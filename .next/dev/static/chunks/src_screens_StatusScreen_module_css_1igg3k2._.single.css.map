@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/screens/StatusScreen.module.css"],"sourcesContent":[".chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  background: var(--card);\n  border-radius: 999px;\n  padding: 9px 18px;\n  font-weight: 800;\n  box-shadow: var(--shadow);\n}\n\n.eta {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  background: var(--basil);\n  color: #fdf9f1;\n  border-radius: 18px;\n  padding: 16px;\n  margin: 0 16px;\n  font-weight: 800;\n  box-shadow: 0 8px 20px rgba(30, 77, 43, 0.3);\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;;;AAWA"}}]
-}

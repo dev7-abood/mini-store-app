@@ -2,10 +2,10 @@
 |--------------------------------------------------------------------------
 | API Client (Laravel Backend)
 |--------------------------------------------------------------------------
-| Requests go to same-origin /backend/*, which next.config.mjs rewrites
-| to the server-side API_BASE_URL — so the backend URL needs no public
-| env prefix. Every request forwards Telegram's raw `initData` so the
-| Laravel middleware can run its HMAC validation.
+| The backend base URL comes from VITE_API_BASE_URL — it's a public
+| endpoint (not a secret), so exposing it in the bundle is fine. Every
+| request forwards Telegram's raw `initData` so the Laravel middleware
+| can run its HMAC validation.
 |
 | Endpoints expected on the Laravel side:
 |   GET  /catalog        -> { categories: [...], products: [...] }
@@ -14,7 +14,7 @@
 |   POST /otp/verify     -> { ok: true }
 */
 
-const BASE_URL = '/backend';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 /** Raw initData string straight from the Telegram SDK (empty in browser). */
 function telegramInitData() {

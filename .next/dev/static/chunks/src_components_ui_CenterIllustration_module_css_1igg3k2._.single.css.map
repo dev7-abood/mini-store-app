@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/components/ui/CenterIllustration.module.css"],"sourcesContent":[".wrap {\n  text-align: center;\n  padding: 30px 24px 10px;\n}\n\n.ring {\n  width: 110px;\n  height: 110px;\n  border-radius: 50%;\n  background: var(--card);\n  box-shadow: var(--shadow);\n  display: grid;\n  place-items: center;\n  font-size: 50px;\n  margin: 0 auto 18px;\n  overflow: hidden;\n  position: relative;\n}\n\n.wrap h2 {\n  font-size: 22px;\n  font-weight: 800;\n  margin-bottom: 8px;\n}\n\n.wrap p {\n  color: var(--ink-soft);\n  font-weight: 600;\n  font-size: 14px;\n  line-height: 1.55;\n}\n"],"names":[],"mappings":"AAAA;;;;;AAKA;;;;;;;;;;;;;;AAcA;;;;;;AAMA"}}]
-}

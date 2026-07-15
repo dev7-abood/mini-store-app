@@ -2,8 +2,8 @@
 |--------------------------------------------------------------------------
 | Order Message Sender (client side)
 |--------------------------------------------------------------------------
-| Posts the formatted order message to our own Next.js API route
-| (/api/telegram/order). The route validates initData and talks to the
+| Posts the formatted order message to our Vercel serverless function
+| (/api/telegram-order). The route validates initData and talks to the
 | Bot API with the server-side BOT_TOKEN — the token never reaches the
 | browser.
 */
@@ -23,7 +23,7 @@ function telegramInitData() {
  */
 export async function sendOrderToChat(message) {
   try {
-    const response = await fetch('/api/telegram/order', {
+    const response = await fetch('/api/telegram-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ initData: telegramInitData(), message }),

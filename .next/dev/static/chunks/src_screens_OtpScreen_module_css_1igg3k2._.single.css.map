@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/screens/OtpScreen.module.css"],"sourcesContent":[".phone {\n  direction: ltr;\n  display: inline-block;\n  font-weight: 800;\n}\n\n.resend {\n  display: block;\n  margin: 16px auto 0;\n  color: var(--basil);\n  font-weight: 800;\n  font-size: 14px;\n}\n\n.hint {\n  text-align: center;\n  color: var(--ink-soft);\n  font-size: 12.5px;\n  font-weight: 700;\n  margin-top: 14px;\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .resend:hover {\n    text-decoration: underline;\n  }\n}\n"],"names":[],"mappings":"AAAA;;;;;;AAMA;;;;;;;;AAQA;;;;;;;;AAQA;EACE"}}]
-}

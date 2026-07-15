@@ -5,8 +5,6 @@
 | Renders the active screen from the navigation state machine. Providers
 | are composed here: Navigation (screen flow) -> Cart -> Order.
 */
-import { useEffect } from 'react';
-import i18n, { applyDocumentLocale } from './i18n';
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
@@ -38,12 +36,6 @@ function ActiveScreen() {
 }
 
 export default function App() {
-  /* Sync <html lang/dir> with the active locale (SSR is disabled, so
-     this runs only in the browser). */
-  useEffect(() => {
-    applyDocumentLocale(i18n.language);
-  }, []);
-
   return (
     <NavigationProvider>
       <CartProvider>
