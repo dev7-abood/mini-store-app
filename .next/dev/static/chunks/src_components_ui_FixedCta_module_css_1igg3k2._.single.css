@@ -1,0 +1,14 @@
+/* [project]/src/components/ui/FixedCta.module.css [app-client] (css) */
+.FixedCta-module__UJNBiq__wrap {
+  width: 100%;
+  max-width: 480px;
+  padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  background: linear-gradient(#f7f2ea00, var(--bg) 35%);
+  z-index: 25;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/*# sourceMappingURL=src_components_ui_FixedCta_module_css_1igg3k2._.single.css.map*/

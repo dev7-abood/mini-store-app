@@ -1,0 +1,54 @@
+/* [project]/src/components/ui/Stepper.module.css [app-client] (css) */
+.Stepper-module__zI6xEW__stepper {
+  background: var(--bg);
+  border-radius: 14px;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 12px;
+  display: flex;
+}
+
+.Stepper-module__zI6xEW__stepper button {
+  background: var(--card);
+  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 2px 6px #22180e1a;
+}
+
+.Stepper-module__zI6xEW__stepper b {
+  text-align: center;
+  min-width: 22px;
+  font-size: 17px;
+}
+
+.Stepper-module__zI6xEW__mini {
+  background: none;
+  gap: 10px;
+  padding: 0;
+}
+
+.Stepper-module__zI6xEW__mini button {
+  background: var(--bg);
+  width: 27px;
+  height: 27px;
+  box-shadow: none;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.Stepper-module__zI6xEW__mini b {
+  font-size: inherit;
+  min-width: auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .Stepper-module__zI6xEW__stepper button:hover, .Stepper-module__zI6xEW__mini button:hover {
+    background: #fff6e6;
+  }
+}
+
+/*# sourceMappingURL=src_components_ui_Stepper_module_css_1igg3k2._.single.css.map*/

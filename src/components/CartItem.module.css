@@ -1,0 +1,35 @@
+.item {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 11px;
+  box-shadow: 0 3px 10px rgba(34, 24, 14, 0.05);
+}
+
+.thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  flex: 0 0 auto;
+  font-size: 28px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.price {
+  color: var(--basil);
+  font-weight: 800;
+  font-size: 13.5px;
+  margin-top: 2px;
+}

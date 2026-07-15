@@ -1,0 +1,30 @@
+/* [project]/src/components/ui/Field.module.css [app-client] (css) */
+.Field-module__bfn3sa__field {
+  margin-bottom: 14px;
+}
+
+.Field-module__bfn3sa__field label {
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  display: block;
+}
+
+.Field-module__bfn3sa__field input, .Field-module__bfn3sa__field textarea {
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  width: 100%;
+  color: var(--ink);
+  border-radius: 14px;
+  outline: none;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all .2s;
+}
+
+.Field-module__bfn3sa__field input:focus, .Field-module__bfn3sa__field textarea:focus {
+  border-color: var(--saffron);
+}
+
+/*# sourceMappingURL=src_components_ui_Field_module_css_1igg3k2._.single.css.map*/

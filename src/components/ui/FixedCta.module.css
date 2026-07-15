@@ -1,0 +1,11 @@
+.wrap {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  background: linear-gradient(rgba(247, 242, 234, 0), var(--bg) 35%);
+  z-index: 25;
+}

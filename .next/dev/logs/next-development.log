@@ -1,0 +1,366 @@
+{"timestamp":"00:00:01.623","source":"Server","level":"WARN","message":"⚠ Slow filesystem detected. The benchmark took 248ms. If C:\\Users\\abudh\\Desktop\\safra-mini-app\\.next/dev is a network drive, consider moving it to a local folder.\nSee more: https://nextjs.org/docs/app/guides/local-development"}
+{"timestamp":"00:00:01.951","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:04.850","source":"Server","level":"WARN","message":"⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from \"192.168.56.1\".\nCross-origin access to Next.js dev resources is blocked by default for safety.\n\nTo allow this host in development, add it to \"allowedDevOrigins\" in next.config.js and restart the dev server:\n\n// next.config.js\nmodule.exports = {\n  allowedDevOrigins: ['192.168.56.1'],\n}\n\nRead more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins"}
+{"timestamp":"00:00:06.254","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:06.254","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:06.254","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:06.254","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:06.254","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:06.254","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:06.254","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:06.254","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:06.254","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:06.254","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:08.251","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:12.628","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:12.628","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:12.628","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:12.628","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:12.628","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:12.628","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:12.628","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:12.628","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:12.628","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:12.628","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:12.694","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:12.694","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:12.704","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:12.705","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:12.716","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:12.716","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:12.728","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:12.728","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:12.747","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:12.747","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:12.761","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:12.761","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:14.193","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:14.198","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:14.199","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.211","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.211","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.222","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.222","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.233","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.233","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.243","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.243","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.253","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:14.253","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.265","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.265","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.274","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.274","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.285","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.285","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:14.293","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:14.293","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:22.715","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:22.724","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:22.724","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:24.329","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:24.334","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:24.334","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:25.230","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:25.230","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:25.230","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:25.234","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:25.234","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:25.241","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:25.241","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:25.247","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:25.247","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:26.538","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:26.538","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:26.538","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:26.544","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:26.544","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.552","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:26.552","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.557","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:26.557","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.558","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:26.558","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.558","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:26.558","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.558","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:26.558","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.559","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:26.559","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.559","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:26.559","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:26.560","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:26.560","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:32.789","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:32.789","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:32.789","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:32.794","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:32.794","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.795","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:32.795","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.795","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:32.795","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.795","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:32.795","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.796","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:32.796","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.796","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:32.796","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.796","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:32.797","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.797","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:32.797","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:32.824","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:32.824","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:37.092","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:37.092","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:37.092","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:37.097","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:37.097","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.097","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:37.097","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.097","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:37.097","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.098","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:37.098","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.098","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:37.098","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.098","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:37.098","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.099","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:37.099","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.099","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:37.099","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:37.099","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:37.099","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:38.960","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:38.960","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_data_send {\"data\":\"{\\\"order\\\":[{\\\"id\\\":1,\\\"qty\\\":1}],\\\"name\\\":\\\"gg\\\",\\\"address\\\":\\\"ggg\\\",\\\"note\\\":\\\"gg\\\",\\\"phone\\\":\\\"+970555555555\\\",\\\"total\\\":42}\"}"}
+{"timestamp":"00:00:38.960","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:38.960","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:38.960","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:38.960","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:38.962","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:38.962","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:38.967","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:38.967","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:38.967","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:38.968","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:38.968","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:38.968","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:38.969","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:38.969","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:39.188","source":"Browser","level":"WARN","message":"Order message not delivered: BOT_TOKEN is not configured"}
+{"timestamp":"00:00:39.191","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33mOrder message not delivered:\\u001b[39m\" \"\\u001b[33mBOT_TOKEN is not configured\\u001b[39m\" \"\\u001b[2m(src/api/telegramBot.js:32:27)\\u001b[22m\""}
+{"timestamp":"00:00:39.191","source":"Browser","level":"WARN","message":"\u001b[33mOrder message not delivered:\u001b[39m \"\\u001b[33mBOT_TOKEN is not configured\\u001b[39m\""}
+{"timestamp":"00:00:40.477","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:40.477","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:40.477","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:40.477","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:40.477","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:40.477","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:00:40.477","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:00:40.477","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:00:40.477","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:00:40.477","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:00:40.481","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:40.481","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:40.481","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:40.481","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:40.482","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:40.482","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:40.482","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:00:40.482","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:40.482","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:00:40.482","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:40.482","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:00:40.483","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:00:53.483","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:00:53.493","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:00:53.493","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:09.023","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:09.029","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:01:09.030","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.030","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.030","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.030","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.031","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.031","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.031","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.031","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.032","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.032","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:09.032","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.032","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.032","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.033","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.033","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.033","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.033","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:09.033","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:09.033","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:11.286","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:01:11.286","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:01:11.286","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:01:11.288","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:01:11.288","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:11.289","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:11.289","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:11.289","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:11.289","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] HapticFeedback is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"[Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] BackButton is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_ready "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"LOG","message":"\u001b[2;38;2;124;124;124m%s\u001b[0m [Telegram.WebView] > postEvent web_app_expand "}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Header color is not supported in version 6.0"}
+{"timestamp":"00:01:12.746","source":"Browser","level":"WARN","message":"[Telegram.WebApp] Background color is not supported in version 6.0"}
+{"timestamp":"00:01:12.750","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:01:12.750","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.750","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:12.750","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.750","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:12.750","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.751","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.751","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.751","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.751","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.751","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.751","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.751","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.751","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.752","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:12.752","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.752","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.752","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.752","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.752","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.752","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.752","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:12.753","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:12.753","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.843","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.844","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.849","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.849","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.854","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:16.854","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.862","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.862","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.869","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.869","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.874","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:16.874","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.876","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:1478:17)\\u001b[22m\""}
+{"timestamp":"00:01:16.876","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] HapticFeedback is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.876","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.876","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.876","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.877","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.877","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.877","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.877","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.877","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.877","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:989:17)\\u001b[22m\""}
+{"timestamp":"00:01:16.877","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] BackButton is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.877","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.877","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.878","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.878","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.878","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:769:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.878","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Header color is not supported in version 6.0\u001b[39m"}
+{"timestamp":"00:01:16.878","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\\u001b[39m\" \"\\u001b[2m(https://telegram.org/js/telegram-web-app.js:825:15)\\u001b[22m\""}
+{"timestamp":"00:01:16.878","source":"Browser","level":"WARN","message":"\u001b[33m[Telegram.WebApp] Background color is not supported in version 6.0\u001b[39m"}

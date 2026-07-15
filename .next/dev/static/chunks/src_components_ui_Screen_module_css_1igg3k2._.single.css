@@ -1,0 +1,19 @@
+/* [project]/src/components/ui/Screen.module.css [app-client] (css) */
+.Screen-module__eEueqW__screen {
+  min-height: 100dvh;
+  animation: .35s Screen-module__eEueqW__fadeIn;
+}
+
+@keyframes Screen-module__eEueqW__fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*# sourceMappingURL=src_components_ui_Screen_module_css_1igg3k2._.single.css.map*/

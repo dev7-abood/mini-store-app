@@ -1,0 +1,47 @@
+.wrap {
+  padding-top: 16vh;
+}
+
+.check {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--ok);
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  animation: checkIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes checkIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+  margin-top: 14px;
+}
+
+.check svg path {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: draw 0.5s 0.25s forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

@@ -1,0 +1,85 @@
+/* [project]/src/components/CategoryChips.module.css [app-client] (css) */
+.CategoryChips-module__oMVbVW__chips {
+  scrollbar-width: none;
+  z-index: 19;
+  background: var(--bg);
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  gap: 9px;
+  padding: 10px 16px 14px;
+  display: flex;
+  position: sticky;
+  top: 66px;
+  overflow-x: auto;
+}
+
+.CategoryChips-module__oMVbVW__dragging {
+  cursor: grabbing;
+}
+
+.CategoryChips-module__oMVbVW__dragging .CategoryChips-module__oMVbVW__chip {
+  pointer-events: none;
+}
+
+.CategoryChips-module__oMVbVW__chips::-webkit-scrollbar {
+  display: none;
+}
+
+.CategoryChips-module__oMVbVW__chip {
+  background: var(--card);
+  border: 1.5px solid #0000;
+  border-radius: 999px;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 15px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all .2s;
+  display: flex;
+  box-shadow: 0 3px 10px #22180e0f;
+}
+
+.CategoryChips-module__oMVbVW__on {
+  background: var(--basil);
+  color: #fdf9f1;
+  border-color: var(--basil);
+}
+
+.CategoryChips-module__oMVbVW__thumb {
+  border-radius: 50%;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .CategoryChips-module__oMVbVW__chips {
+    scrollbar-width: thin;
+    scrollbar-color: #d8cdbb transparent;
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+  }
+
+  .CategoryChips-module__oMVbVW__chips::-webkit-scrollbar {
+    height: 6px;
+    display: block;
+  }
+
+  .CategoryChips-module__oMVbVW__chips::-webkit-scrollbar-track {
+    background: none;
+  }
+
+  .CategoryChips-module__oMVbVW__chips::-webkit-scrollbar-thumb {
+    background: #d8cdbb;
+    border-radius: 99px;
+  }
+
+  .CategoryChips-module__oMVbVW__chip:hover:not(.CategoryChips-module__oMVbVW__on) {
+    border-color: var(--saffron);
+  }
+}
+
+/*# sourceMappingURL=src_components_CategoryChips_module_css_1igg3k2._.single.css.map*/

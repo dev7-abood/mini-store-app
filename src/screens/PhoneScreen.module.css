@@ -1,0 +1,70 @@
+.pad {
+  padding: 22px 16px 130px;
+}
+
+.label {
+  display: block;
+  font-weight: 800;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+/* One merged field: prefix (right, RTL start) + digits input (left).
+   The border/focus ring lives on the container. */
+.phoneField {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  transition: 0.2s;
+}
+
+.phoneField:focus-within {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.22);
+}
+
+.prefix {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 14px 14px 12px;
+  font-weight: 800;
+  font-size: 15px;
+  direction: ltr;
+  color: var(--ink);
+  border-inline-end: 1.5px solid var(--line);
+  user-select: none;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 14px;
+  font-size: 16px; /* >= 16px prevents iOS zoom-on-focus */
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+  direction: ltr;
+  text-align: right; /* digits sit next to the prefix (RTL reading order) */
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.input::placeholder {
+  color: #c9bda9;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.help {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-weight: 700;
+  direction: ltr;
+  text-align: end;
+}

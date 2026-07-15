@@ -1,0 +1,52 @@
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 7px 12px;
+}
+
+.stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(34, 24, 14, 0.1);
+}
+
+.stepper b {
+  min-width: 22px;
+  text-align: center;
+  font-size: 17px;
+}
+
+.mini {
+  gap: 10px;
+  background: none;
+  padding: 0;
+}
+
+.mini button {
+  width: 27px;
+  height: 27px;
+  border-radius: 9px;
+  background: var(--bg);
+  font-weight: 800;
+  font-size: 16px;
+  box-shadow: none;
+}
+
+.mini b {
+  font-size: inherit;
+  min-width: auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stepper button:hover,
+  .mini button:hover {
+    background: #fff6e6;
+  }
+}

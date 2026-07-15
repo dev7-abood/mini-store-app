@@ -1,0 +1,43 @@
+/* [project]/src/components/OtpInput.module.css [app-client] (css) */
+.OtpInput-module__ToZJXW__row {
+  direction: ltr;
+  justify-content: center;
+  gap: 9px;
+  margin: 26px 0 10px;
+  display: flex;
+}
+
+.OtpInput-module__ToZJXW__box {
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  text-align: center;
+  border-radius: 14px;
+  outline: none;
+  width: 48px;
+  height: 58px;
+  font-size: 24px;
+  font-weight: 800;
+  transition: all .2s;
+}
+
+.OtpInput-module__ToZJXW__box:focus {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px #f2a93b40;
+}
+
+.OtpInput-module__ToZJXW__err {
+  border-color: var(--tomato);
+  animation: .35s OtpInput-module__ToZJXW__shake;
+}
+
+@keyframes OtpInput-module__ToZJXW__shake {
+  25% {
+    transform: translateX(-5px);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/*# sourceMappingURL=src_components_OtpInput_module_css_1igg3k2._.single.css.map*/

@@ -1,0 +1,76 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(var(--bg) 75%, rgba(247, 242, 234, 0));
+  padding: 14px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.miniLogo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--basil);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow);
+}
+
+.title {
+  text-align: center;
+}
+
+.title h1 {
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.title p {
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.cartBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--card);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow);
+  font-size: 18px;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  inset-inline-start: -4px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--tomato);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+  padding: 2px 16px 110px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cartBtn:hover {
+    background: #fff6e6;
+  }
+}

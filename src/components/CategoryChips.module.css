@@ -1,0 +1,82 @@
+.chips {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 10px 16px 14px;
+  scrollbar-width: none;
+  position: sticky;
+  top: 66px;
+  z-index: 19;
+  background: var(--bg);
+  cursor: grab;
+  user-select: none;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.dragging .chip {
+  pointer-events: none;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 15px;
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 3px 10px rgba(34, 24, 14, 0.06);
+  border: 1.5px solid transparent;
+  transition: 0.2s;
+}
+
+.on {
+  background: var(--basil);
+  color: #fdf9f1;
+  border-color: var(--basil);
+}
+
+.thumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
+/* Desktop: thin visible scrollbar so mouse scrolling is discoverable */
+@media (hover: hover) and (pointer: fine) {
+  .chips {
+    scrollbar-width: thin;
+    scrollbar-color: #d8cdbb transparent;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+  }
+
+  .chips::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+  }
+
+  .chips::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chips::-webkit-scrollbar-thumb {
+    background: #d8cdbb;
+    border-radius: 99px;
+  }
+
+  .chip:hover:not(.on) {
+    border-color: var(--saffron);
+  }
+}

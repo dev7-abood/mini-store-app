@@ -1,0 +1,34 @@
+.cta {
+  background: var(--saffron);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 14px;
+  font-weight: 800;
+  font-size: 15px;
+  transition: transform 0.15s;
+  box-shadow: 0 6px 16px rgba(242, 169, 59, 0.4);
+}
+
+.cta:active {
+  transform: scale(0.97);
+}
+
+.green {
+  background: var(--basil);
+  color: #fdf9f1;
+  box-shadow: 0 6px 16px rgba(30, 77, 43, 0.35);
+}
+
+.full {
+  width: 100%;
+}
+
+.grow {
+  flex: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover {
+    filter: brightness(1.05);
+  }
+}

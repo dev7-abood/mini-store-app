@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/components/ui/FixedCta.module.css"],"sourcesContent":[".wrap {\n  position: fixed;\n  bottom: 0;\n  left: 50%;\n  transform: translateX(-50%);\n  width: 100%;\n  max-width: 480px;\n  padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);\n  background: linear-gradient(rgba(247, 242, 234, 0), var(--bg) 35%);\n  z-index: 25;\n}\n"],"names":[],"mappings":"AAAA"}}]
+}

@@ -1,0 +1,37 @@
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.back {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+}
+
+.back span {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.trailing {
+  margin-inline-start: auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .back:hover {
+    background: #fff6e6;
+  }
+}

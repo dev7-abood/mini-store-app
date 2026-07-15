@@ -1,0 +1,69 @@
+/*
+|--------------------------------------------------------------------------
+| Design Tokens & Global Resets
+|--------------------------------------------------------------------------
+| The palette / typography of the original design, exposed as CSS custom
+| properties consumed by every CSS Module.
+*/
+:root {
+  --bg: #f7f2ea;
+  --card: #ffffff;
+  --ink: #22180e;
+  --ink-soft: #7a6e5f;
+  --basil: #1e4d2b;
+  --basil-deep: #143520;
+  --saffron: #f2a93b;
+  --tomato: #e4572e;
+  --line: #eae1d3;
+  --ok: #2e9e5b;
+  --shadow: 0 10px 30px rgba(34, 24, 14, 0.1);
+  --font: 'Tajawal', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+}
+
+input,
+textarea {
+  font-family: inherit;
+}
+
+img {
+  display: block;
+}
+
+/* Desktop: exactly the mobile layout — no frame, no backdrop */
+@media (min-width: 560px) {
+  html {
+    background: var(--bg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

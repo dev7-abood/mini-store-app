@@ -1,0 +1,39 @@
+.row {
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+  margin: 26px 0 10px;
+  direction: ltr;
+}
+
+.box {
+  width: 48px;
+  height: 58px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  outline: none;
+  transition: 0.2s;
+}
+
+.box:focus {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.25);
+}
+
+.err {
+  border-color: var(--tomato);
+  animation: shake 0.35s;
+}
+
+@keyframes shake {
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}

@@ -1,0 +1,72 @@
+/* [project]/src/screens/PhoneScreen.module.css [app-client] (css) */
+.PhoneScreen-module__dhjsAq__pad {
+  padding: 22px 16px 130px;
+}
+
+.PhoneScreen-module__dhjsAq__label {
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  display: block;
+}
+
+.PhoneScreen-module__dhjsAq__phoneField {
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  align-items: center;
+  transition: all .2s;
+  display: flex;
+}
+
+.PhoneScreen-module__dhjsAq__phoneField:focus-within {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px #f2a93b38;
+}
+
+.PhoneScreen-module__dhjsAq__prefix {
+  color: var(--ink);
+  border-inline-end: 1.5px solid var(--line);
+  -webkit-user-select: none;
+  user-select: none;
+  direction: ltr;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 14px 14px 12px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+}
+
+.PhoneScreen-module__dhjsAq__input {
+  min-width: 0;
+  color: var(--ink);
+  text-align: right;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  background: none;
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.PhoneScreen-module__dhjsAq__input::placeholder {
+  color: #c9bda9;
+  letter-spacing: .5px;
+  font-weight: 600;
+}
+
+.PhoneScreen-module__dhjsAq__help {
+  color: var(--ink-soft);
+  text-align: end;
+  direction: ltr;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/*# sourceMappingURL=src_screens_PhoneScreen_module_css_1igg3k2._.single.css.map*/

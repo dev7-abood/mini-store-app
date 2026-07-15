@@ -1,0 +1,29 @@
+.pad {
+  padding: 0 16px 130px;
+}
+
+.totals {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: 0 3px 10px rgba(34, 24, 14, 0.05);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-soft);
+  padding: 5px 0;
+}
+
+.grand {
+  border-top: 1.5px dashed var(--line);
+  margin-top: 8px;
+  padding-top: 12px;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 800;
+}

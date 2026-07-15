@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/components/OtpInput.module.css"],"sourcesContent":[".row {\n  display: flex;\n  gap: 9px;\n  justify-content: center;\n  margin: 26px 0 10px;\n  direction: ltr;\n}\n\n.box {\n  width: 48px;\n  height: 58px;\n  border-radius: 14px;\n  border: 1.5px solid var(--line);\n  background: var(--card);\n  text-align: center;\n  font-size: 24px;\n  font-weight: 800;\n  outline: none;\n  transition: 0.2s;\n}\n\n.box:focus {\n  border-color: var(--saffron);\n  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.25);\n}\n\n.err {\n  border-color: var(--tomato);\n  animation: shake 0.35s;\n}\n\n@keyframes shake {\n  25% {\n    transform: translateX(-5px);\n  }\n  75% {\n    transform: translateX(5px);\n  }\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;AAQA;;;;;;;;;;;;;AAaA;;;;;AAKA;;;;;AAKA"}}]
+}
