@@ -2,11 +2,12 @@
 |--------------------------------------------------------------------------
 | Cart Context
 |--------------------------------------------------------------------------
-| Cart state lives in a reducer keyed by product id -> quantity. Totals
-| are derived with useMemo so components only re-render on real changes.
+| Cart state lives in a reducer keyed by product id -> quantity. Product
+| data and the delivery fee come from the (dynamic) catalog; entries for
+| products that no longer exist in the catalog are ignored gracefully.
 */
 import { createContext, useContext, useMemo, useReducer } from 'react';
-import { DELIVERY_FEE, PRODUCT_BY_ID } from '../data/menu';
+import { useCatalog } from './CatalogContext';
 
 const CartContext = createContext(null);
 
@@ -39,13 +40,13 @@ function cartReducer(state, action) {
 }
 
 export function CartProvider({ children }) {
+  const { productById, deliveryFee } = useCatalog();
   const [items, dispatch] = useReducer(cartReducer, {});
 
   const value = useMemo(() => {
-    const entries = Object.entries(items).map(([id, qty]) => ({
-      product: PRODUCT_BY_ID.get(Number(id)),
-      qty,
-    }));
+    const entries = Object.entries(items)
+      .map(([id, qty]) => ({ product: productById.get(Number(id)), qty }))
+      .filter((entry) => Boolean(entry.product));
 
     const count = entries.reduce((sum, e) => sum + e.qty, 0);
     const subtotal = entries.reduce((sum, e) => sum + e.product.price * e.qty, 0);
@@ -55,18 +56,17 @@ export function CartProvider({ children }) {
       entries,
       count,
       subtotal,
-      deliveryFee: DELIVERY_FEE,
-      total: subtotal + (count > 0 ? DELIVERY_FEE : 0),
+      deliveryFee,
+      total: subtotal + (count > 0 ? deliveryFee : 0),
       addItem: (id, qty = 1) => dispatch({ type: 'add', id, qty }),
       changeQty: (id, delta) => dispatch({ type: 'change', id, delta }),
       clearCart: () => dispatch({ type: 'clear' }),
     };
-  }, [items]);
+  }, [items, productById, deliveryFee]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
-/** @returns {ReturnType<typeof CartProvider> extends never ? never : any} */
 export function useCart() {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error('useCart must be used inside <CartProvider>');

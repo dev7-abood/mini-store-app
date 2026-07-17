@@ -14,30 +14,55 @@ import styles from './PhoneScreen.module.css';
 
 const MIN_DIGITS = 8;
 
+/** Merged +970 field: prefix on the right (RTL start), formatted digits. */
+function PhoneField({ label, hint, value, onChange, inputRef, autoFocusRef }) {
+  const inputId = useId();
+
+  return (
+    <div className={styles.fieldBlock}>
+      <label className={styles.label} htmlFor={inputId}>
+        {label}
+      </label>
+      <div className={styles.phoneField}>
+        <span className={styles.prefix}>
+          <FlagPS />
+          {PHONE_PREFIX}
+        </span>
+        <input
+          ref={inputRef ?? autoFocusRef}
+          id={inputId}
+          className={styles.input}
+          placeholder="598 304 517"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel-national"
+          enterKeyHint="done"
+          maxLength={LOCAL_DIGITS + 2} /* 9 digits + 2 spaces */
+          value={value}
+          onChange={(e) => onChange(formatLocalPhone(e.target.value))}
+        />
+      </div>
+      {hint && <p className={styles.hintText}>{hint}</p>}
+    </div>
+  );
+}
+
 /**
- * Phone entry screen. The +970 prefix is merged into the field (on the
- * right — the RTL reading start), digits auto-format as "598 304 517",
- * and type="tel" + inputMode="tel" guarantee the numeric keypad on
- * mobile.
+ * Phone entry screen: the main (OTP) phone plus a delivery contact phone.
+ * The delivery field mirrors the main number live until the user edits
+ * it — handled inside OrderContext.
  */
 export default function PhoneScreen() {
   const { t } = useTranslation();
-  const inputId = useId();
-  const inputRef = useRef(null);
-  const { phone, setPhone } = useOrder();
+  const mainRef = useRef(null);
+  const { phone, setPhone, deliveryPhone, setDeliveryPhone } = useOrder();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
 
-  const handleChange = (event) => {
-    /* Store formatted; fullPhone in OrderContext strips non-digits. */
-    setPhone(formatLocalPhone(event.target.value));
-  };
-
   const sendCode = () => {
-    const digits = toLocalDigits(phone);
-    if (digits.length < MIN_DIGITS) {
+    if (toLocalDigits(phone).length < MIN_DIGITS) {
       notify(t('phone.invalid'));
-      inputRef.current?.focus();
+      mainRef.current?.focus();
       return;
     }
     /* Real flow: await sendOtp(fullPhone) from src/api/client.js first. */
@@ -51,29 +76,18 @@ export default function PhoneScreen() {
         {t('phone.body')}
       </CenterIllustration>
       <div className={styles.pad}>
-        <label className={styles.label} htmlFor={inputId}>
-          {t('phone.label')}
-        </label>
-        <div className={styles.phoneField}>
-          <span className={styles.prefix}>
-            <FlagPS />
-            {PHONE_PREFIX}
-          </span>
-          <input
-            ref={inputRef}
-            id={inputId}
-            className={styles.input}
-            placeholder={t('phone.placeholder')}
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel-national"
-            enterKeyHint="done"
-            maxLength={LOCAL_DIGITS + 2} /* 9 digits + 2 spaces */
-            value={phone}
-            onChange={handleChange}
-          />
-        </div>
-        <p className={styles.help}>{PHONE_PREFIX} {phone || t('phone.placeholder')}</p>
+        <PhoneField
+          label={t('phone.label')}
+          value={phone}
+          onChange={setPhone}
+          inputRef={mainRef}
+        />
+        <PhoneField
+          label={t('phone.deliveryLabel')}
+          hint={t('phone.deliveryHint')}
+          value={deliveryPhone}
+          onChange={setDeliveryPhone}
+        />
       </div>
       <FixedCta>
         <Button variant="green" full onClick={sendCode}>

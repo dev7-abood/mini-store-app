@@ -1,39 +1,45 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CATEGORIES, CATEGORY_BY_ID, PRODUCTS } from '../data/menu';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
 import Screen from '../components/ui/Screen';
 import BrandLogo from '../components/BrandLogo';
 import CategoryChips from '../components/CategoryChips';
-import ProductCard from '../components/ProductCard';
+import ProductCard, { ProductCardSkeleton } from '../components/ProductCard';
 import ProductSheet from '../components/ProductSheet';
 import CartBar from '../components/CartBar';
 import styles from './MenuScreen.module.css';
 
+const SKELETON_COUNT = 6;
+
 /** Main catalog screen: category chips, product grid, cart bar + sheet. */
 export default function MenuScreen() {
   const { t } = useTranslation();
+  const { categories, products, categoryById, isLoading } = useCatalog();
   const { navigate } = useNavigation();
   const { addItem, count } = useCart();
   const { haptic, user } = useTelegram();
+
+  const [pickedCategory, setPickedCategory] = useState(null);
+  const [sheetProduct, setSheetProduct] = useState(null);
+
+  /* Until the user picks, follow the first category from the catalog. */
+  const activeCategory = pickedCategory ?? categories[0]?.id ?? null;
 
   /* Greet by first name, fall back to @username, then the generic line. */
   const displayName = user?.first_name || (user?.username ? `@${user.username}` : null);
   const subtitle = displayName ? t('menu.welcome', { name: displayName }) : t('menu.subtitle');
 
-  const [activeCategory, setActiveCategory] = useState(CATEGORIES[0].id);
-  const [sheetProduct, setSheetProduct] = useState(null);
-
-  const products = useMemo(
-    () => PRODUCTS.filter((p) => p.category === activeCategory),
-    [activeCategory],
+  const visibleProducts = useMemo(
+    () => products.filter((p) => p.category === activeCategory),
+    [products, activeCategory],
   );
-  const tint = CATEGORY_BY_ID.get(activeCategory)?.tint;
+  const tint = activeCategory ? categoryById.get(activeCategory)?.tint : undefined;
 
   const pickCategory = (id) => {
-    setActiveCategory(id);
+    setPickedCategory(id);
     haptic();
   };
 
@@ -66,18 +72,20 @@ export default function MenuScreen() {
       <CategoryChips activeId={activeCategory} onPick={pickCategory} />
 
       <main className={styles.grid}>
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            tint={tint}
-            onOpen={() => {
-              setSheetProduct(product);
-              haptic();
-            }}
-            onQuickAdd={() => quickAdd(product.id)}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: SKELETON_COUNT }, (_, i) => <ProductCardSkeleton key={i} />)
+          : visibleProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                tint={tint}
+                onOpen={() => {
+                  setSheetProduct(product);
+                  haptic();
+                }}
+                onQuickAdd={() => quickAdd(product.id)}
+              />
+            ))}
       </main>
 
       <CartBar onOpenCart={() => navigate(SCREENS.CART)} />

@@ -26,7 +26,7 @@ const DEMO_CODE = '000000';
  */
 export default function OtpScreen() {
   const { t } = useTranslation();
-  const { phone, fullPhone, details, confirmOrder } = useOrder();
+  const { phone, fullPhone, fullDeliveryPhone, details, confirmOrder } = useOrder();
   const { entries, subtotal, deliveryFee, total } = useCart();
   const { navigate } = useNavigation();
   const { haptic, notify, sendData } = useTelegram();
@@ -41,6 +41,7 @@ export default function OtpScreen() {
         address: details.address.trim(),
         note: details.note.trim(),
         phone: fullPhone,
+        delivery_phone: fullDeliveryPhone,
         total,
       });
 
@@ -54,10 +55,11 @@ export default function OtpScreen() {
         total,
         details,
         phone: fullPhone,
+        deliveryPhone: fullDeliveryPhone,
       });
       sendOrderToChat(message);
     },
-    [sendData, entries, details, fullPhone, subtotal, deliveryFee, total],
+    [sendData, entries, details, fullPhone, fullDeliveryPhone, subtotal, deliveryFee, total],
   );
 
   const verify = useCallback(

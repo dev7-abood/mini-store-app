@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { useMoney } from '../hooks/useMoney';
 import Photo from './ui/Photo';
 import styles from './ProductCard.module.css';
@@ -11,7 +10,6 @@ import styles from './ProductCard.module.css';
  *          onOpen: () => void, onQuickAdd: () => void}} props
  */
 export default function ProductCard({ product, tint, onOpen, onQuickAdd }) {
-  const { t } = useTranslation();
   const money = useMoney();
 
   return (
@@ -29,8 +27,8 @@ export default function ProductCard({ product, tint, onOpen, onQuickAdd }) {
         tint={tint}
         fallbackSize="48px"
       />
-      <div className={styles.name}>{t(`products.${product.id}.name`)}</div>
-      <div className={styles.desc}>{t(`products.${product.id}.desc`)}</div>
+      <div className={styles.name}>{product.name}</div>
+      <div className={styles.desc}>{product.desc}</div>
       <div className={styles.foot}>
         <span className={styles.price}>{money(product.price)}</span>
         <button

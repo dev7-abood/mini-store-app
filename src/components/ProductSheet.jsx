@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CATEGORY_BY_ID } from '../data/menu';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useMoney } from '../hooks/useMoney';
@@ -17,6 +17,7 @@ import styles from './ProductSheet.module.css';
 export default function ProductSheet({ product, onClose }) {
   const { t } = useTranslation();
   const money = useMoney();
+  const { categoryById } = useCatalog();
   const { addItem } = useCart();
   const { haptic } = useTelegram();
   const [qty, setQty] = useState(1);
@@ -37,7 +38,7 @@ export default function ProductSheet({ product, onClose }) {
   }, [product, onClose]);
 
   const open = Boolean(product);
-  const tint = product ? CATEGORY_BY_ID.get(product.category)?.tint : undefined;
+  const tint = product ? categoryById.get(product.category)?.tint : undefined;
 
   const changeQty = (delta) => {
     setQty((q) => Math.max(1, q + delta));
@@ -69,8 +70,8 @@ export default function ProductSheet({ product, onClose }) {
               tint={tint}
               fallbackSize="80px"
             />
-            <h2 className={styles.name}>{t(`products.${product.id}.name`)}</h2>
-            <p className={styles.desc}>{t(`products.${product.id}.desc`)}</p>
+            <h2 className={styles.name}>{product.name}</h2>
+            <p className={styles.desc}>{product.desc}</p>
             <div className={styles.qtyRow}>
               <Stepper value={qty} onChange={changeQty} />
               <Button grow onClick={addToCart}>

@@ -6,6 +6,7 @@
 | are composed here: Navigation (screen flow) -> Cart -> Order.
 */
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
+import { CatalogProvider } from './context/CatalogContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
 import SplashScreen from './screens/SplashScreen';
@@ -38,11 +39,13 @@ function ActiveScreen() {
 export default function App() {
   return (
     <NavigationProvider>
-      <CartProvider>
-        <OrderProvider>
-          <ActiveScreen />
-        </OrderProvider>
-      </CartProvider>
+      <CatalogProvider>
+        <CartProvider>
+          <OrderProvider>
+            <ActiveScreen />
+          </OrderProvider>
+        </CartProvider>
+      </CatalogProvider>
     </NavigationProvider>
   );
 }

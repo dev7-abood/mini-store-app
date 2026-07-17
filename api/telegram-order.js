@@ -53,6 +53,28 @@ function validateInitData(initData) {
   }
 }
 
+/** Escape user-controlled text for Telegram's HTML parse mode. */
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+/**
+ * Footer line identifying the VERIFIED Telegram account that placed the
+ * order (from validated initData — cannot be forged by the client).
+ * Includes a clickable profile link; @username shown when available.
+ *
+ * @param {{id: number, first_name?: string, last_name?: string, username?: string}} user
+ * @returns {string}
+ */
+function telegramUserLine(user) {
+  const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'مستخدم تيليجرام';
+  const usernamePart = user.username ? ` (@${user.username})` : '';
+  return `\n✈️ طلب عبر تيليجرام: <a href="tg://user?id=${user.id}">${escapeHtml(fullName)}</a>${usernamePart}`;
+}
+
 /** Send one HTML message through the Bot API. */
 async function sendMessage(chatId, html) {
   const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -85,8 +107,11 @@ export default async function handler(req, res) {
     return res.status(401).json({ ok: false, error: 'invalid initData' });
   }
 
-  const jobs = [sendMessage(user.id, message)];
-  if (ADMIN_CHAT_ID) jobs.push(sendMessage(ADMIN_CHAT_ID, message));
+  /* Append the verified sender identity to the order details. */
+  const fullMessage = message + telegramUserLine(user);
+
+  const jobs = [sendMessage(user.id, fullMessage)];
+  if (ADMIN_CHAT_ID) jobs.push(sendMessage(ADMIN_CHAT_ID, fullMessage));
 
   const results = await Promise.allSettled(jobs);
   const delivered = results.some((r) => r.status === 'fulfilled' && r.value?.ok);

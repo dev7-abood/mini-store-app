@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { CATEGORIES } from '../data/menu';
+import { useCatalog } from '../context/CatalogContext';
 import Photo from './ui/Photo';
 import styles from './CategoryChips.module.css';
 
 /**
- * Horizontal category selector with desktop mouse support:
- * vertical wheel scrolls the strip horizontally, and the strip can be
- * dragged with the mouse (drag is distinguished from a plain click so
- * chips stay tappable).
+ * Horizontal category selector fed by the dynamic catalog, with desktop
+ * mouse support: vertical wheel scrolls the strip horizontally, and the
+ * strip can be dragged with the mouse (drag is distinguished from a
+ * plain click so chips stay tappable).
  *
- * @param {{activeId: string, onPick: (id: string) => void}} props
+ * @param {{activeId: string|null, onPick: (id: string) => void}} props
  */
 export default function CategoryChips({ activeId, onPick }) {
-  const { t } = useTranslation();
+  const { categories } = useCatalog();
   const stripRef = useRef(null);
   const dragRef = useRef({ isDown: false, startX: 0, startScroll: 0, moved: false });
   const [dragging, setDragging] = useState(false);
@@ -82,7 +81,7 @@ export default function CategoryChips({ activeId, onPick }) {
       className={`${styles.chips} ${dragging ? styles.dragging : ''}`}
       onPointerDown={onPointerDown}
     >
-      {CATEGORIES.map((category) => (
+      {categories.map((category) => (
         <button
           key={category.id}
           type="button"
@@ -96,7 +95,7 @@ export default function CategoryChips({ activeId, onPick }) {
             tint={category.tint}
             fallbackSize="16px"
           />
-          {t(`categories.${category.id}`)}
+          {category.name}
         </button>
       ))}
     </nav>

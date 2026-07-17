@@ -26,6 +26,7 @@ function escapeHtml(text) {
  *   total: number,
  *   details: {name: string, address: string, note: string},
  *   phone: string,
+ *   deliveryPhone: string,
  * }} order
  * @returns {string} HTML message body
  */
@@ -33,10 +34,9 @@ export function buildOrderMessage(order) {
   const t = i18n.t.bind(i18n);
   const money = (amount) => t('common.currency', { amount });
 
-  const lines = order.entries.map(({ product, qty }) => {
-    const name = t(`products.${product.id}.name`);
-    return `• ${name} ×${qty} — ${money(product.price * qty)}`;
-  });
+  const lines = order.entries.map(
+    ({ product, qty }) => `• ${escapeHtml(product.name)} ×${qty} — ${money(product.price * qty)}`,
+  );
 
   const parts = [
     `🍽️ <b>${t('botMessage.title', { number: order.orderNumber })}</b>`,
@@ -52,6 +52,11 @@ export function buildOrderMessage(order) {
     `📍 ${t('botMessage.address')}: ${escapeHtml(order.details.address)}`,
     `📞 ${t('botMessage.phone')}: ${escapeHtml(order.phone)}`,
   ];
+
+  /* Show the delivery contact only when it differs from the main phone. */
+  if (order.deliveryPhone && order.deliveryPhone !== order.phone) {
+    parts.push(`🛵 ${t('botMessage.deliveryPhone')}: ${escapeHtml(order.deliveryPhone)}`);
+  }
 
   if (order.details.note.trim()) {
     parts.push(`📝 ${t('botMessage.note')}: ${escapeHtml(order.details.note)}`);

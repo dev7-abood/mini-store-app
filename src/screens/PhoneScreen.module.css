@@ -60,11 +60,14 @@
   letter-spacing: 0.5px;
 }
 
-.help {
-  margin-top: 8px;
+.fieldBlock {
+  margin-bottom: 18px;
+}
+
+.hintText {
+  margin-top: 7px;
   font-size: 12px;
   color: var(--ink-soft);
   font-weight: 700;
-  direction: ltr;
-  text-align: end;
+  line-height: 1.5;
 }

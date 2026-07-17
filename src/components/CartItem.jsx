@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { CATEGORY_BY_ID } from '../data/menu';
+import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useMoney } from '../hooks/useMoney';
 import Photo from './ui/Photo';
@@ -14,8 +14,9 @@ import styles from './CartItem.module.css';
 export default function CartItem({ product, qty }) {
   const { t } = useTranslation();
   const money = useMoney();
+  const { categoryById } = useCatalog();
   const { changeQty } = useCart();
-  const tint = CATEGORY_BY_ID.get(product.category)?.tint;
+  const tint = categoryById.get(product.category)?.tint;
 
   return (
     <div className={styles.item}>
@@ -27,7 +28,7 @@ export default function CartItem({ product, qty }) {
         fallbackSize="28px"
       />
       <div className={styles.info}>
-        <div className={styles.name}>{t(`products.${product.id}.name`)}</div>
+        <div className={styles.name}>{product.name}</div>
         <div className={styles.price}>{money(product.price * qty)}</div>
       </div>
       <Stepper mini value={qty} onChange={(delta) => changeQty(product.id, delta)} />
