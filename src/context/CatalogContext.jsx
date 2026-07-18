@@ -8,6 +8,7 @@
 */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { fetchCatalog, hasBackend } from '../api/client';
+import { useTenant } from './TenantContext';
 import {
   FALLBACK_CATEGORIES,
   FALLBACK_PRODUCTS,
@@ -25,6 +26,7 @@ const INITIAL = {
 };
 
 export function CatalogProvider({ children }) {
+  const tenant = useTenant();
   const [state, setState] = useState(INITIAL);
 
   const load = useCallback(async () => {
@@ -52,9 +54,12 @@ export function CatalogProvider({ children }) {
     });
   }, []);
 
+  /* Load only after the tenant is resolved — the base URL must be
+     configured first. While the tenant resolves, status stays 'loading'
+     so the splash keeps showing. */
   useEffect(() => {
-    load();
-  }, [load]);
+    if (tenant.status === 'ready') load();
+  }, [tenant.status, load]);
 
   const value = useMemo(
     () => ({

@@ -118,6 +118,51 @@ public function __invoke(): JsonResponse
 - The menu grid shows shimmer skeletons while loading.
 - No `VITE_API_BASE_URL`, empty catalog, or a failed/timed-out request (8s) → the app falls back to the built-in seed in `src/data/menu.js`, so it never breaks in front of a customer. Check the console for `source: 'static'` warnings.
 
+
+## Multi-tenant bootstrap (deep links)
+
+Launch sequence — zero extra network requests:
+
+```
+App opens
+  ├─ decode start_param locally ............... 0 requests
+  ├─ configureApiClient(payload.u, payload.b) . 0 requests
+  ├─ save payload to Telegram CloudStorage .... 0 requests to YOUR servers
+  └─ first API call (the catalog) ............. 1 request — the one you needed anyway
+        └─ VerifyTelegramInitData middleware → authentic user + authentic payload
+```
+
+- `src/lib/decodeTelegramPayload.js` — Base64URL + XOR with `VITE_TELEGRAM_DEEP_LINK_KEY` (must equal `TELEGRAM_DEEP_LINK_KEY` on the backend).
+- `src/lib/tenantContext.js` — deep link → CloudStorage (`tenant_ctx_v1`) → null.
+- `src/context/TenantContext.jsx` — resolves before anything loads. Fallbacks: `VITE_API_BASE_URL` (single-tenant/dev) → browser demo mode (seed catalog) → in Telegram with nothing: the **OpenFromBot** screen, no requests made.
+- The API client appends `/api` to `payload.u` and sends `X-Branch-Id` when `payload.b` is present; every request carries the raw initData for the middleware.
+- Trust model: the payload routes, the HMAC proves. Since `start_param` is inside the signed initData, a forged payload dies at the first request.
+
+Backend encode helper (mirror of the frontend decoder):
+
+```php
+/**
+ * Base64URL( XOR( JSON, key ) ) — reversible obfuscation for start_param.
+ *
+ * @param  array<string, mixed>  $payload  e.g. ['u' => $tenantUrl, 'b' => $branchId]
+ */
+function encodeTelegramPayload(array $payload, string $key): string
+{
+    $json  = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $bytes = '';
+
+    foreach (str_split($json) as $i => $char) {
+        $bytes .= chr(ord($char) ^ ord($key[$i % strlen($key)]));
+    }
+
+    return rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');
+}
+
+// Deep link: https://t.me/{$botUsername}/{$appShortName}?startapp={encodeTelegramPayload(...)}
+```
+
+> Multi-tenant note on the order message: the Vercel function `api/telegram-order.js` supports a single `BOT_TOKEN`, so use it only for staging/single-bot setups. In production multi-tenant, send the order message from the **tenant backend** — it owns each restaurant's token (central `telegram_settings`) and already receives the verified user via the middleware.
+
 ## Order message to the Telegram chat
 
 After OTP verification the app:

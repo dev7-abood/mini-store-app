@@ -6,6 +6,7 @@
 | are composed here: Navigation (screen flow) -> Cart -> Order.
 */
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
+import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider } from './context/CatalogContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
@@ -17,6 +18,7 @@ import PhoneScreen from './screens/PhoneScreen';
 import OtpScreen from './screens/OtpScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import StatusScreen from './screens/StatusScreen';
+import OpenFromBotScreen from './screens/OpenFromBotScreen';
 
 /** @type {Record<string, React.ComponentType>} */
 const SCREEN_COMPONENTS = {
@@ -36,16 +38,27 @@ function ActiveScreen() {
   return <Component key={screen} />;
 }
 
+/** Blocks the whole flow when no tenant could be resolved in Telegram. */
+function TenantGate({ children }) {
+  const { isMissing } = useTenant();
+  if (isMissing) return <OpenFromBotScreen />;
+  return children;
+}
+
 export default function App() {
   return (
     <NavigationProvider>
-      <CatalogProvider>
-        <CartProvider>
-          <OrderProvider>
-            <ActiveScreen />
-          </OrderProvider>
-        </CartProvider>
-      </CatalogProvider>
+      <TenantProvider>
+        <TenantGate>
+          <CatalogProvider>
+            <CartProvider>
+              <OrderProvider>
+                <ActiveScreen />
+              </OrderProvider>
+            </CartProvider>
+          </CatalogProvider>
+        </TenantGate>
+      </TenantProvider>
     </NavigationProvider>
   );
 }

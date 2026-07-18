@@ -14,10 +14,36 @@
 |   POST /otp/verify     -> { ok: true }
 */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+/*
+|--------------------------------------------------------------------------
+| Runtime Configuration (multi-tenant)
+|--------------------------------------------------------------------------
+| The base URL is decided at LAUNCH from the deep-link payload
+| (configureApiClient), falling back to VITE_API_BASE_URL for
+| single-tenant / local development. X-Branch-Id is attached when the
+| payload carries a branch.
+*/
+
+let runtimeBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '';
+let runtimeBranchId = null;
+
+/**
+ * Point the client at the resolved tenant. Called once at bootstrap,
+ * before any data request. Never send the decoded payload as proof of
+ * anything — the initData signature is the proof.
+ *
+ * @param {{u: string, b?: number}} ctx Decoded deep-link payload
+ */
+export function configureApiClient(ctx) {
+  runtimeBaseUrl = `${ctx.u.replace(/\/$/, '')}/api`;
+  runtimeBranchId = ctx.b ?? null;
+}
 
 /** Whether a backend is configured at all. */
-export const hasBackend = () => Boolean(BASE_URL);
+export const hasBackend = () => Boolean(runtimeBaseUrl);
+
+/** The branch resolved from the deep link (null when none). */
+export const currentBranchId = () => runtimeBranchId;
 
 /** Raw initData string straight from the Telegram SDK (empty in browser). */
 function telegramInitData() {
@@ -37,13 +63,14 @@ async function request(path, { timeoutMs = 10000, ...options } = {}) {
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const response = await fetch(`${BASE_URL}${path}`, {
+    const response = await fetch(`${runtimeBaseUrl}${path}`, {
       signal: controller.signal,
       ...options,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'X-Telegram-Init-Data': telegramInitData(),
+        ...(runtimeBranchId != null ? { 'X-Branch-Id': String(runtimeBranchId) } : {}),
         ...options.headers,
       },
     });
