@@ -20,7 +20,6 @@ src/
 ├── api/                   # client.js (Laravel), telegramBot.js (calls /api/telegram-order)
 ├── components/            # feature components (+ ui/ primitives)
 ├── context/               # CartContext, OrderContext, NavigationContext
-├── data/menu.js           # static catalog seed (swap for fetchCatalog())
 ├── hooks/                 # useTelegram, useMoney
 ├── i18n/                  # i18next bootstrap + locales/ar.json
 ├── lib/                   # orderMessage.js, phone.js
@@ -52,72 +51,80 @@ Deploying to Vercel: the included `vercel.json` sets the **Vite** preset (output
 To test inside Telegram, use your `https://....vercel.app` URL in BotFather (or `ngrok http 3000` for local UI testing).
 
 
-## Catalog API contract (build this in Laravel)
+## Storefront endpoint (integrated): GET /front-data
 
-`GET {VITE_API_BASE_URL}/catalog` — the app normalizes this response (accepts `category_id` or `category`, `desc` or `description`):
+The app consumes your live Laravel endpoint (`FrontDataController@index`, behind `telegram.initdata`) at:
+
+```
+{tenant_base_url}/api/v1/front-data?page=N
+```
+
+Real payload shape (matches the current tenant response exactly):
 
 ```json
 {
-  "delivery_fee": 10,
-  "categories": [
+  "success": true,
+  "data": [
     {
-      "id": "burgers",
-      "name": "برجر",
-      "emoji": "🍔",
-      "tint": "#FBE3C9",
-      "image": "https://cdn.example.com/categories/burgers.jpg"
+      "id": 6, "name": "حلويات", "slug": "desserts",
+      "image": "https://r-gaza-restaurant-storage.s3.amazonaws.com/tenanttest/seed/storefront/catalogs/desserts.jpg",
+      "active": true,
+      "products": [
+        {
+          "id": 13, "catalog_id": 6, "name": "تشيز كيك كنافة",
+          "description": "تشيز كيك كريمي مع طبقة كنافة",
+          "image": "https://r-gaza-restaurant-storage.s3.amazonaws.com/tenanttest/seed/storefront/products/kunafa-cheesecake.jpg",
+          "price": 18, "discount": 0, "final_price": 18, "available": true
+        }
+      ]
     }
   ],
-  "products": [
-    {
-      "id": 1,
-      "category_id": "burgers",
-      "name": "سماش كلاسيك",
-      "desc": "لحم سماش دبل مع شيدر وصوص البيت",
-      "price": 32,
-      "emoji": "🍔",
-      "image": "https://cdn.example.com/products/smash.jpg"
-    }
-  ]
+  "meta": { "page": 1, "per_page": 9, "total": 14, "has_more": true }
 }
 ```
 
-Notes:
-- `id` can be int or string for categories; product `id` must be numeric (used as the cart key and in the order payload).
-- `emoji` and `tint` are optional (defaults: 🍽️ / #F3E8D5). `image` optional — the emoji shows as fallback.
-- Sort order in the arrays = display order in the app.
-- **CORS**: allow your Vercel origin in `config/cors.php` (paths `api/*`, allowed_origins: `https://your-app.vercel.app`).
-- The app sends `X-Telegram-Init-Data` on every request — plug in your existing initData HMAC middleware.
+How the app handles it:
 
-Minimal Laravel sketch:
-
-```php
-// routes/api.php
-Route::prefix('mini-app')->group(function () {
-    Route::get('catalog', CatalogController::class);
-});
-
-// app/Http/Controllers/CatalogController.php
-public function __invoke(): JsonResponse
-{
-    return response()->json([
-        'delivery_fee' => (int) Setting::get('delivery_fee', 10),
-        'categories'   => CategoryResource::collection(
-            Category::query()->where('is_active', true)->orderBy('sort')->get()
-        ),
-        'products'     => ProductResource::collection(
-            Product::query()->where('is_active', true)->orderBy('sort')->get()
-        ),
-    ]);
-}
-```
+- **Infinite scroll**: page 1 renders immediately on menu mount; an `IntersectionObserver` sentinel 300px above the viewport bottom fires `loadMore()` as the user scrolls, fetching the next page and merging (with id dedupe) as it arrives. Skeleton cards show at the bottom of the grid while a page is in flight. Stops on `has_more: false`.
+- **Prices**: all money math uses `final_price`; when `discount > 0` the original `price` shows struck-through on the card and the product sheet.
+- **Visuals**: the backend has no emoji/tint — cards rotate through the brand tint palette and use a 🍽️ fallback while S3 images load.
+- **Base URL**: resolved from `tenants.json` by matching the launching bot's id against the signed initData (`src/lib/botIdentity.js`) — no per-bot parameters needed. The matched URL gets `/api/v1` appended (override via `VITE_API_PREFIX`).
+- **delivery_fee**: not in the response yet — the app falls back to 10 and will automatically pick up `meta.delivery_fee` if you add it.
 
 ## Loading behavior
 
 - Splash waits for the real catalog request (min 900ms branding, skip button at 2.5s, hard guard at 6s).
 - The menu grid shows shimmer skeletons while loading.
-- No `VITE_API_BASE_URL`, empty catalog, or a failed/timed-out request (8s) → the app falls back to the built-in seed in `src/data/menu.js`, so it never breaks in front of a customer. Check the console for `source: 'static'` warnings.
+- No backend configured, empty catalog, or a failed/timed-out request (8s) → the app shows an error screen with a retry button. Tenant data only — never fake data.
 
+
+
+## Tenant registry (public/tenants.json)
+
+One deployment serves many bots. The static registry maps each bot to its tenant backend:
+
+```json
+{
+  "tenants": [
+    {
+      "telegram_bot_id": 1112563,
+      "tenant_base_url": "https://exsample.com",
+      "telegram_name": "o2"
+    }
+  ]
+}
+```
+
+**No per-bot URL parameter needed.** Telegram's initData has no bot_id field,
+but since Bot API 7.10 it carries an Ed25519 `signature` whose signed
+data-check-string is prefixed with `{bot_id}:WebAppData`. The app tests each
+registry id against the signature using Telegram's public keys
+(`src/lib/botIdentity.js`) — the id that verifies is cryptographically proven to
+be the launching bot. Purely local, ~1ms per tenant, unforgeable. Fallbacks, in
+order: `?bot=` URL param (manual override) → `initDataUnsafe.bot_id` →
+CloudStorage from a previous launch (covers pre-7.10 clients).
+
+Resolution order for the API base URL: **registry → deep-link payload → CloudStorage → `VITE_API_BASE_URL` → demo/OpenFromBot**. The matched base URL gets `/api/v1` appended (VITE_API_PREFIX). The registry is public routing data only — authentication stays with the initData HMAC middleware on each tenant.
 
 ## Multi-tenant bootstrap (deep links)
 
@@ -134,7 +141,7 @@ App opens
 
 - `src/lib/decodeTelegramPayload.js` — Base64URL + XOR with `VITE_TELEGRAM_DEEP_LINK_KEY` (must equal `TELEGRAM_DEEP_LINK_KEY` on the backend).
 - `src/lib/tenantContext.js` — deep link → CloudStorage (`tenant_ctx_v1`) → null.
-- `src/context/TenantContext.jsx` — resolves before anything loads. Fallbacks: `VITE_API_BASE_URL` (single-tenant/dev) → browser demo mode (seed catalog) → in Telegram with nothing: the **OpenFromBot** screen, no requests made.
+- `src/context/TenantContext.jsx` — resolves before anything loads. Fallbacks: `VITE_API_BASE_URL` (single-tenant/dev) → OpenFromBot screen, no requests made.
 - The API client appends `/api` to `payload.u` and sends `X-Branch-Id` when `payload.b` is present; every request carries the raw initData for the middleware.
 - Trust model: the payload routes, the HMAC proves. Since `start_param` is inside the signed initData, a forged payload dies at the first request.
 

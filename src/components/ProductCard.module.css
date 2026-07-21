@@ -55,6 +55,15 @@
   font-weight: 800;
   font-size: 15px;
   color: var(--basil);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.oldPrice {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 
 .add {

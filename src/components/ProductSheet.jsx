@@ -71,6 +71,10 @@ export default function ProductSheet({ product, onClose }) {
               fallbackSize="80px"
             />
             <h2 className={styles.name}>{product.name}</h2>
+            <p className={styles.priceRow}>
+              <b>{money(product.price)}</b>
+              {product.discount > 0 && <s>{money(product.originalPrice)}</s>}
+            </p>
             <p className={styles.desc}>{product.desc}</p>
             <div className={styles.qtyRow}>
               <Stepper value={qty} onChange={changeQty} />

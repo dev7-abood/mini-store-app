@@ -8,7 +8,7 @@
 | can run its HMAC validation.
 |
 | Endpoints expected on the Laravel side (see README for the contract):
-|   GET  /catalog        -> { delivery_fee, categories: [...], products: [...] }
+|   GET  /front-data     -> { success, data: [catalog + products], meta }
 |   POST /orders         -> { order_number: "SF-1024" }
 |   POST /otp/send       -> { ok: true }
 |   POST /otp/verify     -> { ok: true }
@@ -24,18 +24,22 @@
 | payload carries a branch.
 */
 
+/** Path prefix appended to the tenant URL from the deep-link payload. */
+const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? '/api/v1';
+
 let runtimeBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '';
 let runtimeBranchId = null;
 
 /**
- * Point the client at the resolved tenant. Called once at bootstrap,
- * before any data request. Never send the decoded payload as proof of
+ * Point the client at the resolved tenant: `{u}/api/v1` (prefix
+ * overridable via VITE_API_PREFIX). Called once at bootstrap, before
+ * any data request. Never send the decoded payload as proof of
  * anything — the initData signature is the proof.
  *
  * @param {{u: string, b?: number}} ctx Decoded deep-link payload
  */
 export function configureApiClient(ctx) {
-  runtimeBaseUrl = `${ctx.u.replace(/\/$/, '')}/api`;
+  runtimeBaseUrl = `${ctx.u.replace(/\/$/, '')}${API_PREFIX}`;
   runtimeBranchId = ctx.b ?? null;
 }
 
@@ -87,47 +91,83 @@ async function request(path, { timeoutMs = 10000, ...options } = {}) {
 
 /*
 |--------------------------------------------------------------------------
-| Catalog
+| Storefront Catalog (GET /front-data)
 |--------------------------------------------------------------------------
+| Laravel returns catalogs embedding their products, paginated at the
+| PRODUCT level (9 on page 1, then 6 per page) and grouped per page:
+|
+|   { success, data: [ {id, name, slug, image, products: [...]} ],
+|     meta: { page, per_page, total, has_more } }
+|
+| Products carry price / discount / final_price — the app uses
+| final_price everywhere money is computed and keeps the original for
+| strikethrough display.
 */
 
+/** Rotating card tints — the backend has no per-catalog color. */
+const CATALOG_TINTS = ['#FBE3C9', '#FADFD5', '#F0E6CF', '#FBF0C9', '#D9EDE0', '#F6DDE7'];
+
 /**
- * Normalize the Laravel payload to the app's internal shape. Accepts a
- * few field aliases (category_id/category, desc/description) so minor
- * backend naming choices don't break the UI.
+ * Normalize one /front-data page to the app's internal shape.
  *
- * @param {any} data Raw /catalog response
+ * @param {any} data Raw response body
+ * @param {number} page The requested page (meta echo may be absent)
+ * @returns {{categories: object[], products: object[], hasMore: boolean, deliveryFee: number|null}}
  */
-function normalizeCatalog(data) {
-  const categories = (data.categories ?? []).map((c) => ({
-    id: String(c.id),
-    name: String(c.name ?? ''),
-    fallback: c.emoji ?? '🍽️',
-    tint: c.tint ?? '#F3E8D5',
-    image: c.image ?? '',
+function normalizeFrontData(data, page) {
+  const catalogs = Array.isArray(data?.data) ? data.data : [];
+
+  const categories = catalogs.map((catalog, index) => ({
+    id: String(catalog.id),
+    name: String(catalog.name ?? ''),
+    fallback: '🍽️',
+    tint: CATALOG_TINTS[index % CATALOG_TINTS.length],
+    image: catalog.image ?? '',
   }));
 
-  const products = (data.products ?? []).map((p) => ({
-    id: Number(p.id),
-    category: String(p.category_id ?? p.category ?? ''),
-    name: String(p.name ?? ''),
-    desc: String(p.desc ?? p.description ?? ''),
-    price: Number(p.price ?? 0),
-    fallback: p.emoji ?? '🍽️',
-    image: p.image ?? '',
-  }));
+  const products = catalogs.flatMap((catalog) =>
+    (catalog.products ?? []).map((p) => {
+      const original = Number(p.price ?? 0);
+      const discount = Number(p.discount ?? 0);
+      return {
+        id: Number(p.id),
+        category: String(p.catalog_id ?? catalog.id),
+        name: String(p.name ?? ''),
+        desc: String(p.description ?? ''),
+        /* Money everywhere in the app = the price actually charged. */
+        price: Number(p.final_price ?? Math.max(original - discount, 0)),
+        originalPrice: original,
+        discount,
+        fallback: '🍽️',
+        image: p.image ?? '',
+      };
+    }),
+  );
+
+  const fee = Number(data?.meta?.delivery_fee);
 
   return {
     categories,
     products,
-    deliveryFee: Number(data.delivery_fee ?? data.deliveryFee ?? 10),
+    hasMore: Boolean(data?.meta?.has_more),
+    page: Number(data?.meta?.page ?? page),
+    deliveryFee: Number.isFinite(fee) ? fee : null,
   };
 }
 
-/** Fetch and normalize the live catalog. */
-export async function fetchCatalog() {
-  const data = await request('/catalog', { timeoutMs: 8000 });
-  return normalizeCatalog(data);
+/**
+ * Fetch one storefront page.
+ *
+ * @param {number} [page]
+ */
+export async function fetchFrontData(page = 1) {
+  const data = await request(`/front-data?page=${page}`, { timeoutMs: 8000 });
+
+  if (data?.success === false) {
+    throw new Error('front-data returned success: false');
+  }
+
+  return normalizeFrontData(data, page);
 }
 
 /*

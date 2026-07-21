@@ -30,7 +30,12 @@ export default function ProductCard({ product, tint, onOpen, onQuickAdd }) {
       <div className={styles.name}>{product.name}</div>
       <div className={styles.desc}>{product.desc}</div>
       <div className={styles.foot}>
-        <span className={styles.price}>{money(product.price)}</span>
+        <span className={styles.price}>
+          {money(product.price)}
+          {product.discount > 0 && (
+            <s className={styles.oldPrice}>{money(product.originalPrice)}</s>
+          )}
+        </span>
         <button
           type="button"
           className={styles.add}

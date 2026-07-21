@@ -77,7 +77,7 @@ export async function resolveTenantContext() {
     }
   }
 
-  /* 3. Nothing — caller decides (OpenFromBotScreen / demo mode). */
+  /* 3. Nothing resolvable — caller shows the OpenFromBotScreen. */
   return null;
 }
 

@@ -7,7 +7,7 @@
 */
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
 import { TenantProvider, useTenant } from './context/TenantContext';
-import { CatalogProvider } from './context/CatalogContext';
+import { CatalogProvider, useCatalog } from './context/CatalogContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
 import SplashScreen from './screens/SplashScreen';
@@ -19,6 +19,7 @@ import OtpScreen from './screens/OtpScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import StatusScreen from './screens/StatusScreen';
 import OpenFromBotScreen from './screens/OpenFromBotScreen';
+import CatalogErrorScreen from './screens/CatalogErrorScreen';
 
 /** @type {Record<string, React.ComponentType>} */
 const SCREEN_COMPONENTS = {
@@ -45,17 +46,26 @@ function TenantGate({ children }) {
   return children;
 }
 
+/** Blocks the flow when the tenant's catalog could not be loaded. */
+function CatalogGate({ children }) {
+  const { isError } = useCatalog();
+  if (isError) return <CatalogErrorScreen />;
+  return children;
+}
+
 export default function App() {
   return (
     <NavigationProvider>
       <TenantProvider>
         <TenantGate>
           <CatalogProvider>
-            <CartProvider>
-              <OrderProvider>
-                <ActiveScreen />
-              </OrderProvider>
-            </CartProvider>
+            <CatalogGate>
+              <CartProvider>
+                <OrderProvider>
+                  <ActiveScreen />
+                </OrderProvider>
+              </CartProvider>
+            </CatalogGate>
           </CatalogProvider>
         </TenantGate>
       </TenantProvider>

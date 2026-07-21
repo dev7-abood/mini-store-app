@@ -51,6 +51,22 @@
   font-weight: 800;
 }
 
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--basil);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.priceRow s {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
 .desc {
   color: var(--ink-soft);
   font-size: 13.5px;
