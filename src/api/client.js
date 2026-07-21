@@ -176,6 +176,45 @@ export async function fetchFrontData(page = 1) {
 |--------------------------------------------------------------------------
 */
 
+/*
+|--------------------------------------------------------------------------
+| Customer Sync (POST /telegram/customer)
+|--------------------------------------------------------------------------
+| Registers/refreshes the calling Telegram user as a tenant Customer.
+| Identity comes from the verified initData on the backend — the body
+| only carries routing (bot_id -> branch) and optional profile fields.
+| Returns the customer record, used to pre-fill checkout for returning
+| customers.
+*/
+
+/**
+ * Sync the current Telegram user as a Customer.
+ *
+ * @param {{botId?: string|null, phone?: string, address?: string}} [options]
+ * @returns {Promise<{id: number, branch_id: number, telegram_user_id: string,
+ *           username: string|null, phone: string|null, address: string|null,
+ *           total_orders: number} | null>} The customer, or null on failure
+ */
+export async function syncCustomer({ botId = null, phone, address } = {}) {
+  try {
+    const body = {};
+    if (botId) body.bot_id = String(botId);
+    if (phone) body.phone = phone;
+    if (address) body.address = address;
+
+    const data = await request('/telegram/customer', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      timeoutMs: 8000,
+    });
+
+    return data?.success ? data.data : null;
+  } catch (error) {
+    console.warn('Customer sync failed:', error);
+    return null;
+  }
+}
+
 /**
  * Submit a confirmed order.
  *

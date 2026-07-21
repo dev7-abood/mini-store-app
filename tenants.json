@@ -1,7 +1,7 @@
 {
   "tenants": [
     {
-      "telegram_bot_id": 8424896554,
+      "telegram_bot_id": 1112563,
       "tenant_base_url": "https://test.r-gaza.store",
       "telegram_name": "o2"
     }

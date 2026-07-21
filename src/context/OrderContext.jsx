@@ -9,7 +9,9 @@
 | until the delivery field is edited manually — then it becomes
 | independent (ordering for someone else).
 */
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCustomer } from './CustomerContext';
+import { formatLocalPhone } from '../lib/phone';
 
 export const PHONE_PREFIX = '+970';
 
@@ -19,11 +21,33 @@ const OrderContext = createContext(null);
 const toE164 = (value) => `${PHONE_PREFIX}${String(value).replace(/\D/g, '')}`;
 
 export function OrderProvider({ children }) {
+  const { customer } = useCustomer();
   const [details, setDetails] = useState({ name: '', address: '', note: '' });
   const [phone, setPhoneState] = useState('');
   const [deliveryPhone, setDeliveryPhoneState] = useState('');
   const [deliveryEdited, setDeliveryEdited] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
+  const prefilled = useRef(false);
+
+  /* Pre-fill for returning customers: when the launch sync delivers a
+     profile, seed any still-empty fields once. Never overwrites what
+     the user has already typed, and never runs twice. */
+  useEffect(() => {
+    if (customer === null || prefilled.current) return;
+    prefilled.current = true;
+
+    setDetails((prev) => ({
+      ...prev,
+      name: prev.name || customer.username || '',
+      address: prev.address || customer.address || '',
+    }));
+
+    if (customer.phone) {
+      const local = formatLocalPhone(customer.phone.replace(/^\+?970/, ''));
+      setPhoneState((prev) => prev || local);
+      setDeliveryPhoneState((prev) => prev || local);
+    }
+  }, [customer]);
 
   const value = useMemo(
     () => ({

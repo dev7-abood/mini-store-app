@@ -29,6 +29,7 @@ export function TenantProvider({ children }) {
     source: null,
     ctx: null,
     tenantName: null,
+    botId: null,
   });
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export function TenantProvider({ children }) {
           source: 'registry',
           ctx: { u: registryEntry.baseUrl, b: resolved?.payload?.b ?? null },
           tenantName: registryEntry.name,
+          botId,
         });
         return;
       }
@@ -72,18 +74,19 @@ export function TenantProvider({ children }) {
           source: resolved.source,
           ctx: resolved.payload,
           tenantName: null,
+          botId,
         });
         return;
       }
 
       /* 4. Env fallback — VITE_API_BASE_URL already configured. */
       if (hasBackend()) {
-        setState({ status: 'ready', source: 'env', ctx: null, tenantName: null });
+        setState({ status: 'ready', source: 'env', ctx: null, tenantName: null, botId });
         return;
       }
 
       /* Nothing resolvable — user must start from the bot. */
-      setState({ status: 'missing', source: null, ctx: null, tenantName: null });
+      setState({ status: 'missing', source: null, ctx: null, tenantName: null, botId: null });
     })();
 
     return () => {

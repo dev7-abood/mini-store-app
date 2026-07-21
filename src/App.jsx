@@ -8,6 +8,7 @@
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
 import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider, useCatalog } from './context/CatalogContext';
+import { CustomerProvider } from './context/CustomerContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
 import SplashScreen from './screens/SplashScreen';
@@ -58,15 +59,17 @@ export default function App() {
     <NavigationProvider>
       <TenantProvider>
         <TenantGate>
-          <CatalogProvider>
-            <CatalogGate>
-              <CartProvider>
-                <OrderProvider>
-                  <ActiveScreen />
-                </OrderProvider>
-              </CartProvider>
-            </CatalogGate>
-          </CatalogProvider>
+          <CustomerProvider>
+            <CatalogProvider>
+              <CatalogGate>
+                <CartProvider>
+                  <OrderProvider>
+                    <ActiveScreen />
+                  </OrderProvider>
+                </CartProvider>
+              </CatalogGate>
+            </CatalogProvider>
+          </CustomerProvider>
         </TenantGate>
       </TenantProvider>
     </NavigationProvider>
