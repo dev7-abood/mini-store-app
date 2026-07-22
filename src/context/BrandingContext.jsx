@@ -62,8 +62,19 @@ export function BrandingProvider({ children }) {
     setStatus('ready');
   }, [apply]);
 
+  /* Instant paint: the moment the tenant resolves, apply any colors the
+     registry (tenants.json) carries — so the loader and splash show the
+     tenant's colors with ZERO network wait. The API fetch then fills in
+     the full branding (logo, tagline, precise palette). */
   useEffect(() => {
     if (tenant.status !== 'ready') return;
+
+    if (tenant.registryTheme) {
+      const seeded = normalizeBranding(tenant.registryTheme);
+      setBranding(seeded);
+      apply(seeded);
+    }
+
     let cancelled = false;
     (async () => {
       if (!cancelled) await load();
@@ -71,7 +82,7 @@ export function BrandingProvider({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [tenant.status, load]);
+  }, [tenant.status, tenant.registryTheme, load, apply]);
 
   const value = useMemo(
     () => ({

@@ -36,6 +36,7 @@ export function TenantProvider({ children }) {
     ctx: null,
     tenantName: null,
     botId: null,
+    registryTheme: null,
   });
 
   useEffect(() => {
@@ -68,6 +69,7 @@ export function TenantProvider({ children }) {
           ctx: { u: registryEntry.baseUrl, b: resolved?.payload?.b ?? null },
           tenantName: registryEntry.name,
           botId,
+          registryTheme: registryEntry.theme ?? null,
         });
         return;
       }
@@ -104,6 +106,7 @@ export function TenantProvider({ children }) {
           ctx: { u: single.baseUrl, b: null },
           tenantName: single.name,
           botId: String(tenants[0].telegram_bot_id),
+          registryTheme: single.theme ?? null,
         });
         return;
       }
@@ -123,6 +126,7 @@ export function TenantProvider({ children }) {
       isResolving: state.status === 'resolving',
       isMissing: state.status === 'missing',
       branchId: state.ctx?.b ?? null,
+      registryTheme: state.registryTheme,
     }),
     [state],
   );

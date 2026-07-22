@@ -2,11 +2,12 @@
 |--------------------------------------------------------------------------
 | Branding Loader
 |--------------------------------------------------------------------------
-| Neutral, un-branded loading screen shown ONLY while the tenant theme is
-| being fetched — matches the static pre-boot loader in index.html so the
-| transition is seamless. Once branding is ready the real SplashScreen
-| (in tenant colors) takes over. This is what prevents the green flash:
-| we never render a themed screen until we HAVE the theme.
+| Loading screen shown while the full branding is fetched. Reads the CSS
+| variables (--basil / --saffron) which are ALREADY seeded from the
+| registry theme in tenants.json the instant the tenant resolves — so if
+| the registry carries colors, this loader is tenant-colored with zero
+| network wait. Falls back to the default سفرة palette when the registry
+| has no theme.
 */
 export default function BrandingLoader() {
   return (
@@ -21,7 +22,10 @@ export default function BrandingLoader() {
         justifyContent: 'center',
         gap: 20,
         background:
-          'radial-gradient(130% 100% at 50% -10%, #2a5c3a 0%, #1E4D2B 55%, #143520 100%)',
+          'radial-gradient(130% 100% at 50% -10%, ' +
+          'color-mix(in srgb, var(--basil, #1E4D2B) 82%, #fff 18%) 0%, ' +
+          'var(--basil, #1E4D2B) 55%, ' +
+          'color-mix(in srgb, var(--basil, #1E4D2B) 72%, #000 28%) 100%)',
         fontFamily: "'Tajawal', system-ui, sans-serif",
       }}
     >
@@ -46,7 +50,7 @@ export default function BrandingLoader() {
               width: 9,
               height: 9,
               borderRadius: '50%',
-              background: '#F2A93B',
+              background: 'var(--saffron, #F2A93B)',
               display: 'inline-block',
               animation: `pb-pulse 1s ease-in-out ${d}s infinite`,
             }}

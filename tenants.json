@@ -3,7 +3,13 @@
     {
       "telegram_bot_id": 8424896554,
       "tenant_base_url": "https://test.r-gaza.store",
-      "telegram_name": "o2"
+      "telegram_name": "staging_restaurantBot",
+      "theme": {
+        "primary_color": "#1E4D2B",
+        "secondary_color": "#F2A93B",
+        "background_color": "#F7F2EA",
+        "name": "O2"
+      }
     }
   ]
 }

@@ -187,3 +187,30 @@ The menu header greets the user by `first_name` (falling back to `@username`) fr
 2. The catalog is already wired — implement `GET /catalog` per the contract above and it goes live automatically.
 3. In `PhoneScreen` / `OtpScreen`, swap the demo `000000` flow for `sendOtp()` / `verifyOtp()`.
 4. Every request carries the raw `initData` in the `X-Telegram-Init-Data` header for your HMAC validation middleware.
+
+
+### Optional registry theme (instant splash colors)
+
+Each tenant entry may carry an optional `theme` block. When present, the
+app paints the loading + splash screens in these colors **immediately**
+on launch — before the `/telegram/branding` API responds — eliminating
+any flash. The API then fills in the complete branding (logo, tagline,
+exact palette):
+
+```json
+{
+  "telegram_bot_id": 8424896554,
+  "tenant_base_url": "https://test.r-gaza.store",
+  "telegram_name": "staging_restaurantBot",
+  "theme": {
+    "primary_color": "#1E4D2B",
+    "secondary_color": "#F2A93B",
+    "background_color": "#F7F2EA",
+    "name": "سفرة"
+  }
+}
+```
+
+`theme` is entirely optional — omit it and the loader uses the default
+سفرة palette until the API responds. Keep these colors in sync with each
+tenant's Filament branding for a seamless launch.

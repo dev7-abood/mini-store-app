@@ -112,7 +112,8 @@ export async function detectBotId(tenants = []) {
  *
  * @param {Array<object>} tenants
  * @param {string | null} botId
- * @returns {{baseUrl: string, name: string | null} | null}
+ * @returns {{baseUrl: string, name: string | null,
+ *           theme: object | null} | null}
  */
 export function findTenantByBotId(tenants, botId) {
   if (!botId) return null;
@@ -123,5 +124,11 @@ export function findTenantByBotId(tenants, botId) {
   const baseUrl = entry.tenant_base_url ?? entry.ttenant_base_url ?? '';
   if (!baseUrl) return null;
 
-  return { baseUrl, name: entry.telegram_name ?? null };
+  return {
+    baseUrl,
+    name: entry.telegram_name ?? null,
+    /* Optional registry theme — instant splash colors before the full
+       branding API responds. Safe to omit. */
+    theme: entry.theme ?? null,
+  };
 }
