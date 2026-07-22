@@ -18,13 +18,25 @@
     replacing this loader. No unstyled flash.
   -->
   <style>
+    /* Neutral, brand-agnostic boot backdrop — NOT green. The inline
+       script below overrides these CSS vars with the tenant's colors
+       (read from tenants.json) before the first meaningful paint, so the
+       brand color is what the user actually sees. */
+    :root {
+      --boot-bg: #14110f;      /* neutral near-black, no brand identity */
+      --boot-accent: #8a8a8a;  /* neutral grey until tenant color loads */
+    }
     #preboot {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center; flex-direction: column;
       gap: 20px;
-      background: radial-gradient(130% 100% at 50% -10%, #2a5c3a 0%, #1E4D2B 55%, #143520 100%);
+      background:
+        radial-gradient(130% 100% at 50% -10%,
+          color-mix(in srgb, var(--boot-bg) 82%, #fff 18%) 0%,
+          var(--boot-bg) 55%,
+          color-mix(in srgb, var(--boot-bg) 70%, #000 30%) 100%);
       font-family: 'Tajawal', system-ui, sans-serif;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.35s ease, background 0.3s ease;
     }
     #preboot .pb-mark {
       width: 84px; height: 84px; border-radius: 50%;
@@ -35,8 +47,10 @@
     #preboot .pb-mark span { font-size: 40px; }
     #preboot .pb-dots { display: flex; gap: 8px; }
     #preboot .pb-dots i {
-      width: 9px; height: 9px; border-radius: 50%; background: #F2A93B;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--boot-accent);
       display: inline-block; animation: pb-pulse 1s ease-in-out infinite;
+      transition: background 0.3s ease;
     }
     #preboot .pb-dots i:nth-child(2) { animation-delay: 0.15s; }
     #preboot .pb-dots i:nth-child(3) { animation-delay: 0.3s; }
@@ -48,6 +62,59 @@
     <div class="pb-mark"><span>🍽️</span></div>
     <div class="pb-dots"><i></i><i></i><i></i></div>
   </div>
+
+  <!--
+    Config-first boot: read tenants.json and identify the launching bot
+    (via the signed initData signature, same rule the app uses), then
+    paint the tenant theme onto the boot loader BEFORE the JS bundle
+    downloads. This is why the user never sees a generic/green flash —
+    the very first colored paint is already the tenant's color.
+
+    Kept dependency-free and defensive: any failure just leaves the
+    neutral backdrop, and the full app still themes itself once booted.
+  -->
+  <script>
+    (function () {
+      var tg = window.Telegram && window.Telegram.WebApp;
+
+      function paint(theme) {
+        if (!theme) return;
+        var root = document.documentElement.style;
+        if (theme.background_color) root.setProperty('--boot-bg', theme.background_color);
+        /* Prefer primary for the backdrop so it reads as the brand;
+           secondary drives the loader dots. */
+        if (theme.primary_color) root.setProperty('--boot-bg', theme.primary_color);
+        if (theme.secondary_color) root.setProperty('--boot-accent', theme.secondary_color);
+        /* Also colour the native Telegram header immediately. */
+        try { if (tg && theme.primary_color) tg.setHeaderColor(theme.primary_color); } catch (e) {}
+      }
+
+      /* Single tenant is the common case — if the registry has exactly
+         one, we can theme without needing to identify the bot at all. */
+      fetch('/tenants.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data || !data.tenants || !data.tenants.length) return;
+          var list = data.tenants;
+
+          /* One tenant: use it directly. */
+          if (list.length === 1) { paint(list[0].theme); return; }
+
+          /* Multiple: match by bot id if the client exposed it, else
+             leave neutral (the full app will identify + theme shortly). */
+          var botId = tg && tg.initDataUnsafe && tg.initDataUnsafe.bot_id;
+          if (botId) {
+            for (var i = 0; i < list.length; i++) {
+              if (String(list[i].telegram_bot_id) === String(botId)) {
+                paint(list[i].theme);
+                return;
+              }
+            }
+          }
+        })
+        .catch(function () { /* stay neutral; app themes itself on boot */ });
+    })();
+  </script>
 
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>

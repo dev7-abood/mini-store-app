@@ -23,9 +23,9 @@ export default function BrandingLoader() {
         gap: 20,
         background:
           'radial-gradient(130% 100% at 50% -10%, ' +
-          'color-mix(in srgb, var(--basil, #1E4D2B) 82%, #fff 18%) 0%, ' +
-          'var(--basil, #1E4D2B) 55%, ' +
-          'color-mix(in srgb, var(--basil, #1E4D2B) 72%, #000 28%) 100%)',
+          'color-mix(in srgb, var(--basil, #14110f) 82%, #fff 18%) 0%, ' +
+          'var(--basil, #14110f) 55%, ' +
+          'color-mix(in srgb, var(--basil, #14110f) 72%, #000 28%) 100%)',
         fontFamily: "'Tajawal', system-ui, sans-serif",
       }}
     >
@@ -50,7 +50,7 @@ export default function BrandingLoader() {
               width: 9,
               height: 9,
               borderRadius: '50%',
-              background: 'var(--saffron, #F2A93B)',
+              background: 'var(--saffron, #8a8a8a)',
               display: 'inline-block',
               animation: `pb-pulse 1s ease-in-out ${d}s infinite`,
             }}
