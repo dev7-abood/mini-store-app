@@ -10,6 +10,45 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+  <!--
+    Pre-boot loader: painted from static HTML/CSS the instant the page
+    parses, BEFORE the JS bundle downloads or React mounts. Uses the
+    default سفرة primary color; the real branded SplashScreen takes over
+    seamlessly once the app boots. #root is emptied by React on mount,
+    replacing this loader. No unstyled flash.
+  -->
+  <style>
+    #preboot {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      gap: 20px;
+      background: radial-gradient(130% 100% at 50% -10%, #2a5c3a 0%, #1E4D2B 55%, #143520 100%);
+      font-family: 'Tajawal', system-ui, sans-serif;
+      transition: opacity 0.35s ease;
+    }
+    #preboot .pb-mark {
+      width: 84px; height: 84px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+      display: grid; place-items: center;
+      animation: pb-float 2.6s ease-in-out infinite;
+    }
+    #preboot .pb-mark span { font-size: 40px; }
+    #preboot .pb-dots { display: flex; gap: 8px; }
+    #preboot .pb-dots i {
+      width: 9px; height: 9px; border-radius: 50%; background: #F2A93B;
+      display: inline-block; animation: pb-pulse 1s ease-in-out infinite;
+    }
+    #preboot .pb-dots i:nth-child(2) { animation-delay: 0.15s; }
+    #preboot .pb-dots i:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes pb-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    @keyframes pb-pulse { 0%,100%{transform:scale(0.7);opacity:0.5} 50%{transform:scale(1.15);opacity:1} }
+  </style>
+
+  <div id="preboot">
+    <div class="pb-mark"><span>🍽️</span></div>
+    <div class="pb-dots"><i></i><i></i><i></i></div>
+  </div>
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

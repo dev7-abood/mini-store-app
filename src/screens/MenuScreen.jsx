@@ -54,12 +54,12 @@ export default function MenuScreen() {
   return (
     <Screen>
       <header className={styles.topbar}>
-        <div className={styles.miniLogo}>
+        <div className={`${styles.miniLogo} ${branding.logo_url ? styles.miniLogoImg : ''}`}>
           {branding.logo_url ? (
             <img
               src={branding.logo_url}
               alt=""
-              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }}
             />
           ) : (
             <BrandLogo variant="light" size={26} />

@@ -11,16 +11,22 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { fetchBranding, hasBackend } from '../api/client';
 import { DEFAULT_BRANDING, normalizeBranding, applyBranding } from '../lib/branding';
 import { useTenant } from './TenantContext';
+import { useTelegram } from '../hooks/useTelegram';
 
 const BrandingContext = createContext(null);
 
 export function BrandingProvider({ children }) {
   const tenant = useTenant();
+  const { setThemeColors } = useTelegram();
   const [branding, setBranding] = useState(DEFAULT_BRANDING);
 
   useEffect(() => {
     if (tenant.status !== 'ready' || !hasBackend()) {
       applyBranding(DEFAULT_BRANDING);
+      setThemeColors({
+        header: DEFAULT_BRANDING.primary_color,
+        background: DEFAULT_BRANDING.background_color,
+      });
       return undefined;
     }
 
@@ -31,6 +37,12 @@ export function BrandingProvider({ children }) {
       const normalized = normalizeBranding(payload);
       setBranding(normalized);
       applyBranding(normalized);
+      /* Native Telegram header uses the tenant PRIMARY color, chrome
+         background uses the tenant background — white-label chrome. */
+      setThemeColors({
+        header: normalized.primary_color,
+        background: normalized.background_color,
+      });
     })();
 
     return () => {

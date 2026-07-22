@@ -11,3 +11,12 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 );
+
+/* Remove the static pre-boot loader once React has painted. */
+requestAnimationFrame(() => {
+  const preboot = document.getElementById('preboot');
+  if (preboot) {
+    preboot.style.opacity = '0';
+    setTimeout(() => preboot.remove(), 400);
+  }
+});

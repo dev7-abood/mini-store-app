@@ -17,14 +17,14 @@ function getWebApp() {
 export function useTelegram() {
   const tg = getWebApp();
 
-  /* Initialise once on mount: expand + theme the native chrome. */
+  /* Initialise once on mount: expand only. The native chrome colors
+     are set from tenant branding via setThemeColors() once branding
+     resolves — never hardcoded here. */
   useEffect(() => {
     if (!tg) return;
     try {
       tg.ready();
       tg.expand();
-      tg.setHeaderColor('#143520');
-      tg.setBackgroundColor('#F7F2EA');
     } catch {
       /* older clients may not support every method */
     }
@@ -55,6 +55,28 @@ export function useTelegram() {
     [tg],
   );
 
+  /**
+   * Theme the native Telegram chrome (header + background) from tenant
+   * branding. setHeaderColor accepts a hex string on modern clients;
+   * older ones only accept 'bg_color'/'secondary_bg_color' keywords, so
+   * failures are swallowed.
+   *
+   * @param {{header: string, background: string}} colors
+   */
+  const setThemeColors = useCallback(
+    ({ header, background }) => {
+      try {
+        if (header) tg?.setHeaderColor?.(header);
+        if (background) tg?.setBackgroundColor?.(background);
+        /* Bot API 8+ also lets us color the bottom bar. */
+        if (background) tg?.setBottomBarColor?.(background);
+      } catch {
+        /* older clients — keep default chrome */
+      }
+    },
+    [tg],
+  );
+
   /** Send a JSON payload back to the bot (Nutgram `onWebAppData`). */
   const sendData = useCallback(
     (payload) => {
@@ -73,8 +95,8 @@ export function useTelegram() {
   const user = tg?.initDataUnsafe?.user ?? null;
 
   return useMemo(
-    () => ({ tg, haptic, notify, sendData, user, initData: tg?.initData ?? '' }),
-    [tg, haptic, notify, sendData, user],
+    () => ({ tg, haptic, notify, sendData, setThemeColors, user, initData: tg?.initData ?? '' }),
+    [tg, haptic, notify, sendData, setThemeColors, user],
   );
 }
 
