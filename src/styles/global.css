@@ -67,3 +67,8 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Shared boot-loader keyframes (BrandingLoader + pre-boot in index.html). */
+@keyframes pb-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes pb-pulse { 0%,100%{transform:scale(0.7);opacity:0.5} 50%{transform:scale(1.15);opacity:1} }

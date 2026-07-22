@@ -8,7 +8,7 @@
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
 import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider, useCatalog } from './context/CatalogContext';
-import { BrandingProvider } from './context/BrandingContext';
+import { BrandingProvider, useBranding } from './context/BrandingContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
@@ -22,6 +22,8 @@ import SuccessScreen from './screens/SuccessScreen';
 import StatusScreen from './screens/StatusScreen';
 import OpenFromBotScreen from './screens/OpenFromBotScreen';
 import CatalogErrorScreen from './screens/CatalogErrorScreen';
+import BrandingLoader from './screens/BrandingLoader';
+import BrandingErrorScreen from './screens/BrandingErrorScreen';
 
 /** @type {Record<string, React.ComponentType>} */
 const SCREEN_COMPONENTS = {
@@ -48,6 +50,18 @@ function TenantGate({ children }) {
   return children;
 }
 
+/**
+ * Holds the app on a neutral loader until the tenant BRANDING has
+ * resolved, so no screen ever paints in default (green) colors and
+ * then recolors. On branding failure, shows the "sorry" screen.
+ */
+function BrandingGate({ children }) {
+  const { isLoading, isError } = useBranding();
+  if (isError) return <BrandingErrorScreen />;
+  if (isLoading) return <BrandingLoader />;
+  return children;
+}
+
 /** Blocks the flow when the tenant's catalog could not be loaded. */
 function CatalogGate({ children }) {
   const { isError } = useCatalog();
@@ -61,17 +75,19 @@ export default function App() {
       <TenantProvider>
         <TenantGate>
           <BrandingProvider>
-          <CustomerProvider>
-            <CatalogProvider>
-              <CatalogGate>
-                <CartProvider>
-                  <OrderProvider>
-                    <ActiveScreen />
-                  </OrderProvider>
-                </CartProvider>
-              </CatalogGate>
-            </CatalogProvider>
-          </CustomerProvider>
+            <BrandingGate>
+              <CustomerProvider>
+                <CatalogProvider>
+                  <CatalogGate>
+                    <CartProvider>
+                      <OrderProvider>
+                        <ActiveScreen />
+                      </OrderProvider>
+                    </CartProvider>
+                  </CatalogGate>
+                </CatalogProvider>
+              </CustomerProvider>
+            </BrandingGate>
           </BrandingProvider>
         </TenantGate>
       </TenantProvider>
