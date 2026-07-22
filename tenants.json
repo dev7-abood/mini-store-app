@@ -5,9 +5,9 @@
       "tenant_base_url": "https://test.r-gaza.store",
       "telegram_name": "staging_restaurantBot",
       "theme": {
-        "primary_color": "#1E4D2B",
-        "secondary_color": "#F2A93B",
-        "background_color": "#F7F2EA",
+        "primary_color": "#870413",
+        "secondary_color": "#fce300",
+        "background_color": "#e0f2df",
         "name": "O2"
       }
     }
