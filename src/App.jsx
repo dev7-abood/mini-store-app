@@ -8,6 +8,7 @@
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
 import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider, useCatalog } from './context/CatalogContext';
+import { BrandingProvider } from './context/BrandingContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
@@ -59,6 +60,7 @@ export default function App() {
     <NavigationProvider>
       <TenantProvider>
         <TenantGate>
+          <BrandingProvider>
           <CustomerProvider>
             <CatalogProvider>
               <CatalogGate>
@@ -70,6 +72,7 @@ export default function App() {
               </CatalogGate>
             </CatalogProvider>
           </CustomerProvider>
+          </BrandingProvider>
         </TenantGate>
       </TenantProvider>
     </NavigationProvider>

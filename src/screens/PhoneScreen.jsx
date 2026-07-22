@@ -32,7 +32,7 @@ function PhoneField({ label, hint, value, onChange, inputRef, autoFocusRef }) {
           ref={inputRef ?? autoFocusRef}
           id={inputId}
           className={styles.input}
-          placeholder="598 304 517"
+          placeholder="5555 555 555"
           type="tel"
           inputMode="tel"
           autoComplete="tel-national"

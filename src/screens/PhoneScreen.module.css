@@ -18,6 +18,7 @@
   border: 1.5px solid var(--line);
   border-radius: 14px;
   transition: 0.2s;
+  direction: ltr; /* prefix on the left, digits flow left-to-right */
 }
 
 .phoneField:focus-within {
@@ -34,7 +35,7 @@
   font-size: 15px;
   direction: ltr;
   color: var(--ink);
-  border-inline-end: 1.5px solid var(--line);
+  border-right: 1.5px solid var(--line);
   user-select: none;
 }
 
@@ -49,7 +50,7 @@
   color: var(--ink);
   outline: none;
   direction: ltr;
-  text-align: right; /* digits sit next to the prefix (RTL reading order) */
+  text-align: left; /* digits read left-to-right next to the prefix */
   letter-spacing: 1px;
   font-variant-numeric: tabular-nums;
 }

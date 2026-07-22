@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCatalog } from '../context/CatalogContext';
+import { useBranding } from '../context/BrandingContext';
 import { useCart } from '../context/CartContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
@@ -22,6 +23,7 @@ export default function MenuScreen() {
   const { navigate } = useNavigation();
   const { addItem, count } = useCart();
   const { haptic, user } = useTelegram();
+  const { branding } = useBranding();
 
   const [pickedCategory, setPickedCategory] = useState(null);
   const [sheetProduct, setSheetProduct] = useState(null);
@@ -31,7 +33,7 @@ export default function MenuScreen() {
 
   /* Greet by first name, fall back to @username, then the generic line. */
   const displayName = user?.first_name || (user?.username ? `@${user.username}` : null);
-  const subtitle = displayName ? t('menu.welcome', { name: displayName }) : t('menu.subtitle');
+  const subtitle = displayName ? t('menu.welcome', { name: displayName }) : branding.tagline;
 
   const visibleProducts = useMemo(
     () => products.filter((p) => p.category === activeCategory),
@@ -53,10 +55,18 @@ export default function MenuScreen() {
     <Screen>
       <header className={styles.topbar}>
         <div className={styles.miniLogo}>
-          <BrandLogo variant="light" size={26} />
+          {branding.logo_url ? (
+            <img
+              src={branding.logo_url}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+            />
+          ) : (
+            <BrandLogo variant="light" size={26} />
+          )}
         </div>
         <div className={styles.title}>
-          <h1>{t('brand.name')}</h1>
+          <h1>{branding.name}</h1>
           <p>{subtitle}</p>
         </div>
         <button

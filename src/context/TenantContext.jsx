@@ -10,6 +10,12 @@
 |   2. deeplink  — decoded start_param payload (u)
 |   3. cloud     — payload remembered in CloudStorage
 |   4. env       — VITE_API_BASE_URL (single tenant / local dev)
+|   5. single    — registry holds EXACTLY ONE tenant and we're inside
+|                  Telegram: use it. A one-tenant deployment can never
+|                  be ambiguous, so identification failures (old client
+|                  without signature, etc.) must not lock the customer
+|                  out. Logged loudly; disappears once a 2nd tenant is
+|                  added.
 |      missing   — nothing resolvable: OpenFromBot screen, no requests
 |
 | The deep-link payload's branch (b) applies even when the registry
@@ -17,7 +23,7 @@
 | HMAC check remains the authentication.
 */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { resolveTenantContext } from '../lib/tenantContext';
+import { resolveTenantContext, isInsideTelegram } from '../lib/tenantContext';
 import { loadTenantRegistry, detectBotId, findTenantByBotId } from '../lib/tenantRegistry';
 import { configureApiClient, hasBackend } from '../api/client';
 
@@ -82,6 +88,23 @@ export function TenantProvider({ children }) {
       /* 4. Env fallback — VITE_API_BASE_URL already configured. */
       if (hasBackend()) {
         setState({ status: 'ready', source: 'env', ctx: null, tenantName: null, botId });
+        return;
+      }
+
+      /* 5. Single-tenant safety net: with exactly one registry entry
+            there is nothing to disambiguate — use it rather than lock
+            the customer out when signature identification failed. */
+      const single = tenants.length === 1 ? findTenantByBotId(tenants, tenants[0].telegram_bot_id) : null;
+      if (single && isInsideTelegram()) {
+        console.warn('Tenant resolution: falling back to the single registry tenant.');
+        configureApiClient({ u: single.baseUrl });
+        setState({
+          status: 'ready',
+          source: 'registry-single',
+          ctx: { u: single.baseUrl, b: null },
+          tenantName: single.name,
+          botId: String(tenants[0].telegram_bot_id),
+        });
         return;
       }
 

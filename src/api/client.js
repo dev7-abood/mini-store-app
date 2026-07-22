@@ -178,6 +178,31 @@ export async function fetchFrontData(page = 1) {
 
 /*
 |--------------------------------------------------------------------------
+| Branding (GET /telegram/branding)
+|--------------------------------------------------------------------------
+| The tenant's Mini App theme: name, tagline, colors, logo. Public.
+| Returns null on failure so the app keeps its default (سفرة) palette.
+*/
+
+/**
+ * Fetch the tenant branding.
+ *
+ * @returns {Promise<{name: string, tagline: string, primary_color: string,
+ *   secondary_color: string, background_color: string, text_color: string,
+ *   logo_url: string|null, logo_size: number} | null>}
+ */
+export async function fetchBranding() {
+  try {
+    const data = await request('/telegram/branding', { timeoutMs: 6000 });
+    return data?.success ? data.data : null;
+  } catch (error) {
+    console.warn('Branding fetch failed — using defaults:', error);
+    return null;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Customer Sync (POST /telegram/customer)
 |--------------------------------------------------------------------------
 | Registers/refreshes the calling Telegram user as a tenant Customer.

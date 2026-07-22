@@ -57,7 +57,10 @@ export async function identifyBotBySignature(candidateBotIds) {
   /* URLSearchParams decodes values — exactly what the check-string needs. */
   const params = new URLSearchParams(raw);
   const signature = params.get('signature');
-  if (!signature) return null; // pre-7.10 client
+  if (!signature) {
+    console.warn('Bot identification: initData has no signature (old Telegram client).');
+    return null;
+  }
 
   const lines = [];
   for (const [key, value] of params.entries()) {
@@ -90,5 +93,9 @@ export async function identifyBotBySignature(candidateBotIds) {
     }
   }
 
+  console.warn(
+    'Bot identification: signature matched none of the registry ids',
+    candidateBotIds.map(String),
+  );
   return null;
 }
