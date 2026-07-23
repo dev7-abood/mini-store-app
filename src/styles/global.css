@@ -17,6 +17,11 @@
    | what a non-matching tenant would flash before its own theme loads.
    * ------------------------------------------------------------------ */
   --bg: #f5f4f2;
+  /* Opaque surface for cards, sheets, chips and inputs. MUST stay
+     opaque — 15 components paint on it, and a transparent value makes
+     the product sheet and cards unreadable. Refined per tenant by
+     applyBranding() (a near-white tint of the brand background). */
+  --card: #ffffff;
   --ink: #1c1a18;
   --ink-soft: #6f6a64;
   --basil: #14110f;

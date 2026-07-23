@@ -109,7 +109,15 @@
           root.setProperty('--boot-accent', theme.secondary_color);
           root.setProperty('--saffron', theme.secondary_color);
         }
-        if (theme.background_color) root.setProperty('--bg', theme.background_color);
+        if (theme.background_color) {
+          root.setProperty('--bg', theme.background_color);
+          /* Opaque card surface: lift toward white on light themes,
+             only slightly on dark ones so text stays readable. */
+          var bgHex = String(theme.background_color).replace('#', '');
+          var rgb = bgHex.match(/.{2}/g) || ['ff', 'ff', 'ff'];
+          var lum = parseInt(rgb[0], 16) * 0.299 + parseInt(rgb[1], 16) * 0.587 + parseInt(rgb[2], 16) * 0.114;
+          root.setProperty('--card', shade(theme.background_color, lum < 128 ? 0.12 : 0.72));
+        }
         if (theme.text_color) root.setProperty('--ink', theme.text_color);
 
         /* Native Telegram header, immediately. */

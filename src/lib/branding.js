@@ -56,6 +56,12 @@ export function applyBranding(branding) {
   root.setProperty('--saffron', branding.secondary_color);
   root.setProperty('--bg', branding.background_color);
   root.setProperty('--ink', branding.text_color);
+
+  /* Card/sheet surface derived from the tenant background, always
+     OPAQUE — these surfaces sit over content and must never let it
+     bleed through. Light themes lift toward white; dark themes lift
+     only slightly so the surface stays dark enough for light text. */
+  root.setProperty('--card', surfaceFrom(branding.background_color));
 }
 
 /**
@@ -75,4 +81,31 @@ function shade(hex, t) {
     return Math.max(0, Math.min(255, Math.round(v)));
   };
   return `#${[adj(r), adj(g), adj(b)].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/**
+ * Perceived luminance of a hex color (0-255).
+ *
+ * @param {string} hex
+ * @returns {number}
+ */
+function luminance(hex) {
+  const m = hex.replace('#', '').match(/.{2}/g);
+  if (!m) return 255;
+  const [r, g, b] = m.map((h) => parseInt(h, 16));
+  return r * 0.299 + g * 0.587 + b * 0.114;
+}
+
+/**
+ * Opaque card/sheet surface for a given background. Light backgrounds
+ * lift strongly toward white; dark backgrounds lift just enough to read
+ * as a raised surface without washing out to grey.
+ *
+ * @param {string} background
+ * @returns {string}
+ */
+function surfaceFrom(background) {
+  return luminance(background) < 128
+    ? shade(background, 0.12)
+    : shade(background, 0.72);
 }
