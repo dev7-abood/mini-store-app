@@ -4,7 +4,18 @@
 |--------------------------------------------------------------------------
 | Fetches the tenant theme BEFORE the app content shows, so the splash
 | and every screen paint in the tenant colors from the first frame — no
-| green-then-recolor flash.
+| default-then-recolor flash.
+|
+| PRECEDENCE (highest wins):
+|   1. tenants.json `theme`  — the registry is authoritative. Anything
+|      it defines is final and never overwritten.
+|   2. /telegram/branding API — fills only what the registry omits
+|      (typically logo_url, tagline, text_color).
+|   3. DEFAULT_BRANDING       — neutral last resort.
+|
+| Because the registry is read first AND wins, the colors painted on the
+| very first frame are the colors that stay — the API can never recolor
+| the UI mid-launch.
 |
 | Status:
 |   'loading' — fetch in flight; the app shows the pre-boot loader
@@ -37,30 +48,45 @@ export function BrandingProvider({ children }) {
     [setThemeColors],
   );
 
-  const load = useCallback(async () => {
-    setStatus('loading');
+  const load = useCallback(
+    async (registryTheme) => {
+      setStatus('loading');
 
-    /* No backend configured (browser dev): use defaults, don't error. */
-    if (!hasBackend()) {
-      setBranding(DEFAULT_BRANDING);
-      apply(DEFAULT_BRANDING);
+      /* No backend configured (browser dev): registry theme alone. */
+      if (!hasBackend()) {
+        const local = normalizeBranding(registryTheme);
+        setBranding(local);
+        apply(local);
+        setStatus('ready');
+        return;
+      }
+
+      const payload = await fetchBranding();
+
+      /* fetchBranding returns null on any failure (network / 4xx / 5xx). */
+      if (payload === null) {
+        /* API down but the registry has a theme — the app can still run
+           fully branded; only logo/tagline are missing. */
+        if (registryTheme) {
+          const local = normalizeBranding(registryTheme);
+          setBranding(local);
+          apply(local);
+          setStatus('ready');
+          return;
+        }
+        setStatus('error');
+        return;
+      }
+
+      /* Registry LAST in the spread => registry wins every key it
+         defines; the API supplies only what the registry omitted. */
+      const merged = normalizeBranding({ ...payload, ...(registryTheme ?? {}) });
+      setBranding(merged);
+      apply(merged);
       setStatus('ready');
-      return;
-    }
-
-    const payload = await fetchBranding();
-
-    /* fetchBranding returns null on any failure (network / 4xx / 5xx). */
-    if (payload === null) {
-      setStatus('error');
-      return;
-    }
-
-    const normalized = normalizeBranding(payload);
-    setBranding(normalized);
-    apply(normalized);
-    setStatus('ready');
-  }, [apply]);
+    },
+    [apply],
+  );
 
   /* Instant paint: the moment the tenant resolves, apply any colors the
      registry (tenants.json) carries — so the loader and splash show the
@@ -69,6 +95,8 @@ export function BrandingProvider({ children }) {
   useEffect(() => {
     if (tenant.status !== 'ready') return;
 
+    /* Instant paint from the registry — these colors are final, so the
+       first painted frame already shows what the user will keep seeing. */
     if (tenant.registryTheme) {
       const seeded = normalizeBranding(tenant.registryTheme);
       setBranding(seeded);
@@ -77,7 +105,7 @@ export function BrandingProvider({ children }) {
 
     let cancelled = false;
     (async () => {
-      if (!cancelled) await load();
+      if (!cancelled) await load(tenant.registryTheme);
     })();
     return () => {
       cancelled = true;
@@ -90,9 +118,9 @@ export function BrandingProvider({ children }) {
       status,
       isLoading: status === 'loading',
       isError: status === 'error',
-      reload: load,
+      reload: () => load(tenant.registryTheme),
     }),
-    [branding, status, load],
+    [branding, status, load, tenant.registryTheme],
   );
 
   return <BrandingContext.Provider value={value}>{children}</BrandingContext.Provider>;
