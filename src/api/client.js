@@ -264,6 +264,164 @@ export async function syncCustomer({ botId = null, phone, address } = {}) {
   }
 }
 
+/*
+|--------------------------------------------------------------------------
+| Cart (server-persisted)
+|--------------------------------------------------------------------------
+| Behind `telegram.initdata` + `telegram.customer`, so the customer must
+| already be synced before these are called.
+|
+|   GET    /cart                    -> current cart
+|   PUT    /cart                    -> replace the whole cart
+|   DELETE /cart                    -> empty it
+|   POST   /cart/items              -> add one product
+|   PATCH  /cart/items/{product}    -> set a product's quantity
+|   DELETE /cart/items/{product}    -> remove a product
+|
+| Every function resolves to a { [productId]: quantity } map (or null on
+| failure) so the caller never deals with transport shapes.
+*/
+
+/**
+ * Reduce a cart response to { productId: quantity }.
+ *
+ * Tolerates the common shapes: items under `data.items` or `data`, and
+ * a product referenced as `product_id` / `productId` / nested `product.id`,
+ * with the amount as `quantity` / `qty`.
+ *
+ * @param {any} payload
+ * @returns {Record<number, number>}
+ */
+export function normalizeCartItems(payload) {
+  const raw = payload?.data?.items ?? payload?.items ?? payload?.data ?? [];
+  if (!Array.isArray(raw)) return {};
+
+  const map = {};
+  for (const line of raw) {
+    const id = Number(
+      line?.product_id ?? line?.productId ?? line?.product?.id ?? line?.id,
+    );
+    const qty = Number(line?.quantity ?? line?.qty ?? 0);
+    if (Number.isFinite(id) && id > 0 && qty > 0) {
+      map[id] = (map[id] ?? 0) + qty;
+    }
+  }
+  return map;
+}
+
+/**
+ * Fetch the persisted cart.
+ *
+ * @returns {Promise<Record<number, number> | null>} null on failure
+ */
+export async function fetchCart() {
+  try {
+    return normalizeCartItems(await request('/cart', { timeoutMs: 8000 }));
+  } catch (error) {
+    console.warn('Cart fetch failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Replace the entire server cart (used to reconcile a local cart).
+ *
+ * @param {Record<number, number>} items
+ * @returns {Promise<Record<number, number> | null>}
+ */
+export async function syncCart(items) {
+  try {
+    const payload = {
+      items: Object.entries(items).map(([productId, quantity]) => ({
+        product_id: Number(productId),
+        quantity: Number(quantity),
+      })),
+    };
+    return normalizeCartItems(
+      await request('/cart', { method: 'PUT', body: JSON.stringify(payload), timeoutMs: 8000 }),
+    );
+  } catch (error) {
+    console.warn('Cart sync failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Empty the server cart.
+ *
+ * @returns {Promise<boolean>} whether the server confirmed
+ */
+export async function clearCartRemote() {
+  try {
+    await request('/cart', { method: 'DELETE', timeoutMs: 8000 });
+    return true;
+  } catch (error) {
+    console.warn('Cart clear failed:', error);
+    return false;
+  }
+}
+
+/**
+ * Add a product to the cart.
+ *
+ * @param {number} productId
+ * @param {number} quantity
+ * @returns {Promise<Record<number, number> | null>}
+ */
+export async function addCartItem(productId, quantity = 1) {
+  try {
+    return normalizeCartItems(
+      await request('/cart/items', {
+        method: 'POST',
+        body: JSON.stringify({ product_id: Number(productId), quantity: Number(quantity) }),
+        timeoutMs: 8000,
+      }),
+    );
+  } catch (error) {
+    console.warn('Cart add failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Set a product's quantity.
+ *
+ * @param {number} productId
+ * @param {number} quantity
+ * @returns {Promise<Record<number, number> | null>}
+ */
+export async function updateCartItem(productId, quantity) {
+  try {
+    return normalizeCartItems(
+      await request(`/cart/items/${Number(productId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ quantity: Number(quantity) }),
+        timeoutMs: 8000,
+      }),
+    );
+  } catch (error) {
+    console.warn('Cart update failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Remove a product from the cart.
+ *
+ * @param {number} productId
+ * @returns {Promise<Record<number, number> | null>}
+ */
+export async function removeCartItem(productId) {
+  try {
+    return normalizeCartItems(
+      await request(`/cart/items/${Number(productId)}`, { method: 'DELETE', timeoutMs: 8000 }),
+    );
+  } catch (error) {
+    console.warn('Cart remove failed:', error);
+    return null;
+  }
+}
+
 /**
  * Submit a confirmed order.
  *
