@@ -73,15 +73,27 @@ export default function ProductSheet({ product, onClose }) {
             <h2 className={styles.name}>{product.name}</h2>
             <p className={styles.priceRow}>
               <b>{money(product.price)}</b>
-              {product.discount > 0 && <s>{money(product.originalPrice)}</s>}
+              {product.onSale && <s>{money(product.originalPrice)}</s>}
             </p>
             <p className={styles.desc}>{product.desc}</p>
+            {product.available === false ? (
+              /* Out of stock: keep the item fully browsable, explain
+                 warmly why it can't be ordered, and offer no add path. */
+              <div className={styles.soldOutNotice}>
+                <span className={styles.soldOutIcon}>🕒</span>
+                <div>
+                  <b>{t('product.soldOutTitle')}</b>
+                  <p>{t('product.soldOutBody')}</p>
+                </div>
+              </div>
+            ) : (
             <div className={styles.qtyRow}>
               <Stepper value={qty} onChange={changeQty} />
               <Button grow onClick={addToCart}>
                 {t('sheet.add', { price: money(product.price * qty) })}
               </Button>
             </div>
+            )}
           </>
         )}
       </div>

@@ -58,7 +58,14 @@ export function CartProvider({ children }) {
       subtotal,
       deliveryFee,
       total: subtotal + (count > 0 ? deliveryFee : 0),
-      addItem: (id, qty = 1) => dispatch({ type: 'add', id, qty }),
+      /* Guard: unavailable products can never enter the cart, even if a
+         stale screen or a race slipped past the disabled UI. */
+      addItem: (id, qty = 1) => {
+        const product = productById.get(id);
+        if (product && product.available === false) return false;
+        dispatch({ type: 'add', id, qty });
+        return true;
+      },
       changeQty: (id, delta) => dispatch({ type: 'change', id, delta }),
       clearCart: () => dispatch({ type: 'clear' }),
     };

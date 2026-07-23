@@ -99,9 +99,17 @@ async function request(path, { timeoutMs = 10000, ...options } = {}) {
 |   { success, data: [ {id, name, slug, image, products: [...]} ],
 |     meta: { page, per_page, total, has_more } }
 |
-| Products carry price / discount / final_price — the app uses
-| final_price everywhere money is computed and keeps the original for
-| strikethrough display.
+| Products carry price / discount / final_price:
+|
+|   price       — list price
+|   discount    — PERCENTAGE (0-100), NOT an amount. The API reports 0
+|                 whenever the discount is outside its scheduled window,
+|                 so the client can treat "discount > 0" as "on sale now".
+|   final_price — what the customer actually pays; authoritative.
+|
+| The app uses final_price everywhere money is computed and keeps the
+| list price for strikethrough display. The local fallback below must
+| apply the percentage — subtracting the raw value would undercharge.
 */
 
 /** Rotating card tints — the backend has no per-catalog color. */
@@ -128,15 +136,31 @@ function normalizeFrontData(data, page) {
   const products = catalogs.flatMap((catalog) =>
     (catalog.products ?? []).map((p) => {
       const original = Number(p.price ?? 0);
-      const discount = Number(p.discount ?? 0);
+      /* Percentage, clamped: a malformed value can never invert a price. */
+      const discount = Math.min(Math.max(Number(p.discount ?? 0), 0), 100);
+
+      /* Trust final_price when the API sends it; otherwise apply the
+         percentage locally (NOT `original - discount`). */
+      const apiFinal = Number(p.final_price);
+      const charged = Number.isFinite(apiFinal)
+        ? apiFinal
+        : Math.max(original - (original * discount) / 100, 0);
+
       return {
         id: Number(p.id),
         category: String(p.catalog_id ?? catalog.id),
         name: String(p.name ?? ''),
         desc: String(p.description ?? ''),
         /* Money everywhere in the app = the price actually charged. */
-        price: Number(p.final_price ?? Math.max(original - discount, 0)),
+        price: charged,
         originalPrice: original,
+        /* Only true when there is a real saving to show — guards against
+           rendering a strikethrough identical to the current price. */
+        onSale: discount > 0 && original > charged,
+        /* Out of stock: the item is still listed (the merchant wants it
+           visible) but cannot be ordered. Only `active: false` products
+           are withheld by the API entirely. */
+        available: p.available !== false,
         discount,
         fallback: '🍽️',
         image: p.image ?? '',
