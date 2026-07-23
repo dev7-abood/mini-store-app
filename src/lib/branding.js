@@ -24,20 +24,54 @@ export const DEFAULT_BRANDING = {
 };
 
 /**
- * Merge a partial branding payload over the defaults (any missing or
- * empty field falls back), so a half-configured tenant never breaks.
+ * Strip null / undefined / empty values so a layer only contributes the
+ * keys it actually defines.
+ *
+ * @param {object|null|undefined} source
+ * @returns {object}
+ */
+function definedOnly(source) {
+  if (!source) return {};
+  return Object.fromEntries(
+    Object.entries(source).filter(
+      ([, value]) => value !== undefined && value !== null && value !== '',
+    ),
+  );
+}
+
+/**
+ * Merge a single partial payload over the built-in defaults.
  *
  * @param {Partial<Branding>|null} incoming
  * @returns {Branding}
  */
 export function normalizeBranding(incoming) {
-  if (!incoming) return DEFAULT_BRANDING;
-  const merged = { ...DEFAULT_BRANDING };
-  for (const key of Object.keys(DEFAULT_BRANDING)) {
-    const value = incoming[key];
-    if (value !== undefined && value !== null && value !== '') merged[key] = value;
-  }
-  return merged;
+  return { ...DEFAULT_BRANDING, ...definedOnly(incoming) };
+}
+
+/**
+ * Resolve the final branding from all three layers.
+ *
+ * PRECEDENCE (highest last — later spreads overwrite earlier ones):
+ *   1. DEFAULT_BRANDING — neutral built-in fallback
+ *   2. registry theme   — tenants.json, the per-tenant default shipped
+ *                         with the app; used when the DB has nothing
+ *   3. API payload      — what the merchant actually configured in the
+ *                         admin panel. Wins for every key it defines.
+ *
+ * The API returns null for keys the tenant never configured, and
+ * definedOnly() drops those — so an unconfigured field falls through to
+ * the registry rather than overwriting it with a null.
+ *
+ * @param {{registryTheme?: object|null, apiPayload?: object|null}} layers
+ * @returns {Branding}
+ */
+export function resolveBranding({ registryTheme = null, apiPayload = null } = {}) {
+  return {
+    ...DEFAULT_BRANDING,
+    ...definedOnly(registryTheme),
+    ...definedOnly(apiPayload),
+  };
 }
 
 /**

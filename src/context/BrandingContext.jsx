@@ -7,15 +7,17 @@
 | default-then-recolor flash.
 |
 | PRECEDENCE (highest wins):
-|   1. tenants.json `theme`  — the registry is authoritative. Anything
-|      it defines is final and never overwritten.
-|   2. /telegram/branding API — fills only what the registry omits
-|      (typically logo_url, tagline, text_color).
+|   1. /telegram/branding API — what the merchant configured in the
+|      admin panel. Wins for every key it actually returns.
+|   2. tenants.json `theme`   — the per-tenant default shipped with the
+|      app; used for keys the merchant has never configured (the API
+|      returns null for those, so they don't overwrite).
 |   3. DEFAULT_BRANDING       — neutral last resort.
 |
-| Because the registry is read first AND wins, the colors painted on the
-| very first frame are the colors that stay — the API can never recolor
-| the UI mid-launch.
+| The registry theme is applied instantly on tenant resolution so the
+| first frame is already tenant-coloured; the API response then refines
+| it. When the merchant hasn't branded anything (is_configured: false),
+| the registry values simply stand — no flash, because they match.
 |
 | Status:
 |   'loading' — fetch in flight; the app shows the pre-boot loader
@@ -27,7 +29,7 @@
 */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { fetchBranding, hasBackend } from '../api/client';
-import { DEFAULT_BRANDING, normalizeBranding, applyBranding } from '../lib/branding';
+import { DEFAULT_BRANDING, normalizeBranding, resolveBranding, applyBranding } from '../lib/branding';
 import { useTenant } from './TenantContext';
 import { useTelegram } from '../hooks/useTelegram';
 
@@ -78,9 +80,9 @@ export function BrandingProvider({ children }) {
         return;
       }
 
-      /* Registry LAST in the spread => registry wins every key it
-         defines; the API supplies only what the registry omitted. */
-      const merged = normalizeBranding({ ...payload, ...(registryTheme ?? {}) });
+      /* API LAST => configured values win; nulls (unconfigured keys)
+         are dropped so the registry default stands for those. */
+      const merged = resolveBranding({ registryTheme, apiPayload: payload });
       setBranding(merged);
       apply(merged);
       setStatus('ready');
