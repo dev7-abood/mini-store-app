@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  background: linear-gradient(var(--bg) 75%, rgba(247, 242, 234, 0));
+  background: linear-gradient(var(--bg) 75%, transparent);
   padding: 14px 16px 8px;
   display: flex;
   align-items: center;

@@ -77,15 +77,42 @@
     (function () {
       var tg = window.Telegram && window.Telegram.WebApp;
 
+      /* Darken/lighten a hex colour (t<0 darker, t>0 lighter). */
+      function shade(hex, t) {
+        var m = String(hex).replace('#', '').match(/.{2}/g);
+        if (!m || m.length < 3) return hex;
+        var out = m.slice(0, 3).map(function (h) {
+          var c = parseInt(h, 16);
+          var v = t < 0 ? c * (1 + t) : c + (255 - c) * t;
+          v = Math.max(0, Math.min(255, Math.round(v)));
+          return ('0' + v.toString(16)).slice(-2);
+        });
+        return '#' + out.join('');
+      }
+
+      /*
+        Write the tenant theme onto <html> as INLINE styles. Inline beats
+        the :root block in global.css, so every screen — boot loader,
+        splash and the whole app — renders in the tenant colours from the
+        very first painted frame. Same token names the app uses.
+      */
       function paint(theme) {
         if (!theme) return;
         var root = document.documentElement.style;
-        if (theme.background_color) root.setProperty('--boot-bg', theme.background_color);
-        /* Prefer primary for the backdrop so it reads as the brand;
-           secondary drives the loader dots. */
-        if (theme.primary_color) root.setProperty('--boot-bg', theme.primary_color);
-        if (theme.secondary_color) root.setProperty('--boot-accent', theme.secondary_color);
-        /* Also colour the native Telegram header immediately. */
+
+        if (theme.primary_color) {
+          root.setProperty('--boot-bg', theme.primary_color);
+          root.setProperty('--basil', theme.primary_color);
+          root.setProperty('--basil-deep', shade(theme.primary_color, -0.18));
+        }
+        if (theme.secondary_color) {
+          root.setProperty('--boot-accent', theme.secondary_color);
+          root.setProperty('--saffron', theme.secondary_color);
+        }
+        if (theme.background_color) root.setProperty('--bg', theme.background_color);
+        if (theme.text_color) root.setProperty('--ink', theme.text_color);
+
+        /* Native Telegram header, immediately. */
         try { if (tg && theme.primary_color) tg.setHeaderColor(theme.primary_color); } catch (e) {}
       }
 

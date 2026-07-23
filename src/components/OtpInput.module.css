@@ -21,7 +21,7 @@
 
 .box:focus {
   border-color: var(--saffron);
-  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.25);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 40%, transparent);
 }
 
 .err {

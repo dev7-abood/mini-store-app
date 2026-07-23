@@ -6,7 +6,7 @@
   font-weight: 800;
   font-size: 15px;
   transition: transform 0.15s;
-  box-shadow: 0 6px 16px rgba(242, 169, 59, 0.4);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--saffron) 40%, transparent);
 }
 
 .cta:active {
@@ -16,7 +16,7 @@
 .green {
   background: var(--basil);
   color: #fdf9f1;
-  box-shadow: 0 6px 16px rgba(30, 77, 43, 0.35);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--basil) 35%, transparent);
 }
 
 .full {

@@ -55,13 +55,13 @@
 
 .now .dot {
   background: var(--saffron);
-  box-shadow: 0 0 0 5px rgba(242, 169, 59, 0.22);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--saffron) 40%, transparent);
   animation: pulse 1.4s infinite;
 }
 
 @keyframes pulse {
   50% {
-    box-shadow: 0 0 0 10px rgba(242, 169, 59, 0.08);
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--saffron) 40%, transparent);
   }
 }
 

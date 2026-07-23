@@ -6,13 +6,22 @@
 | properties consumed by every CSS Module.
 */
 :root {
-  --bg: #f7f2ea;
-  --card: #ffffff;
-  --ink: #22180e;
-  --ink-soft: #7a6e5f;
-  --basil: #1e4d2b;
-  --basil-deep: #143520;
-  --saffron: #f2a93b;
+  /* ------------------------------------------------------------------
+   | Brand tokens — NEUTRAL by default (deliberately NOT the سفرة green).
+   | The real values are written as inline styles on <html> by the boot
+   | script in index.html, which reads them from tenants.json BEFORE
+   | first paint, and later refreshed from the branding API. Inline
+   | styles outrank this :root block, so the tenant color always wins.
+   |
+   | Never hardcode a brand color here: whatever sits in this block is
+   | what a non-matching tenant would flash before its own theme loads.
+   * ------------------------------------------------------------------ */
+  --bg: #f5f4f2;
+  --ink: #1c1a18;
+  --ink-soft: #6f6a64;
+  --basil: #14110f;
+  --basil-deep: #0c0a09;
+  --saffron: #8a8a8a;
   --tomato: #e4572e;
   --line: #eae1d3;
   --ok: #2e9e5b;

@@ -23,7 +23,7 @@
 
 .phoneField:focus-within {
   border-color: var(--saffron);
-  box-shadow: 0 0 0 3px rgba(242, 169, 59, 0.22);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 40%, transparent);
 }
 
 .prefix {

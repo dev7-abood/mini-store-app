@@ -9,7 +9,9 @@
 | arrive so a category's items across pages all end up together.
 |
 | Data policy: the app shows ONLY tenant data. A failed or empty
-| /front-data becomes status 'error' with a retry — never fake data.
+| /front-data failing becomes status 'error' with a retry; an EMPTY
+| but successful response becomes status 'empty' (the merchant simply
+| has no products yet) — never fake data.
 | If no tenant backend is configured at all, we still error out;
 | there is no seed to fall back to.
 */
@@ -23,7 +25,7 @@ const CatalogContext = createContext(null);
 const DEFAULT_DELIVERY_FEE = 10;
 
 const INITIAL = {
-  status: 'loading',    // 'loading' | 'ready' | 'error'
+  status: 'loading',    // 'loading' | 'ready' | 'empty' | 'error'
   categories: [],
   products: [],
   deliveryFee: DEFAULT_DELIVERY_FEE,
@@ -68,9 +70,18 @@ export function CatalogProvider({ children }) {
       const first = await fetchFrontData(1);
       if (!isCurrent()) return;
 
+      /* Successful response with no products: the merchant hasn't added
+         anything yet. That's a legitimate state, not a failure — show a
+         friendly empty screen instead of an error. */
       if (first.products.length === 0) {
-        console.warn('front-data returned no products.');
-        setState((s) => ({ ...s, status: 'error', isLoadingMore: false }));
+        setState((s) => ({
+          ...s,
+          status: 'empty',
+          categories: [],
+          products: [],
+          hasMore: false,
+          isLoadingMore: false,
+        }));
         return;
       }
 
@@ -144,6 +155,7 @@ export function CatalogProvider({ children }) {
       ...state,
       isLoading: state.status === 'loading',
       isError: state.status === 'error',
+      isEmpty: state.status === 'empty',
       /** @type {Map<number, object>} */
       productById: new Map(state.products.map((p) => [p.id, p])),
       /** @type {Map<string, object>} */

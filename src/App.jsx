@@ -22,6 +22,7 @@ import SuccessScreen from './screens/SuccessScreen';
 import StatusScreen from './screens/StatusScreen';
 import OpenFromBotScreen from './screens/OpenFromBotScreen';
 import CatalogErrorScreen from './screens/CatalogErrorScreen';
+import CatalogEmptyScreen from './screens/CatalogEmptyScreen';
 import BrandingLoader from './screens/BrandingLoader';
 import BrandingErrorScreen from './screens/BrandingErrorScreen';
 
@@ -62,10 +63,15 @@ function BrandingGate({ children }) {
   return children;
 }
 
-/** Blocks the flow when the tenant's catalog could not be loaded. */
+/**
+ * Blocks the flow when the catalog can't be shown:
+ *   error — the request failed (retry)
+ *   empty — the request succeeded but the merchant has no products yet
+ */
 function CatalogGate({ children }) {
-  const { isError } = useCatalog();
+  const { isError, isEmpty } = useCatalog();
   if (isError) return <CatalogErrorScreen />;
+  if (isEmpty) return <CatalogEmptyScreen />;
   return children;
 }
 

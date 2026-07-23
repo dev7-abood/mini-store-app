@@ -5,7 +5,11 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: radial-gradient(120% 90% at 50% 0%, #274f33 0%, var(--basil-deep) 60%);
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    color-mix(in srgb, var(--basil) 78%, #fff 22%) 0%,
+    var(--basil-deep) 60%
+  );
   color: #fdf9f1;
   text-align: center;
   padding: 32px;
