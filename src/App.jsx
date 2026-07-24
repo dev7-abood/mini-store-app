@@ -12,6 +12,7 @@ import { BrandingProvider, useBranding } from './context/BrandingContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
+import { OrderFlowProvider } from './context/OrderFlowContext';
 import SplashScreen from './screens/SplashScreen';
 import MenuScreen from './screens/MenuScreen';
 import CartScreen from './screens/CartScreen';
@@ -87,7 +88,9 @@ export default function App() {
                   <CatalogGate>
                     <CartProvider>
                       <OrderProvider>
-                        <ActiveScreen />
+                        <OrderFlowProvider>
+                          <ActiveScreen />
+                        </OrderFlowProvider>
                       </OrderProvider>
                     </CartProvider>
                   </CatalogGate>

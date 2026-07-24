@@ -2,6 +2,7 @@ import { useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOrder, PHONE_PREFIX } from '../context/OrderContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
+import { useOrderFlow } from '../context/OrderFlowContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { formatLocalPhone, toLocalDigits, LOCAL_DIGITS } from '../lib/phone';
 import Screen from '../components/ui/Screen';
@@ -55,17 +56,40 @@ function PhoneField({ label, hint, value, onChange, inputRef, autoFocusRef }) {
 export default function PhoneScreen() {
   const { t } = useTranslation();
   const mainRef = useRef(null);
-  const { phone, setPhone, deliveryPhone, setDeliveryPhone } = useOrder();
+  const {
+    phone, setPhone, deliveryPhone, setDeliveryPhone,
+    details, fullPhone, fullDeliveryPhone,
+  } = useOrder();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
+  const { place, isBusy } = useOrderFlow();
 
-  const sendCode = () => {
+  /**
+   * Places the order server-side (POST /checkout). The API converts the
+   * cart into an unverified order and dispatches the OTP — so the code
+   * is only ever sent for a real order, and the OTP screen always has an
+   * order number to verify against.
+   */
+  const sendCode = async () => {
     if (toLocalDigits(phone).length < MIN_DIGITS) {
       notify(t('phone.invalid'));
       mainRef.current?.focus();
       return;
     }
-    /* Real flow: await sendOtp(fullPhone) from src/api/client.js first. */
+
+    const result = await place({
+      name: details.name.trim(),
+      address: details.address.trim(),
+      note: details.note.trim(),
+      phone: fullPhone,
+      delivery_phone: fullDeliveryPhone,
+    });
+
+    if (!result.ok) {
+      notify(result.message || t('phone.orderFailed'));
+      return;
+    }
+
     navigate(SCREENS.OTP);
   };
 
@@ -90,8 +114,8 @@ export default function PhoneScreen() {
         />
       </div>
       <FixedCta>
-        <Button variant="green" full onClick={sendCode}>
-          {t('phone.send')}
+        <Button variant="green" full onClick={sendCode} disabled={isBusy}>
+          {isBusy ? t('phone.sending') : t('phone.send')}
         </Button>
       </FixedCta>
     </Screen>

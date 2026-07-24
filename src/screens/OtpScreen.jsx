@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useOrder, PHONE_PREFIX } from '../context/OrderContext';
 import { useCart } from '../context/CartContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
+import { useOrderFlow } from '../context/OrderFlowContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { buildOrderMessage } from '../lib/orderMessage';
 import { sendOrderToChat } from '../api/telegramBot';
@@ -12,24 +13,33 @@ import CenterIllustration from '../components/ui/CenterIllustration';
 import OtpInput from '../components/OtpInput';
 import styles from './OtpScreen.module.css';
 
-/** Demo verification code — replace with verifyOtp() from the API layer. */
-const DEMO_CODE = '000000';
-
-/**
- * OTP verification. On success it:
- *  1. generates the order number,
- *  2. sends the payload to the bot via tg.sendData()
- *     (received by Nutgram's onWebAppData — keyboard-button launches),
- *  3. sends the formatted order details to the Telegram chat through
- *     our server route /api/telegram/order (token stays server-side),
- *  4. shows the success screen.
- */
+/*
+|--------------------------------------------------------------------------
+| OTP Verification
+|--------------------------------------------------------------------------
+| The order already exists (created by POST /checkout on the previous
+| screen) and the API has dispatched the code. Here we:
+|   1. POST /orders/{n}/verify with the entered code,
+|   2. on success mirror the order to the Telegram chat,
+|   3. start payment polling and show the success screen.
+|
+| A wrong code is an expected outcome, not an error state: the input
+| shakes and the customer types again. Resend is throttled server-side
+| (5/min), and a 429 is surfaced politely rather than as a failure.
+*/
 export default function OtpScreen() {
   const { t } = useTranslation();
   const { phone, fullPhone, fullDeliveryPhone, details, confirmOrder } = useOrder();
   const { entries, subtotal, deliveryFee, total } = useCart();
   const { navigate } = useNavigation();
   const { haptic, notify, sendData } = useTelegram();
+  const {
+    orderNumber,
+    verify: verifyCode,
+    resend,
+    startPaymentPolling,
+    isBusy,
+  } = useOrderFlow();
   const [error, setError] = useState(false);
 
   const submitOrder = useCallback(
@@ -63,18 +73,25 @@ export default function OtpScreen() {
   );
 
   const verify = useCallback(
-    (code) => {
-      if (code === DEMO_CODE) {
-        haptic('heavy');
-        const orderNumber = confirmOrder();
-        submitOrder(orderNumber);
-        navigate(SCREENS.SUCCESS);
-      } else {
+    async (code) => {
+      const result = await verifyCode(code);
+
+      if (!result.ok) {
         haptic('rigid');
         setError(true);
+        if (result.throttled) notify(t('otp.throttled'));
+        return;
       }
+
+      haptic('heavy');
+      /* Keep the local order number in sync for the status screen. */
+      confirmOrder(orderNumber);
+      submitOrder(orderNumber);
+      /* Payment (if any) is approved in the wallet app — start watching. */
+      startPaymentPolling(orderNumber);
+      navigate(SCREENS.SUCCESS);
     },
-    [haptic, confirmOrder, submitOrder, navigate],
+    [verifyCode, haptic, notify, t, confirmOrder, orderNumber, submitOrder, startPaymentPolling, navigate],
   );
 
   return (
@@ -87,9 +104,17 @@ export default function OtpScreen() {
       <button
         type="button"
         className={styles.resend}
-        onClick={() => {
+        disabled={isBusy}
+        onClick={async () => {
           haptic();
-          notify(t('otp.resent'));
+          const result = await resend();
+          notify(
+            result.throttled
+              ? t('otp.throttled')
+              : result.ok
+                ? t('otp.resent')
+                : t('otp.resendFailed'),
+          );
         }}
       >
         {t('otp.resend')}

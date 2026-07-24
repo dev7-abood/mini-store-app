@@ -80,7 +80,21 @@ async function request(path, { timeoutMs = 10000, ...options } = {}) {
     });
 
     if (!response.ok) {
-      throw new Error(`API ${response.status}: ${await response.text()}`);
+      /* Attach the status and the parsed body to the error so callers
+         can distinguish 401 (bad initData) from 422 (validation) and
+         429 (throttled), and surface the API's own message. */
+      const text = await response.text();
+      let payload = null;
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        /* non-JSON error body (HTML error page, proxy timeout, ...) */
+      }
+
+      const error = new Error(`API ${response.status}: ${text}`);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
     }
 
     return await response.json();
@@ -421,6 +435,155 @@ export async function removeCartItem(productId) {
     return null;
   }
 }
+
+/*
+|--------------------------------------------------------------------------
+| Checkout & Orders
+|--------------------------------------------------------------------------
+| Behind `telegram.initdata` + `telegram.customer`.
+|
+|   GET    /checkout                     -> price the basket (no mutation)
+|   POST   /checkout                     -> cart => unverified order + OTP
+|   GET    /orders                       -> the customer's orders
+|   GET    /orders/{n}                   -> one order
+|   POST   /orders/{n}/cancel            -> cancel
+|   POST   /orders/{n}/verify   {code}   -> confirm the phone OTP
+|   POST   /orders/{n}/resend            -> re-send the OTP
+|   GET    /orders/{n}/payment           -> payment state (polled)
+|   POST   /orders/{n}/payment/retry     -> new payment attempt
+|
+| Each helper returns { ok, data, message, status } so screens can react
+| to validation errors and throttling (429) without try/catch.
+*/
+
+/**
+ * Envelope for order-flow calls: never throws, always reports why.
+ *
+ * @param {string} path
+ * @param {{method?: string, body?: any, timeoutMs?: number}} [options]
+ * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ */
+async function orderRequest(path, options = {}) {
+  try {
+    const payload = await request(path, {
+      timeoutMs: 10000,
+      ...options,
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    });
+    return {
+      ok: payload?.success !== false,
+      data: payload?.data ?? payload ?? null,
+      message: payload?.message ?? null,
+      status: 200,
+    };
+  } catch (error) {
+    const status = Number(error?.status) || null;
+    console.warn(`Order request failed (${path}):`, error);
+    return {
+      ok: false,
+      data: null,
+      /* Surface the API's own message when it sent one. */
+      message: error?.payload?.message ?? error?.message ?? null,
+      status,
+    };
+  }
+}
+
+/**
+ * Normalize an order payload into the shape the screens consume.
+ *
+ * @param {any} raw
+ * @returns {object|null}
+ */
+export function normalizeOrder(raw) {
+  const o = raw?.order ?? raw;
+  if (!o || typeof o !== 'object') return null;
+
+  return {
+    orderNumber: String(o.order_number ?? o.orderNumber ?? o.number ?? o.id ?? ''),
+    status: String(o.status ?? 'pending'),
+    /* Server-side money is authoritative — never recompute locally. */
+    subtotal: Number(o.subtotal ?? 0),
+    deliveryFee: Number(o.delivery_fee ?? o.deliveryFee ?? 0),
+    total: Number(o.total ?? 0),
+    isVerified: Boolean(o.is_verified ?? o.verified ?? false),
+    paymentStatus: o.payment?.status ?? o.payment_status ?? null,
+    paymentUrl: o.payment?.url ?? o.payment_url ?? null,
+    createdAt: o.created_at ?? null,
+    items: Array.isArray(o.items) ? o.items : [],
+    raw: o,
+  };
+}
+
+/**
+ * Price the current cart without modifying it.
+ *
+ * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ */
+export const previewCheckout = () => orderRequest('/checkout');
+
+/**
+ * Convert the cart into an unverified order; the API dispatches the OTP.
+ *
+ * @param {{name: string, address: string, phone: string,
+ *          delivery_phone?: string, note?: string}} details
+ * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ */
+export const placeOrder = (details) =>
+  orderRequest('/checkout', { method: 'POST', body: details });
+
+/**
+ * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ */
+export const fetchOrders = () => orderRequest('/orders');
+
+/**
+ * @param {string} orderNumber
+ */
+export const fetchOrder = (orderNumber) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}`);
+
+/**
+ * @param {string} orderNumber
+ */
+export const cancelOrder = (orderNumber) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}/cancel`, { method: 'POST' });
+
+/**
+ * Verify the phone OTP for an order.
+ *
+ * @param {string} orderNumber
+ * @param {string} code
+ */
+export const verifyOrder = (orderNumber, code) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}/verify`, {
+    method: 'POST',
+    body: { code: String(code) },
+  });
+
+/**
+ * Re-send the OTP (server throttles to 5/min).
+ *
+ * @param {string} orderNumber
+ */
+export const resendOrderOtp = (orderNumber) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}/resend`, { method: 'POST' });
+
+/**
+ * Payment state — polled while the customer approves in their wallet.
+ *
+ * @param {string} orderNumber
+ */
+export const fetchOrderPayment = (orderNumber) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment`, { timeoutMs: 8000 });
+
+/**
+ * Start a fresh payment attempt after a decline.
+ *
+ * @param {string} orderNumber
+ */
+export const retryOrderPayment = (orderNumber) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment/retry`, { method: 'POST' });
 
 /**
  * Submit a confirmed order.

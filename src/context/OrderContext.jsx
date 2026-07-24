@@ -71,8 +71,17 @@ export function OrderProvider({ children }) {
       fullPhone: toE164(phone),
       /** Falls back to the main phone when the delivery field is empty. */
       fullDeliveryPhone: toE164(deliveryPhone.trim() ? deliveryPhone : phone),
-      confirmOrder: () => {
-        const number = `#SF-${Math.floor(1000 + Math.random() * 9000)}`;
+      /**
+       * Record the confirmed order number. The server issues the real
+       * one (POST /checkout); the random fallback exists only for the
+       * no-backend demo path so the success screen still has something
+       * to show.
+       *
+       * @param {string} [serverOrderNumber]
+       * @returns {string}
+       */
+      confirmOrder: (serverOrderNumber) => {
+        const number = serverOrderNumber || `#SF-${Math.floor(1000 + Math.random() * 9000)}`;
         setOrderNumber(number);
         return number;
       },
