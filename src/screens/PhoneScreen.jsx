@@ -58,7 +58,7 @@ export default function PhoneScreen() {
   const mainRef = useRef(null);
   const {
     phone, setPhone, deliveryPhone, setDeliveryPhone,
-    details, fullPhone, fullDeliveryPhone,
+    details, fullPhone, fullDeliveryPhone, paymentMethod,
   } = useOrder();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
@@ -83,6 +83,8 @@ export default function PhoneScreen() {
       note: details.note.trim(),
       phone: fullPhone,
       delivery_phone: fullDeliveryPhone,
+      /* Required by the API — validated against the backend's enum. */
+      payment_method: paymentMethod,
     });
 
     if (!result.ok) {

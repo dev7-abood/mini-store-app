@@ -5,6 +5,7 @@ import { useTelegram } from '../hooks/useTelegram';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import Field from '../components/ui/Field';
+import PaymentMethodPicker from '../components/PaymentMethodPicker';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './CheckoutScreen.module.css';
@@ -12,7 +13,7 @@ import styles from './CheckoutScreen.module.css';
 /** Delivery details form (name, address, kitchen note). */
 export default function CheckoutScreen() {
   const { t } = useTranslation();
-  const { details, updateDetails } = useOrder();
+  const { details, updateDetails, paymentMethod, setPaymentMethod } = useOrder();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
 
@@ -47,6 +48,12 @@ export default function CheckoutScreen() {
           value={details.note}
           onChange={(e) => updateDetails({ note: e.target.value })}
         />
+
+        {/* Payment method — sent to the API as `payment_method`. */}
+        <div className={styles.paymentBlock}>
+          <span className={styles.paymentLabel}>{t('payment.title')}</span>
+          <PaymentMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
+        </div>
       </div>
       <FixedCta>
         <Button variant="green" full onClick={submit}>

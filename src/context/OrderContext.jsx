@@ -12,6 +12,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useCustomer } from './CustomerContext';
 import { formatLocalPhone } from '../lib/phone';
+import { DEFAULT_PAYMENT_METHOD } from '../lib/paymentMethods';
 
 export const PHONE_PREFIX = '+970';
 
@@ -27,6 +28,7 @@ export function OrderProvider({ children }) {
   const [deliveryPhone, setDeliveryPhoneState] = useState('');
   const [deliveryEdited, setDeliveryEdited] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState(DEFAULT_PAYMENT_METHOD);
   const prefilled = useRef(false);
 
   /* Pre-fill for returning customers: when the launch sync delivers a
@@ -68,6 +70,8 @@ export function OrderProvider({ children }) {
         setDeliveryEdited(true);
         setDeliveryPhoneState(next);
       },
+      paymentMethod,
+      setPaymentMethod,
       fullPhone: toE164(phone),
       /** Falls back to the main phone when the delivery field is empty. */
       fullDeliveryPhone: toE164(deliveryPhone.trim() ? deliveryPhone : phone),
@@ -91,9 +95,10 @@ export function OrderProvider({ children }) {
         setDeliveryPhoneState('');
         setDeliveryEdited(false);
         setOrderNumber(null);
+        setPaymentMethod(DEFAULT_PAYMENT_METHOD);
       },
     }),
-    [details, phone, deliveryPhone, deliveryEdited, orderNumber],
+    [details, phone, deliveryPhone, deliveryEdited, orderNumber, paymentMethod],
   );
 
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;

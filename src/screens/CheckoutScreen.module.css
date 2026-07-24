@@ -1,3 +1,16 @@
 .pad {
   padding: 0 16px 130px;
 }
+
+/* Payment method section. */
+.paymentBlock {
+  margin-top: 6px;
+}
+
+.paymentLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 10px;
+}

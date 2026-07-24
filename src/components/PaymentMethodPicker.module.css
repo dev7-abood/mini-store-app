@@ -1,0 +1,110 @@
+/*
+|--------------------------------------------------------------------------
+| Payment Method Picker
+|--------------------------------------------------------------------------
+| Colors come from the branding tokens so each tenant themes the
+| selection state automatically.
+*/
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: start;
+  font-family: inherit;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+}
+
+.card:active {
+  transform: scale(0.99);
+}
+
+.selected {
+  border-color: var(--basil);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--basil) 14%, transparent);
+}
+
+/* Logo plate: white so brand logos keep their intended colors on any
+   tenant background, and transparent PNGs never sit on a clashing tint. */
+.mark {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 38px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.logo {
+  width: 44px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.emoji {
+  font-size: 20px;
+}
+
+.text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.text b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.text small {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.radio {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+}
+
+.selected .radio {
+  border-color: var(--basil);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--basil);
+}
+
+/* Only one method offered: shown for clarity, not interactive. */
+.single {
+  cursor: default;
+}
+
+.single:active {
+  transform: none;
+}
