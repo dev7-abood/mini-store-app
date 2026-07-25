@@ -2,12 +2,14 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCatalog } from '../context/CatalogContext';
 import { useBranding } from '../context/BrandingContext';
+import { searchProducts } from '../lib/search';
 import { useCart } from '../context/CartContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
 import Screen from '../components/ui/Screen';
 import BrandLogo from '../components/BrandLogo';
 import CategoryChips from '../components/CategoryChips';
+import SearchBar from '../components/SearchBar';
 import ProductCard, { ProductCardSkeleton } from '../components/ProductCard';
 import InfiniteScrollSentinel from '../components/InfiniteScrollSentinel';
 import ProductSheet from '../components/ProductSheet';
@@ -29,15 +31,21 @@ export default function MenuScreen() {
   const [sheetProduct, setSheetProduct] = useState(null);
 
   /* Until the user picks, follow the first category from the catalog. */
+  const [query, setQuery] = useState('');
   const activeCategory = pickedCategory ?? categories[0]?.id ?? null;
 
   /* Greet by first name, fall back to @username, then the generic line. */
   const displayName = user?.first_name || (user?.username ? `@${user.username}` : null);
   const subtitle = displayName ? t('menu.welcome', { name: displayName }) : branding.tagline;
 
+  /* searchProducts returns null when the query is too short — that's
+     the signal to fall back to normal category browsing. */
+  const searchResults = useMemo(() => searchProducts(products, query), [products, query]);
+  const isSearching = searchResults !== null;
+
   const visibleProducts = useMemo(
-    () => products.filter((p) => p.category === activeCategory),
-    [products, activeCategory],
+    () => (isSearching ? searchResults : products.filter((p) => p.category === activeCategory)),
+    [isSearching, searchResults, products, activeCategory],
   );
   const tint = activeCategory ? categoryById.get(activeCategory)?.tint : undefined;
 
@@ -80,18 +88,31 @@ export default function MenuScreen() {
         </button>
       </header>
 
-      <CategoryChips activeId={activeCategory} onPick={pickCategory} />
+      <div className={styles.searchWrap}>
+        <SearchBar value={query} onChange={setQuery} onClear={() => setQuery('')} />
+      </div>
+
+      {/* Categories are irrelevant while searching — results span all. */}
+      {!isSearching && <CategoryChips activeId={activeCategory} onPick={pickCategory} />}
 
       <main className={styles.grid}>
         {isLoading ? (
           Array.from({ length: SKELETON_COUNT }, (_, i) => <ProductCardSkeleton key={i} />)
         ) : (
           <>
+            {isSearching && visibleProducts.length === 0 && (
+              <div className={styles.noResults}>
+                <span className={styles.noResultsIcon}>🔎</span>
+                <b>{t('search.emptyTitle')}</b>
+                <p>{t('search.emptyBody', { query })}</p>
+              </div>
+            )}
+
             {visibleProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
-                tint={tint}
+                tint={isSearching ? undefined : tint}
                 onOpen={() => {
                   setSheetProduct(product);
                   haptic();
@@ -113,8 +134,11 @@ export default function MenuScreen() {
       {/* Fetches the next /front-data page when the user scrolls near
           the end. Disabled while page 1 is still loading or the list
           is exhausted so it never fires when there's nothing to do. */}
+      {/* Pagination pauses during a search: results are matched against
+          the products already loaded, so an endless fetch would be
+          confusing while the customer is reading matches. */}
       <InfiniteScrollSentinel
-        enabled={!isLoading && hasMore && !isLoadingMore}
+        enabled={!isSearching && !isLoading && hasMore && !isLoadingMore}
         onIntersect={loadMore}
       />
 

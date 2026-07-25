@@ -33,14 +33,17 @@ export function OrderProvider({ children }) {
 
   /* Pre-fill for returning customers: when the launch sync delivers a
      profile, seed any still-empty fields once. Never overwrites what
-     the user has already typed, and never runs twice. */
+     the user has already typed, and never runs twice.
+     NOTE: name is intentionally NOT seeded from the Telegram username —
+     only from a real saved delivery name (customer.name). A @handle is
+     not a person's name and shouldn't land on the order silently. */
   useEffect(() => {
     if (customer === null || prefilled.current) return;
     prefilled.current = true;
 
     setDetails((prev) => ({
       ...prev,
-      name: prev.name || customer.username || '',
+      name: prev.name || customer.name || '',
       address: prev.address || customer.address || '',
     }));
 
@@ -74,6 +77,9 @@ export function OrderProvider({ children }) {
       setPaymentMethod,
       fullPhone: toE164(phone),
       /** Falls back to the main phone when the delivery field is empty. */
+      /* Delivery phone: the number the driver calls. Falls back to the
+         account phone only when the customer left it blank (they're the
+         same person by default), otherwise sends the distinct number. */
       fullDeliveryPhone: toE164(deliveryPhone.trim() ? deliveryPhone : phone),
       /**
        * Record the confirmed order number. The server issues the real

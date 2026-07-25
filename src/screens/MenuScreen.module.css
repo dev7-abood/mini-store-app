@@ -81,3 +81,37 @@
   background: transparent !important;
   box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.25);
 }
+
+/* Search bar sits between the header and the chips. */
+.searchWrap {
+  padding: 4px 16px 10px;
+}
+
+/* No-results panel spans the whole grid. */
+.noResults {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.noResultsIcon {
+  font-size: 44px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.75;
+}
+
+.noResults b {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.noResults p {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  line-height: 1.6;
+}
