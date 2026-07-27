@@ -62,7 +62,19 @@ export default function MenuScreen() {
   return (
     <Screen>
       <header className={styles.topbar}>
-        <div className={`${styles.miniLogo} ${branding.logo_url ? styles.miniLogoImg : ''}`}>
+        <div
+          className={`${styles.miniLogo} ${branding.logo_url ? styles.miniLogoImg : ''}`}
+          /* Header mark scales with the branch's logo_size setting,
+             capped so a large logo can't crowd out the title. */
+          style={
+            branding.logo_url
+              ? {
+                  width: `${Math.min(Number(branding.logo_size) || 64, 56)}px`,
+                  height: `${Math.min(Number(branding.logo_size) || 64, 56)}px`,
+                }
+              : undefined
+          }
+        >
           {branding.logo_url ? (
             <img
               src={branding.logo_url}

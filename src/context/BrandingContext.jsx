@@ -83,6 +83,23 @@ export function BrandingProvider({ children }) {
       /* API LAST => configured values win; nulls (unconfigured keys)
          are dropped so the registry default stands for those. */
       const merged = resolveBranding({ registryTheme, apiPayload: payload });
+
+      /* Onboarding hint: a branch that has branded the app but whose
+         registry entry still carries different colours will show the
+         registry's palette for the first frame, then settle on the
+         branch's. Harmless, but worth surfacing in dev. */
+      if (
+        import.meta.env?.DEV &&
+        payload?.is_configured &&
+        registryTheme?.primary_color &&
+        payload.primary_color &&
+        registryTheme.primary_color.toLowerCase() !== payload.primary_color.toLowerCase()
+      ) {
+        console.info(
+          '[branding] tenants.json primary_color differs from the saved branding — ' +
+            'update the registry entry to match for a flash-free launch.',
+        );
+      }
       setBranding(merged);
       apply(merged);
       setStatus('ready');

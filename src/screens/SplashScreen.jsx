@@ -6,7 +6,9 @@ import { useNavigation, SCREENS } from '../context/NavigationContext';
 import BrandLogo from '../components/BrandLogo';
 import styles from './SplashScreen.module.css';
 
-const MIN_SPLASH_MS = 900; // keep the branding visible at least this long
+/* Minimum splash time is per-branch (branding.splash.duration); these
+   are the fallbacks and the hard limits around it. */
+const DEFAULT_MIN_SPLASH_MS = 900;
 const SKIP_AFTER_MS = 2500; // manual escape hatch for slow networks
 const FORCE_MS = 6000; // the splash never hangs — menu shows skeletons
 
@@ -28,13 +30,26 @@ export default function SplashScreen() {
   const [showSkip, setShowSkip] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
+  /* Per-branch minimum, clamped so a bad value can't strand the
+     customer on the splash. */
+  const minSplashMs = Math.min(
+    Math.max(Number(branding.splash?.duration) || DEFAULT_MIN_SPLASH_MS, 0),
+    FORCE_MS,
+  );
+
   useEffect(() => {
-    const minTimer = setTimeout(() => setMinElapsed(true), MIN_SPLASH_MS);
+    /* The branch can switch the splash off entirely — go straight in. */
+    if (branding.splash?.enabled === false) {
+      navigate(SCREENS.MENU);
+      return undefined;
+    }
+
+    const minTimer = setTimeout(() => setMinElapsed(true), minSplashMs);
     const skipTimer = setTimeout(() => setShowSkip(true), SKIP_AFTER_MS);
     const forceTimer = setTimeout(() => go(), FORCE_MS);
     return () => [minTimer, skipTimer, forceTimer].forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [minSplashMs, branding.splash?.enabled]);
 
   /* Advance when the catalog is ready, after the minimum splash time. */
   useEffect(() => {
@@ -68,7 +83,17 @@ export default function SplashScreen() {
       <div className={styles.center}>
         <div className={styles.halo}>
           {branding.logo_url ? (
-            <img src={branding.logo_url} alt="" className={styles.logo} />
+            <img
+              src={branding.logo_url}
+              alt=""
+              className={styles.logo}
+              /* Branch-configured size, scaled up for the splash where
+                 the logo is the hero rather than a header mark. */
+              style={{
+                width: `${Math.round((Number(branding.logo_size) || 64) * 1.5)}px`,
+                height: `${Math.round((Number(branding.logo_size) || 64) * 1.5)}px`,
+              }}
+            />
           ) : (
             <BrandLogo variant="light" size={92} />
           )}

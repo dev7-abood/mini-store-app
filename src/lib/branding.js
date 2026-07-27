@@ -21,22 +21,68 @@ export const DEFAULT_BRANDING = {
   text_color: '#22180E',
   logo_url: null,
   logo_size: 64,
+  /* Splash behaviour, mirroring the API's `splash` object. */
+  splash: {
+    enabled: true,
+    duration: 900, // ms the splash stays up at minimum
+  },
 };
 
 /**
  * Strip null / undefined / empty values so a layer only contributes the
  * keys it actually defines.
  *
+ * Recurses into plain objects: the API sends `splash: {enabled: null,
+ * duration: null}` for an unconfigured branch, and a shallow filter
+ * would keep that object (it isn't null) and wipe the defaults beneath
+ * it. Nested objects that end up empty are dropped entirely.
+ *
  * @param {object|null|undefined} source
  * @returns {object}
  */
 function definedOnly(source) {
-  if (!source) return {};
-  return Object.fromEntries(
-    Object.entries(source).filter(
-      ([, value]) => value !== undefined && value !== null && value !== '',
-    ),
-  );
+  if (!source || typeof source !== 'object') return {};
+
+  const out = {};
+  for (const [key, value] of Object.entries(source)) {
+    if (value === undefined || value === null || value === '') continue;
+
+    if (isPlainObject(value)) {
+      const nested = definedOnly(value);
+      if (Object.keys(nested).length > 0) out[key] = nested;
+      continue;
+    }
+    out[key] = value;
+  }
+  return out;
+}
+
+/**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function isPlainObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Merge layers, recursing one level so nested groups (splash) merge
+ * key-by-key instead of replacing each other wholesale.
+ *
+ * @param {...object} layers
+ * @returns {object}
+ */
+function deepMerge(...layers) {
+  const result = {};
+
+  for (const layer of layers) {
+    for (const [key, value] of Object.entries(layer)) {
+      result[key] = isPlainObject(value) && isPlainObject(result[key])
+        ? { ...result[key], ...value }
+        : value;
+    }
+  }
+  return result;
 }
 
 /**
@@ -46,7 +92,7 @@ function definedOnly(source) {
  * @returns {Branding}
  */
 export function normalizeBranding(incoming) {
-  return { ...DEFAULT_BRANDING, ...definedOnly(incoming) };
+  return deepMerge(DEFAULT_BRANDING, definedOnly(incoming));
 }
 
 /**
@@ -67,11 +113,11 @@ export function normalizeBranding(incoming) {
  * @returns {Branding}
  */
 export function resolveBranding({ registryTheme = null, apiPayload = null } = {}) {
-  return {
-    ...DEFAULT_BRANDING,
-    ...definedOnly(registryTheme),
-    ...definedOnly(apiPayload),
-  };
+  return deepMerge(
+    DEFAULT_BRANDING,
+    definedOnly(registryTheme),
+    definedOnly(apiPayload),
+  );
 }
 
 /**
