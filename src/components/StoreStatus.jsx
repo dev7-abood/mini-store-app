@@ -37,8 +37,6 @@ export function StoreStatusNotice() {
     canCheckout,
     isChecking,
     isOpen,
-    message,
-    acceptPreorders,
     refresh,
   } = useStoreStatus();
 
@@ -49,8 +47,7 @@ export function StoreStatusNotice() {
       <span className={styles.noticeIcon}>!</span>
       <div>
         <b>{t('storeStatus.closed')}</b>
-        <p>{message || t('storeStatus.closedFallback')}</p>
-        {acceptPreorders && <small>{t('storeStatus.acceptPreorders')}</small>}
+        <p>{t('storeStatus.closedFallback')}</p>
         <button
           type="button"
           className={styles.noticeAction}

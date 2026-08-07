@@ -67,7 +67,6 @@ export default function PhoneScreen() {
   const { place, isBusy } = useOrderFlow();
   const {
     canCheckout,
-    message: storeStatusMessage,
     refresh: refreshStoreStatus,
   } = useStoreStatus();
   const [isCheckingStore, setIsCheckingStore] = useState(false);
@@ -80,7 +79,7 @@ export default function PhoneScreen() {
    */
   const sendCode = async () => {
     if (!canCheckout) {
-      notify(storeStatusMessage || t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'));
       return;
     }
 
@@ -95,7 +94,7 @@ export default function PhoneScreen() {
     setIsCheckingStore(false);
 
     if (latestStatus && latestStatus.canCheckout === false) {
-      notify(latestStatus.message || t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'));
       return;
     }
 
@@ -110,7 +109,11 @@ export default function PhoneScreen() {
     });
 
     if (!result.ok) {
-      notify(result.message || t('phone.orderFailed'));
+      notify(
+        result.code === 'STORE_CLOSED'
+          ? t('storeStatus.closedFallback')
+          : result.message || t('phone.orderFailed'),
+      );
       return;
     }
 

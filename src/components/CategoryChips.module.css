@@ -29,13 +29,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px 6px 15px;
+  padding: 6px 8px 6px 14px;
   border-radius: 999px;
   background: var(--card);
   font-weight: 700;
   font-size: 14px;
-  box-shadow: 0 3px 10px rgba(34, 24, 14, 0.06);
-  border: 1.5px solid transparent;
+  border: 1.5px solid color-mix(in srgb, var(--line) 70%, var(--card));
   transition: 0.2s;
 }
 

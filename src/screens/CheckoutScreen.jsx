@@ -16,13 +16,13 @@ import styles from './CheckoutScreen.module.css';
 export default function CheckoutScreen() {
   const { t } = useTranslation();
   const { details, updateDetails, paymentMethod, setPaymentMethod } = useOrder();
-  const { canCheckout, message } = useStoreStatus();
+  const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
 
   const submit = () => {
     if (!canCheckout) {
-      notify(message || t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'));
       return;
     }
 
