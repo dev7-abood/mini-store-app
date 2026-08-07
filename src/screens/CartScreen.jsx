@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../context/CartContext';
+import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useMoney } from '../hooks/useMoney';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import CartItem from '../components/CartItem';
+import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './CartScreen.module.css';
@@ -15,6 +17,7 @@ export default function CartScreen() {
   const { t } = useTranslation();
   const money = useMoney();
   const { entries, count, subtotal, deliveryFee, total } = useCart();
+  const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
 
   const isEmpty = count === 0;
@@ -47,10 +50,16 @@ export default function CartScreen() {
           </>
         )}
       </div>
+      {!isEmpty && <StoreStatusNotice />}
       {!isEmpty && (
         <FixedCta>
-          <Button variant="green" full onClick={() => navigate(SCREENS.CHECKOUT)}>
-            {t('cart.checkout')}
+          <Button
+            variant="green"
+            full
+            disabled={!canCheckout}
+            onClick={() => navigate(SCREENS.CHECKOUT)}
+          >
+            {canCheckout ? t('cart.checkout') : t('storeStatus.closedCheckout')}
           </Button>
         </FixedCta>
       )}

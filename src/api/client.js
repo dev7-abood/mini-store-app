@@ -241,6 +241,97 @@ export async function fetchBranding() {
 
 /*
 |--------------------------------------------------------------------------
+| Store Status (GET /telegram/store/status)
+|--------------------------------------------------------------------------
+| Returns whether the branch is currently open and whether checkout is
+| allowed. Checkout is still protected server-side by `store.open`, so
+| the UI treats this as guidance and rechecks before placing an order.
+*/
+
+function toBoolean(value, fallback = false) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['1', 'true', 'yes', 'open', 'opened'].includes(normalized)) return true;
+    if (['0', 'false', 'no', 'closed', 'close'].includes(normalized)) return false;
+  }
+  return fallback;
+}
+
+/**
+ * Normalize the status endpoint and STORE_CLOSED error payloads into one
+ * UI-friendly shape. Unknown/error auth responses must not block checkout;
+ * the POST /checkout middleware remains the final source of truth.
+ *
+ * @param {any} payload
+ */
+export function normalizeStoreStatus(payload) {
+  const body = payload?.data && typeof payload.data === 'object' ? payload.data : {};
+  const rawStatus = body?.status;
+  const status = rawStatus && typeof rawStatus === 'object' ? rawStatus : {};
+  const error = payload?.error && typeof payload.error === 'object' ? payload.error : {};
+
+  const openSignal =
+    body.is_open
+    ?? body.isOpen
+    ?? body.open
+    ?? status.is_open
+    ?? status.open
+    ?? (typeof rawStatus === 'string' ? rawStatus : undefined);
+  const checkoutSignal = body.can_checkout ?? body.canCheckout;
+  const hasOpenSignal = openSignal !== undefined || checkoutSignal !== undefined;
+  const closedByCode =
+    String(error.code ?? body.code ?? payload?.code ?? '').toUpperCase() === 'STORE_CLOSED';
+
+  const isOpen = hasOpenSignal
+    ? toBoolean(openSignal ?? checkoutSignal, false)
+    : closedByCode
+      ? false
+      : null;
+
+  const canCheckout = hasOpenSignal
+    ? toBoolean(checkoutSignal ?? openSignal, Boolean(isOpen))
+    : closedByCode
+      ? false
+      : true;
+
+  return {
+    isOpen,
+    canCheckout,
+    acceptPreorders: toBoolean(
+      body.accept_preorders ?? body.acceptPreorders ?? status.accept_preorders,
+      false,
+    ),
+    message: error.message ?? body.message ?? status.message ?? payload?.message ?? null,
+    code: error.code ?? body.code ?? payload?.code ?? null,
+    status,
+    raw: payload,
+  };
+}
+
+/**
+ * Fetch the branch's open/closed state.
+ *
+ * @returns {Promise<{isOpen: boolean|null, canCheckout: boolean,
+ *   acceptPreorders: boolean, message: string|null, code: string|null,
+ *   status: object, raw: any}>}
+ */
+export async function fetchStoreStatus() {
+  try {
+    return normalizeStoreStatus(
+      await request('/telegram/store/status', { timeoutMs: 6000 }),
+    );
+  } catch (error) {
+    if (error?.payload) {
+      return normalizeStoreStatus(error.payload);
+    }
+    throw error;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Customer Sync (POST /telegram/customer)
 |--------------------------------------------------------------------------
 | Registers/refreshes the calling Telegram user as a tenant Customer.
@@ -452,8 +543,9 @@ export async function removeCartItem(productId) {
 |   GET    /orders/{n}/payment           -> payment state (polled)
 |   POST   /orders/{n}/payment/retry     -> new payment attempt
 |
-| Each helper returns { ok, data, message, status } so screens can react
-| to validation errors and throttling (429) without try/catch.
+| Each helper returns { ok, data, message, status, code } so screens can
+| react to validation errors, throttling (429), and STORE_CLOSED without
+| try/catch.
 */
 
 /**
@@ -461,7 +553,8 @@ export async function removeCartItem(productId) {
  *
  * @param {string} path
  * @param {{method?: string, body?: any, timeoutMs?: number}} [options]
- * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ * @returns {Promise<{ok: boolean, data: any, message: string|null,
+ *   status: number|null, code?: string|null}>}
  */
 async function orderRequest(path, options = {}) {
   try {
@@ -478,13 +571,15 @@ async function orderRequest(path, options = {}) {
     };
   } catch (error) {
     const status = Number(error?.status) || null;
+    const payload = error?.payload ?? null;
     console.warn(`Order request failed (${path}):`, error);
     return {
       ok: false,
-      data: null,
+      data: payload?.data ?? null,
       /* Surface the API's own message when it sent one. */
-      message: error?.payload?.message ?? error?.message ?? null,
+      message: payload?.message ?? payload?.error?.message ?? error?.message ?? null,
       status,
+      code: payload?.error?.code ?? payload?.code ?? null,
     };
   }
 }
@@ -518,7 +613,8 @@ export function normalizeOrder(raw) {
 /**
  * Price the current cart without modifying it.
  *
- * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ * @returns {Promise<{ok: boolean, data: any, message: string|null,
+ *   status: number|null, code?: string|null}>}
  */
 export const previewCheckout = () => orderRequest('/checkout');
 
@@ -527,13 +623,15 @@ export const previewCheckout = () => orderRequest('/checkout');
  *
  * @param {{name: string, address: string, phone: string,
  *          delivery_phone?: string, note?: string}} details
- * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ * @returns {Promise<{ok: boolean, data: any, message: string|null,
+ *   status: number|null, code?: string|null}>}
  */
 export const placeOrder = (details) =>
   orderRequest('/checkout', { method: 'POST', body: details });
 
 /**
- * @returns {Promise<{ok: boolean, data: any, message: string|null, status: number|null}>}
+ * @returns {Promise<{ok: boolean, data: any, message: string|null,
+ *   status: number|null, code?: string|null}>}
  */
 export const fetchOrders = () => orderRequest('/orders');
 

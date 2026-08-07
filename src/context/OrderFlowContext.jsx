@@ -40,6 +40,7 @@ import {
   normalizeOrder,
   hasBackend,
 } from '../api/client';
+import { useStoreStatus } from './StoreStatusContext';
 
 const OrderFlowContext = createContext(null);
 
@@ -52,6 +53,7 @@ const PAYMENT_POLL_MS = 3000;
 const PAYMENT_POLL_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function OrderFlowProvider({ children }) {
+  const { markClosed } = useStoreStatus();
   const [order, setOrder] = useState(null);
   const [pricing, setPricing] = useState(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -110,7 +112,8 @@ export function OrderFlowProvider({ children }) {
    *
    * @param {{name: string, address: string, phone: string,
    *          delivery_phone?: string, note?: string}} details
-   * @returns {Promise<{ok: boolean, order: object|null, message: string|null}>}
+   * @returns {Promise<{ok: boolean, order: object|null,
+   *   message: string|null, code?: string|null}>}
    */
   const place = useCallback(async (details) => {
     setError(null);
@@ -119,14 +122,17 @@ export function OrderFlowProvider({ children }) {
     setIsBusy(false);
 
     if (!result.ok) {
+      if (result.code === 'STORE_CLOSED') {
+        markClosed({ message: result.message, data: result.data, code: result.code });
+      }
       setError(result.message);
-      return { ok: false, order: null, message: result.message };
+      return { ok: false, order: null, message: result.message, code: result.code };
     }
 
     const placed = normalizeOrder(result.data);
     setOrder(placed);
     return { ok: true, order: placed, message: null };
-  }, []);
+  }, [markClosed]);
 
   /*
   |--------------------------------------------------------------------------

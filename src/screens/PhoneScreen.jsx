@@ -1,6 +1,7 @@
-import { useId, useRef } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOrder, PHONE_PREFIX } from '../context/OrderContext';
+import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useOrderFlow } from '../context/OrderFlowContext';
 import { useTelegram } from '../hooks/useTelegram';
@@ -9,6 +10,7 @@ import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import FlagPS from '../components/ui/FlagPS';
+import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './PhoneScreen.module.css';
@@ -63,6 +65,12 @@ export default function PhoneScreen() {
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
   const { place, isBusy } = useOrderFlow();
+  const {
+    canCheckout,
+    message: storeStatusMessage,
+    refresh: refreshStoreStatus,
+  } = useStoreStatus();
+  const [isCheckingStore, setIsCheckingStore] = useState(false);
 
   /**
    * Places the order server-side (POST /checkout). The API converts the
@@ -71,9 +79,23 @@ export default function PhoneScreen() {
    * order number to verify against.
    */
   const sendCode = async () => {
+    if (!canCheckout) {
+      notify(storeStatusMessage || t('storeStatus.closedFallback'));
+      return;
+    }
+
     if (toLocalDigits(phone).length < MIN_DIGITS) {
       notify(t('phone.invalid'));
       mainRef.current?.focus();
+      return;
+    }
+
+    setIsCheckingStore(true);
+    const latestStatus = await refreshStoreStatus();
+    setIsCheckingStore(false);
+
+    if (latestStatus && latestStatus.canCheckout === false) {
+      notify(latestStatus.message || t('storeStatus.closedFallback'));
       return;
     }
 
@@ -101,6 +123,7 @@ export default function PhoneScreen() {
       <CenterIllustration icon="📱" heading={t('phone.heading')}>
         {t('phone.body')}
       </CenterIllustration>
+      <StoreStatusNotice />
       <div className={styles.pad}>
         <PhoneField
           label={t('phone.label')}
@@ -116,8 +139,12 @@ export default function PhoneScreen() {
         />
       </div>
       <FixedCta>
-        <Button variant="green" full onClick={sendCode} disabled={isBusy}>
-          {isBusy ? t('phone.sending') : t('phone.send')}
+        <Button variant="green" full onClick={sendCode} disabled={isBusy || isCheckingStore || !canCheckout}>
+          {isBusy || isCheckingStore
+            ? t('phone.sending')
+            : canCheckout
+              ? t('phone.send')
+              : t('storeStatus.closedCheckout')}
         </Button>
       </FixedCta>
     </Screen>

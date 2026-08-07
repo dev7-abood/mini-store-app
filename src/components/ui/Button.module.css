@@ -13,6 +13,17 @@
   transform: scale(0.97);
 }
 
+.cta:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  box-shadow: none;
+  filter: grayscale(0.15);
+}
+
+.cta:disabled:active {
+  transform: none;
+}
+
 .green {
   background: var(--basil);
   color: #fdf9f1;
@@ -28,7 +39,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .cta:hover {
+  .cta:not(:disabled):hover {
     filter: brightness(1.05);
   }
 }

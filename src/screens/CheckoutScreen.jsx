@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useOrder } from '../context/OrderContext';
+import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import Field from '../components/ui/Field';
 import PaymentMethodPicker from '../components/PaymentMethodPicker';
+import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './CheckoutScreen.module.css';
@@ -14,10 +16,16 @@ import styles from './CheckoutScreen.module.css';
 export default function CheckoutScreen() {
   const { t } = useTranslation();
   const { details, updateDetails, paymentMethod, setPaymentMethod } = useOrder();
+  const { canCheckout, message } = useStoreStatus();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
 
   const submit = () => {
+    if (!canCheckout) {
+      notify(message || t('storeStatus.closedFallback'));
+      return;
+    }
+
     if (!details.name.trim() || !details.address.trim()) {
       notify(t('checkout.missingFields'));
       return;
@@ -55,9 +63,10 @@ export default function CheckoutScreen() {
           <PaymentMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
         </div>
       </div>
+      <StoreStatusNotice />
       <FixedCta>
-        <Button variant="green" full onClick={submit}>
-          {t('checkout.continue')}
+        <Button variant="green" full onClick={submit} disabled={!canCheckout}>
+          {canCheckout ? t('checkout.continue') : t('storeStatus.closedCheckout')}
         </Button>
       </FixedCta>
     </Screen>

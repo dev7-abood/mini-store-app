@@ -14,6 +14,7 @@ import ProductCard, { ProductCardSkeleton } from '../components/ProductCard';
 import InfiniteScrollSentinel from '../components/InfiniteScrollSentinel';
 import ProductSheet from '../components/ProductSheet';
 import CartBar from '../components/CartBar';
+import { StoreStatusNotice, StoreStatusPill } from '../components/StoreStatus';
 import styles from './MenuScreen.module.css';
 
 const SKELETON_COUNT = 6;
@@ -88,6 +89,7 @@ export default function MenuScreen() {
         <div className={styles.title}>
           <h1>{branding.name}</h1>
           <p>{subtitle}</p>
+          <StoreStatusPill />
         </div>
         <button
           type="button"
@@ -103,6 +105,7 @@ export default function MenuScreen() {
       <div className={styles.searchWrap}>
         <SearchBar value={query} onChange={setQuery} onClear={() => setQuery('')} />
       </div>
+      <StoreStatusNotice />
 
       {/* Categories are irrelevant while searching — results span all. */}
       {!isSearching && <CategoryChips activeId={activeCategory} onPick={pickCategory} />}
