@@ -268,7 +268,7 @@ function toBoolean(value, fallback = false) {
  */
 export function normalizeStoreStatus(payload) {
   const body = payload?.data && typeof payload.data === 'object' ? payload.data : {};
-  const rawStatus = body?.status;
+  const rawStatus = body?.status ?? payload?.status;
   const status = rawStatus && typeof rawStatus === 'object' ? rawStatus : {};
   const error = payload?.error && typeof payload.error === 'object' ? payload.error : {};
 
@@ -276,10 +276,17 @@ export function normalizeStoreStatus(payload) {
     body.is_open
     ?? body.isOpen
     ?? body.open
+    ?? payload?.is_open
+    ?? payload?.isOpen
+    ?? payload?.open
     ?? status.is_open
     ?? status.open
     ?? (typeof rawStatus === 'string' ? rawStatus : undefined);
-  const checkoutSignal = body.can_checkout ?? body.canCheckout;
+  const checkoutSignal =
+    body.can_checkout
+    ?? body.canCheckout
+    ?? payload?.can_checkout
+    ?? payload?.canCheckout;
   const hasOpenSignal = openSignal !== undefined || checkoutSignal !== undefined;
   const closedByCode =
     String(error.code ?? body.code ?? payload?.code ?? '').toUpperCase() === 'STORE_CLOSED';
@@ -300,7 +307,11 @@ export function normalizeStoreStatus(payload) {
     isOpen,
     canCheckout,
     acceptPreorders: toBoolean(
-      body.accept_preorders ?? body.acceptPreorders ?? status.accept_preorders,
+      body.accept_preorders
+      ?? body.acceptPreorders
+      ?? payload?.accept_preorders
+      ?? payload?.acceptPreorders
+      ?? status.accept_preorders,
       false,
     ),
     message: error.message ?? body.message ?? status.message ?? payload?.message ?? null,

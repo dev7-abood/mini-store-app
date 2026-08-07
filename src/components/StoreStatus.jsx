@@ -33,7 +33,14 @@ export function StoreStatusPill() {
 
 export function StoreStatusNotice() {
   const { t } = useTranslation();
-  const { canCheckout, isOpen, message, acceptPreorders } = useStoreStatus();
+  const {
+    canCheckout,
+    isChecking,
+    isOpen,
+    message,
+    acceptPreorders,
+    refresh,
+  } = useStoreStatus();
 
   if (canCheckout || isOpen !== false) return null;
 
@@ -44,6 +51,14 @@ export function StoreStatusNotice() {
         <b>{t('storeStatus.closed')}</b>
         <p>{message || t('storeStatus.closedFallback')}</p>
         {acceptPreorders && <small>{t('storeStatus.acceptPreorders')}</small>}
+        <button
+          type="button"
+          className={styles.noticeAction}
+          onClick={() => refresh()}
+          disabled={isChecking}
+        >
+          {isChecking ? t('storeStatus.checking') : t('storeStatus.checkAgain')}
+        </button>
       </div>
     </aside>
   );

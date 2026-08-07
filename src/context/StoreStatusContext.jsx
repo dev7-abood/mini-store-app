@@ -11,6 +11,8 @@ import { fetchStoreStatus, hasBackend } from '../api/client';
 import { useTenant } from './TenantContext';
 
 const StoreStatusContext = createContext(null);
+const OPEN_REFRESH_MS = 60000;
+const CLOSED_REFRESH_MS = 10000;
 
 const INITIAL = {
   status: 'loading', // 'loading' | 'ready' | 'error'
@@ -20,6 +22,7 @@ const INITIAL = {
   message: null,
   code: null,
   raw: null,
+  lastCheckedAt: null,
 };
 
 function closedPatch({ message = null, data = null, code = 'STORE_CLOSED' } = {}) {
@@ -31,6 +34,7 @@ function closedPatch({ message = null, data = null, code = 'STORE_CLOSED' } = {}
     message,
     code,
     raw: data,
+    lastCheckedAt: Date.now(),
   };
 }
 
@@ -38,12 +42,17 @@ export function StoreStatusProvider({ children }) {
   const tenant = useTenant();
   const [state, setState] = useState(INITIAL);
   const generationRef = useRef(0);
+  const stateRef = useRef(INITIAL);
 
-  const refresh = useCallback(async () => {
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  const refresh = useCallback(async ({ silent = false } = {}) => {
     const generation = ++generationRef.current;
     const isCurrent = () => generation === generationRef.current;
 
-    setState((s) => ({ ...s, status: 'loading' }));
+    if (!silent) setState((s) => ({ ...s, status: 'loading' }));
 
     if (!hasBackend()) {
       setState((s) => ({ ...s, status: 'error', canCheckout: true }));
@@ -62,6 +71,7 @@ export function StoreStatusProvider({ children }) {
         message: next.message,
         code: next.code,
         raw: next.raw,
+        lastCheckedAt: Date.now(),
       });
       return next;
     } catch (error) {
@@ -83,6 +93,48 @@ export function StoreStatusProvider({ children }) {
     if (tenant.status === 'ready') refresh();
   }, [tenant.status, refresh]);
 
+  useEffect(() => {
+    if (tenant.status !== 'ready' || !hasBackend()) return undefined;
+
+    let stopped = false;
+    let timer = null;
+
+    const schedule = () => {
+      if (stopped) return;
+      const current = stateRef.current;
+      const delay = current.canCheckout === false ? CLOSED_REFRESH_MS : OPEN_REFRESH_MS;
+      timer = window.setTimeout(async () => {
+        await refresh({ silent: true });
+        schedule();
+      }, delay);
+    };
+
+    schedule();
+
+    return () => {
+      stopped = true;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [tenant.status, refresh, state.canCheckout]);
+
+  useEffect(() => {
+    if (tenant.status !== 'ready' || !hasBackend()) return undefined;
+
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') refresh({ silent: true });
+    };
+
+    window.addEventListener('focus', refreshIfVisible);
+    window.addEventListener('pageshow', refreshIfVisible);
+    document.addEventListener('visibilitychange', refreshIfVisible);
+
+    return () => {
+      window.removeEventListener('focus', refreshIfVisible);
+      window.removeEventListener('pageshow', refreshIfVisible);
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+    };
+  }, [tenant.status, refresh]);
+
   const value = useMemo(
     () => ({
       ...state,
@@ -90,6 +142,7 @@ export function StoreStatusProvider({ children }) {
       isError: state.status === 'error',
       isReady: state.status === 'ready',
       isClosed: state.status === 'ready' && state.canCheckout === false,
+      isChecking: state.status === 'loading',
       refresh,
       markClosed,
     }),
