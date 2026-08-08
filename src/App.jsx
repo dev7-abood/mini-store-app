@@ -5,8 +5,9 @@
 | Renders the active screen from the navigation state machine. Providers
 | are composed here: Navigation (screen flow) -> Cart -> Order.
 */
+import { useEffect, useRef } from 'react';
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider, useCatalog } from './context/CatalogContext';
 import { BrandingProvider, useBranding } from './context/BrandingContext';
@@ -28,6 +29,7 @@ import CatalogErrorScreen from './screens/CatalogErrorScreen';
 import CatalogEmptyScreen from './screens/CatalogEmptyScreen';
 import BrandingLoader from './screens/BrandingLoader';
 import BrandingErrorScreen from './screens/BrandingErrorScreen';
+import { orderNumberFromStartParam } from './lib/telegramStartParam';
 
 /** @type {Record<string, React.ComponentType>} */
 const SCREEN_COMPONENTS = {
@@ -47,23 +49,47 @@ function ActiveScreen() {
   return <Component key={screen} />;
 }
 
+function TelegramStartParamRedirect() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const consumedRef = useRef(false);
+
+  useEffect(() => {
+    if (consumedRef.current) return;
+
+    const orderNumber = orderNumberFromStartParam();
+    if (!orderNumber) return;
+
+    consumedRef.current = true;
+    const orderPath = `/orders/${encodeURIComponent(orderNumber)}`;
+    if (location.pathname !== orderPath) {
+      navigate(orderPath, { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  return null;
+}
+
 function OrderFlowScreens() {
   return (
-    <Routes>
-      <Route path="/orders/:orderNumber" element={<StatusScreen />} />
-      <Route
-        path="*"
-        element={
-          <CatalogProvider>
-            <CatalogGate>
-              <CartProvider>
-                <ActiveScreen />
-              </CartProvider>
-            </CatalogGate>
-          </CatalogProvider>
-        }
-      />
-    </Routes>
+    <>
+      <TelegramStartParamRedirect />
+      <Routes>
+        <Route path="/orders/:orderNumber" element={<StatusScreen />} />
+        <Route
+          path="*"
+          element={
+            <CatalogProvider>
+              <CatalogGate>
+                <CartProvider>
+                  <ActiveScreen />
+                </CartProvider>
+              </CatalogGate>
+            </CatalogProvider>
+          }
+        />
+      </Routes>
+    </>
   );
 }
 
