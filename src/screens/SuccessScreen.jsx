@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
-import { useNavigation, SCREENS } from '../context/NavigationContext';
 import Screen from '../components/ui/Screen';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import FixedCta from '../components/ui/FixedCta';
@@ -11,7 +11,12 @@ import styles from './SuccessScreen.module.css';
 export default function SuccessScreen() {
   const { t } = useTranslation();
   const { orderNumber } = useOrder();
-  const { navigate } = useNavigation();
+  const navigate = useNavigate();
+
+  const trackOrder = () => {
+    if (!orderNumber) return;
+    navigate(`/orders/${encodeURIComponent(orderNumber)}`);
+  };
 
   return (
     <Screen>
@@ -33,7 +38,7 @@ export default function SuccessScreen() {
         </div>
       </div>
       <FixedCta>
-        <Button full onClick={() => navigate(SCREENS.STATUS)}>
+        <Button full onClick={trackOrder} disabled={!orderNumber}>
           {t('success.track')}
         </Button>
       </FixedCta>

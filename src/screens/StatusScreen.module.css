@@ -1,24 +1,197 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 16px 150px;
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  max-width: 154px;
+  min-height: 34px;
   background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 75%, var(--card));
   border-radius: 999px;
-  padding: 9px 18px;
-  font-weight: 800;
-  box-shadow: var(--shadow);
+  padding: 8px 13px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.eta {
+.hero {
+  border-radius: 20px;
+  padding: 18px 16px;
+  background: var(--basil);
+  color: #fff;
+}
+
+.heroDanger {
+  background: color-mix(in srgb, var(--tomato) 92%, var(--ink));
+}
+
+.eyebrow {
+  display: block;
+  color: color-mix(in srgb, #fff 70%, var(--basil));
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.hero h2 {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.hero p {
+  color: color-mix(in srgb, #fff 78%, var(--basil));
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.65;
+  margin-top: 8px;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.heroMeta span {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.panel,
+.finalNotice {
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, var(--card));
+  border-radius: 18px;
+  padding: 15px;
+}
+
+.panel h3 {
+  font-size: 15px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.finalNotice {
+  background: color-mix(in srgb, var(--tomato) 9%, var(--card));
+  border-color: color-mix(in srgb, var(--tomato) 22%, var(--line));
+}
+
+.finalNotice b {
+  display: block;
+  color: var(--tomato);
+  font-size: 15px;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.finalNotice p {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+}
+
+.infoRow:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.infoRow:last-child {
+  padding-bottom: 0;
+}
+
+.infoRow span {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.infoRow b {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.5;
+  text-align: end;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: var(--basil);
-  color: #fdf9f1;
-  border-radius: 18px;
-  padding: 16px;
-  margin: 0 16px;
+  justify-content: space-between;
+  gap: 14px;
+  border-radius: 14px;
+  padding: 11px;
+  background: color-mix(in srgb, var(--bg) 74%, var(--card));
+}
+
+.item b {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.item span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 11px;
   font-weight: 800;
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--basil) 35%, transparent);
+  margin-top: 3px;
+}
+
+.item strong {
+  color: var(--basil);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.cancelButton {
+  background: color-mix(in srgb, var(--tomato) 12%, var(--card));
+  color: var(--tomato);
+  box-shadow: none;
+}
+
+.stateWrap {
+  padding: 12vh 18px 30px;
+}
+
+.stateWrap button {
+  margin-top: 22px;
 }

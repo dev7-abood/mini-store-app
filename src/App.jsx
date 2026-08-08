@@ -6,6 +6,7 @@
 | are composed here: Navigation (screen flow) -> Cart -> Order.
 */
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
+import { Route, Routes } from 'react-router-dom';
 import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider, useCatalog } from './context/CatalogContext';
 import { BrandingProvider, useBranding } from './context/BrandingContext';
@@ -44,6 +45,26 @@ function ActiveScreen() {
   const { screen } = useNavigation();
   const Component = SCREEN_COMPONENTS[screen] ?? MenuScreen;
   return <Component key={screen} />;
+}
+
+function OrderFlowScreens() {
+  return (
+    <Routes>
+      <Route path="/orders/:orderNumber" element={<StatusScreen />} />
+      <Route
+        path="*"
+        element={
+          <CatalogProvider>
+            <CatalogGate>
+              <CartProvider>
+                <ActiveScreen />
+              </CartProvider>
+            </CatalogGate>
+          </CatalogProvider>
+        }
+      />
+    </Routes>
+  );
 }
 
 /** Blocks the whole flow when no tenant could be resolved in Telegram. */
@@ -86,17 +107,11 @@ export default function App() {
             <BrandingGate>
               <StoreStatusProvider>
                 <CustomerProvider>
-                  <CatalogProvider>
-                    <CatalogGate>
-                      <CartProvider>
-                        <OrderProvider>
-                          <OrderFlowProvider>
-                            <ActiveScreen />
-                          </OrderFlowProvider>
-                        </OrderProvider>
-                      </CartProvider>
-                    </CatalogGate>
-                  </CatalogProvider>
+                  <OrderProvider>
+                    <OrderFlowProvider>
+                      <OrderFlowScreens />
+                    </OrderFlowProvider>
+                  </OrderProvider>
                 </CustomerProvider>
               </StoreStatusProvider>
             </BrandingGate>

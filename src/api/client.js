@@ -605,18 +605,61 @@ export function normalizeOrder(raw) {
   const o = raw?.order ?? raw;
   if (!o || typeof o !== 'object') return null;
 
+  const status = o.status && typeof o.status === 'object' ? o.status : null;
+  const payment = o.payment && typeof o.payment === 'object' ? o.payment : null;
+  const totals = o.totals && typeof o.totals === 'object' ? o.totals : null;
+  const verification = o.verification && typeof o.verification === 'object' ? o.verification : null;
+  const statusValue = status?.value ?? (status ? null : o.status) ?? 'pending';
+  const items = Array.isArray(o.items)
+    ? o.items
+    : Array.isArray(o.items?.data)
+      ? o.items.data
+      : [];
+
   return {
     orderNumber: String(o.order_number ?? o.orderNumber ?? o.number ?? o.id ?? ''),
-    status: String(o.status ?? 'pending'),
+    id: o.id ?? null,
+    status: String(statusValue),
+    statusLabel: status?.label ?? null,
+    statusDescription: status?.description ?? null,
+    statusStep: Number(status?.step ?? 0),
+    statusTotalSteps: Number(status?.total_steps ?? status?.totalSteps ?? 0),
+    isFinal: Boolean(status?.is_final ?? status?.isFinal ?? false),
+    isCancellable: Boolean(status?.is_cancellable ?? status?.isCancellable ?? false),
+    verification: {
+      required: Boolean(verification?.required ?? false),
+      verifiedAt: verification?.verified_at ?? verification?.verifiedAt ?? null,
+      expiresIn: verification?.expires_in ?? verification?.expiresIn ?? null,
+    },
     /* Server-side money is authoritative — never recompute locally. */
-    subtotal: Number(o.subtotal ?? 0),
-    deliveryFee: Number(o.delivery_fee ?? o.deliveryFee ?? 0),
-    total: Number(o.total ?? 0),
+    subtotal: Number(totals?.subtotal ?? o.subtotal ?? 0),
+    discountTotal: Number(totals?.discount_total ?? totals?.discountTotal ?? o.discount_total ?? 0),
+    deliveryFee: Number(totals?.delivery_fee ?? totals?.deliveryFee ?? o.delivery_fee ?? o.deliveryFee ?? 0),
+    total: Number(totals?.total ?? o.total ?? o.total_price ?? 0),
+    currency: totals?.currency ?? o.currency ?? null,
     isVerified: Boolean(o.is_verified ?? o.verified ?? false),
-    paymentStatus: o.payment?.status ?? o.payment_status ?? null,
-    paymentUrl: o.payment?.url ?? o.payment_url ?? null,
-    createdAt: o.created_at ?? null,
-    items: Array.isArray(o.items) ? o.items : [],
+    paymentMethod: payment?.method ?? o.payment_method ?? null,
+    paymentMethodLabel: payment?.method_label ?? payment?.methodLabel ?? null,
+    paymentStatus: payment?.status ?? o.payment_status ?? null,
+    paymentStatusLabel: payment?.status_label ?? payment?.statusLabel ?? null,
+    paymentDescription: payment?.description ?? null,
+    paymentPhone: payment?.notified_phone ?? payment?.notifiedPhone ?? null,
+    paymentFailureReason: payment?.failure_reason ?? payment?.failureReason ?? null,
+    paymentExpiresIn: payment?.expires_in ?? payment?.expiresIn ?? null,
+    paymentAttemptsRemaining: payment?.attempts_remaining ?? payment?.attemptsRemaining ?? null,
+    paymentShouldPoll: Boolean(payment?.should_poll ?? payment?.shouldPoll ?? false),
+    paymentIsRetryable: Boolean(payment?.is_retryable ?? payment?.isRetryable ?? false),
+    paymentPaidAt: payment?.paid_at ?? payment?.paidAt ?? null,
+    paymentUrl: payment?.url ?? o.payment_url ?? null,
+    phoneNumber: o.phone_number ?? o.phoneNumber ?? null,
+    deliveryPhone: o.delivery_phone ?? o.deliveryPhone ?? null,
+    hasThirdPartyDelivery: Boolean(o.has_third_party_delivery ?? o.hasThirdPartyDelivery ?? false),
+    address: o.address ?? null,
+    note: o.note ?? null,
+    deliveryCode: o.delivery_code ?? o.deliveryCode ?? null,
+    placedAt: o.placed_at ?? o.placedAt ?? null,
+    createdAt: o.created_at ?? o.createdAt ?? null,
+    items,
     raw: o,
   };
 }

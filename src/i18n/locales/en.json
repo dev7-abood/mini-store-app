@@ -1,0 +1,108 @@
+{
+  "success": {
+    "track": "Track my order"
+  },
+  "cart": {
+    "subtotal": "Subtotal",
+    "delivery": "Delivery",
+    "total": "Total"
+  },
+  "common": {
+    "back": "Back",
+    "currency": "₪{{amount}}"
+  },
+  "status": {
+    "title": "Order Status",
+    "loadingTitle": "Loading order",
+    "loadingBody": "Reading the latest order status.",
+    "invalidTitle": "Invalid order number",
+    "invalidBody": "This link does not contain a valid order number.",
+    "notFoundTitle": "Order not found",
+    "notFoundBody": "Check the order number or open the link from your order message.",
+    "errorTitle": "Could not load order",
+    "errorBody": "Something went wrong while loading the order status. Try again.",
+    "emptyTitle": "No order data",
+    "emptyBody": "The server returned an empty response for this order.",
+    "current": "Current status",
+    "currentBody": "We will refresh the order automatically when it moves to the next step.",
+    "orderNumber": "Order number",
+    "orderDate": "Order time",
+    "summaryTitle": "Order information",
+    "itemsTitle": "Items",
+    "paymentTitle": "Payment",
+    "totalsTitle": "Totals",
+    "address": "Address",
+    "phone": "Contact phone",
+    "deliveryPhone": "Delivery phone",
+    "deliveryCode": "Delivery code",
+    "note": "Note",
+    "paymentMethod": "Payment method",
+    "paymentStatus": "Payment status",
+    "paymentPhone": "Payment notification phone",
+    "paymentFailure": "Payment failure reason",
+    "discount": "Discount",
+    "itemQuantity": "Quantity: {{count}}",
+    "finalNegativeBody": "This order has stopped and will not continue toward delivery.",
+    "values": {
+      "awaiting_verification": "Awaiting verification",
+      "unverified": "Awaiting verification",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "accepted": "Accepted",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "out_for_delivery": "Out for delivery",
+      "on_the_way": "Out for delivery",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "canceled": "Cancelled",
+      "rejected": "Rejected",
+      "failed": "Failed"
+    },
+    "paymentValues": {
+      "pending": "Payment pending",
+      "awaiting": "Payment pending",
+      "processing": "Processing",
+      "approved": "Approved",
+      "paid": "Paid",
+      "completed": "Completed",
+      "declined": "Declined",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "timeout": "Timed out"
+    },
+    "steps": {
+      "pending": {
+        "title": "Pending",
+        "caption": "We received the order and are waiting for confirmation"
+      },
+      "confirmed": {
+        "title": "Confirmed",
+        "caption": "The order was accepted and will be prepared"
+      },
+      "preparing": {
+        "title": "Preparing",
+        "caption": "The kitchen is preparing your order"
+      },
+      "ready": {
+        "title": "Ready",
+        "caption": "The order is ready for delivery or pickup"
+      },
+      "outForDelivery": {
+        "title": "Out for delivery",
+        "caption": "The order is on its way"
+      },
+      "delivered": {
+        "title": "Delivered",
+        "caption": "Enjoy your meal"
+      }
+    },
+    "orderAgain": "Order again",
+    "cancel": "Cancel order",
+    "cancelConfirm": "Are you sure you want to cancel this order?",
+    "cancelled": "Order cancelled",
+    "cancelFailed": "Could not cancel the order.",
+    "refresh": "Refresh status"
+  }
+}

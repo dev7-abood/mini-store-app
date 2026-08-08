@@ -1,16 +1,16 @@
 .timeline {
   background: var(--card);
-  border-radius: 22px;
-  padding: 22px 20px;
-  margin: 22px 16px;
-  box-shadow: var(--shadow);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, var(--card));
+  border-radius: 18px;
+  padding: 18px 16px;
 }
 
 .step {
   display: flex;
-  gap: 15px;
+  gap: 13px;
   position: relative;
-  padding-bottom: 30px;
+  padding-bottom: 26px;
+  color: var(--ink-soft);
 }
 
 .step:last-child {
@@ -20,10 +20,10 @@
 .step::before {
   content: '';
   position: absolute;
-  inset-inline-end: 17px;
+  inset-inline-start: 18px;
   top: 38px;
-  bottom: 2px;
-  width: 3px;
+  bottom: 0;
+  width: 2px;
   border-radius: 2px;
   background: var(--line);
 }
@@ -37,42 +37,54 @@
 }
 
 .dot {
-  width: 37px;
-  height: 37px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--bg);
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
   display: grid;
   place-items: center;
-  font-size: 17px;
+  font-size: 13px;
+  font-weight: 900;
   flex: 0 0 auto;
   z-index: 1;
 }
 
 .done .dot {
-  background: var(--ok);
-  box-shadow: 0 0 0 5px rgba(46, 158, 91, 0.15);
+  background: color-mix(in srgb, var(--ok) 14%, var(--card));
+  border-color: var(--ok);
+  color: var(--ok);
 }
 
-.now .dot {
-  background: var(--saffron);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--saffron) 40%, transparent);
-  animation: pulse 1.4s infinite;
+.current .dot {
+  background: var(--basil);
+  border-color: var(--basil);
+  color: #fff;
 }
 
-@keyframes pulse {
-  50% {
-    box-shadow: 0 0 0 10px color-mix(in srgb, var(--saffron) 40%, transparent);
-  }
+.info {
+  min-width: 0;
+  padding-top: 1px;
 }
 
 .info b {
   display: block;
-  font-size: 15px;
-  font-weight: 800;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
 }
 
 .info span {
-  font-size: 12.5px;
+  display: block;
+  font-size: 12px;
   color: var(--ink-soft);
   font-weight: 700;
+  line-height: 1.55;
+  margin-top: 3px;
+}
+
+.step:not(.done):not(.current) .info b {
+  color: color-mix(in srgb, var(--ink-soft) 78%, var(--card));
 }

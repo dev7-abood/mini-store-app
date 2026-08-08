@@ -76,21 +76,88 @@
   },
   "status": {
     "title": "حالة الطلب",
+    "loadingTitle": "جاري تحميل الطلب",
+    "loadingBody": "نقرأ آخر حالة للطلب من النظام.",
+    "invalidTitle": "رقم الطلب غير صحيح",
+    "invalidBody": "الرابط لا يحتوي على رقم طلب صالح.",
+    "notFoundTitle": "لم نجد هذا الطلب",
+    "notFoundBody": "تأكد من رقم الطلب أو افتح الرابط من رسالة الطلب.",
+    "errorTitle": "تعذر تحميل الطلب",
+    "errorBody": "حدث خطأ أثناء جلب حالة الطلب. حاول مرة أخرى.",
+    "emptyTitle": "لا توجد بيانات للطلب",
+    "emptyBody": "وصلنا رد فارغ من الخادم لهذا الطلب.",
+    "current": "الحالة الحالية",
+    "currentBody": "سنحدث حالة الطلب تلقائياً عند انتقاله للخطوة التالية.",
+    "orderNumber": "رقم الطلب",
+    "orderDate": "وقت الطلب",
+    "summaryTitle": "معلومات الطلب",
+    "itemsTitle": "الأصناف",
+    "paymentTitle": "الدفع",
+    "totalsTitle": "الإجمالي",
+    "address": "العنوان",
+    "phone": "رقم التواصل",
+    "deliveryPhone": "رقم التوصيل",
+    "deliveryCode": "رمز التسليم",
+    "note": "ملاحظة",
+    "paymentMethod": "طريقة الدفع",
+    "paymentStatus": "حالة الدفع",
+    "paymentPhone": "رقم إشعار الدفع",
+    "paymentFailure": "سبب فشل الدفع",
+    "discount": "الخصم",
+    "itemQuantity": "الكمية: {{count}}",
+    "finalNegativeBody": "تم إيقاف هذا الطلب ولن يتابع مراحل التوصيل.",
     "eta": "الوصول المتوقع",
     "etaInitial": "25–35 د",
     "etaOnTheWay": "10–15 د",
+    "values": {
+      "awaiting_verification": "بانتظار التحقق",
+      "unverified": "بانتظار التحقق",
+      "pending": "قيد الانتظار",
+      "confirmed": "تم التأكيد",
+      "accepted": "تم قبول الطلب",
+      "preparing": "قيد التحضير",
+      "ready": "جاهز",
+      "out_for_delivery": "في الطريق",
+      "on_the_way": "في الطريق",
+      "delivered": "تم التوصيل",
+      "completed": "مكتمل",
+      "cancelled": "ملغي",
+      "canceled": "ملغي",
+      "rejected": "مرفوض",
+      "failed": "فشل"
+    },
+    "paymentValues": {
+      "pending": "بانتظار الدفع",
+      "awaiting": "بانتظار الدفع",
+      "processing": "قيد المعالجة",
+      "approved": "تمت الموافقة",
+      "paid": "مدفوع",
+      "completed": "مكتمل",
+      "declined": "مرفوض",
+      "failed": "فشل",
+      "cancelled": "ملغي",
+      "timeout": "انتهت المهلة"
+    },
     "steps": {
-      "received": {
-        "title": "تم استلام الطلب",
-        "caption": "وصلنا طلبك"
+      "pending": {
+        "title": "قيد الانتظار",
+        "caption": "استلمنا الطلب وننتظر تأكيده"
+      },
+      "confirmed": {
+        "title": "تم التأكيد",
+        "caption": "تم قبول الطلب وسيبدأ التجهيز"
       },
       "preparing": {
         "title": "قيد التحضير",
         "caption": "المطبخ يجهز وجبتك الآن"
       },
-      "onTheWay": {
+      "ready": {
+        "title": "جاهز",
+        "caption": "الطلب جاهز للانطلاق أو الاستلام"
+      },
+      "outForDelivery": {
         "title": "في الطريق",
-        "caption": "السائق استلم طلبك"
+        "caption": "الطلب خرج للتوصيل"
       },
       "delivered": {
         "title": "تم التوصيل",

@@ -1,34 +1,37 @@
 import { useTranslation } from 'react-i18next';
+import {
+  progressStateForStep,
+  visibleProgressSteps,
+} from '../lib/orderStatus';
 import styles from './OrderTimeline.module.css';
 
-export const ORDER_STEPS = [
-  { id: 'received', icon: '🧾' },
-  { id: 'preparing', icon: '👨‍🍳' },
-  { id: 'onTheWay', icon: '🛵' },
-  { id: 'delivered', icon: '🎉' },
-];
-
 /**
- * Vertical order-status timeline.
+ * Vertical order-status timeline driven by the API's status.step and
+ * status.total_steps values, with value-based fallback for older shapes.
  *
- * @param {{currentStep: number}} props Index of the active step;
- *        values >= ORDER_STEPS.length mark everything as done.
+ * @param {{order: object}} props
  */
-export default function OrderTimeline({ currentStep }) {
+export default function OrderTimeline({ order }) {
   const { t } = useTranslation();
+  const steps = visibleProgressSteps(order);
 
   return (
     <div className={styles.timeline}>
-      {ORDER_STEPS.map((step, index) => {
-        const isDone = index < currentStep || currentStep >= ORDER_STEPS.length;
-        const isNow = index === currentStep && currentStep < ORDER_STEPS.length;
+      {steps.map((step) => {
+        const state = progressStateForStep(order, step);
+        const className = [
+          styles.step,
+          state === 'done' && styles.done,
+          state === 'current' && styles.current,
+        ]
+          .filter(Boolean)
+          .join(' ');
 
         return (
           <div
             key={step.id}
-            className={[styles.step, isDone && styles.done, isNow && styles.now]
-              .filter(Boolean)
-              .join(' ')}
+            className={className}
+            aria-current={state === 'current' ? 'step' : undefined}
           >
             <div className={styles.dot}>{step.icon}</div>
             <div className={styles.info}>

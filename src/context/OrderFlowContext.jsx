@@ -200,6 +200,43 @@ export function OrderFlowProvider({ children }) {
   */
 
   /**
+   * Load one order by number.
+   *
+   * @param {string} orderNumber
+   * @param {{silent?: boolean}} [options]
+   * @returns {Promise<{ok: boolean, order: object|null, message: string|null,
+   *   status: number|null, empty?: boolean}>}
+   */
+  const loadOrder = useCallback(async (orderNumber, { silent = false } = {}) => {
+    if (!orderNumber || !hasBackend()) {
+      return { ok: false, order: null, message: null, status: null };
+    }
+
+    setError(null);
+    if (!silent) setIsBusy(true);
+    const result = await fetchOrder(orderNumber);
+    if (!silent) setIsBusy(false);
+
+    if (!result.ok) {
+      setError(result.message);
+      return {
+        ok: false,
+        order: null,
+        message: result.message,
+        status: result.status,
+      };
+    }
+
+    const loaded = normalizeOrder(result.data);
+    if (!loaded) {
+      return { ok: false, order: null, message: null, status: result.status, empty: true };
+    }
+
+    setOrder(loaded);
+    return { ok: true, order: loaded, message: null, status: result.status };
+  }, []);
+
+  /**
    * Re-read the order from the server.
    *
    * @param {string} [orderNumber] Defaults to the active order.
@@ -210,14 +247,10 @@ export function OrderFlowProvider({ children }) {
       const number = orderNumber ?? order?.orderNumber;
       if (!number) return null;
 
-      const result = await fetchOrder(number);
-      if (!result.ok) return null;
-
-      const fresh = normalizeOrder(result.data);
-      setOrder(fresh);
-      return fresh;
+      const result = await loadOrder(number, { silent: true });
+      return result.order;
     },
-    [order],
+    [order, loadOrder],
   );
 
   /**
@@ -335,6 +368,7 @@ export function OrderFlowProvider({ children }) {
       place,
       verify,
       resend,
+      loadOrder,
       refresh,
       cancel,
       startPaymentPolling,
@@ -344,7 +378,7 @@ export function OrderFlowProvider({ children }) {
     }),
     [
       order, pricing, payment, isBusy, error,
-      preview, place, verify, resend, refresh, cancel,
+      preview, place, verify, resend, loadOrder, refresh, cancel,
       startPaymentPolling, stopPolling, retryPayment, reset,
     ],
   );
