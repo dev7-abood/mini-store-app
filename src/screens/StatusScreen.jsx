@@ -118,7 +118,7 @@ function LoadingSkeleton({ t }) {
         </section>
 
         <section className={classNames(styles.panel, styles.skeletonTimeline)} aria-hidden="true">
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className={styles.skeletonStep}>
               <span className={styles.skeletonDot} />
               <div className={styles.skeletonStepBody}>

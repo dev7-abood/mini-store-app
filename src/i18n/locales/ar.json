@@ -117,10 +117,10 @@
       "accepted": "تم قبول الطلب",
       "preparing": "قيد التحضير",
       "ready": "جاهز",
-      "out_for_delivery": "في الطريق",
-      "on_the_way": "في الطريق",
-      "delivered": "تم التوصيل",
-      "completed": "مكتمل",
+      "out_for_delivery": "في الطريق إليك",
+      "on_the_way": "في الطريق إليك",
+      "delivered": "تم التسليم",
+      "completed": "تم التسليم",
       "cancelled": "ملغي",
       "canceled": "ملغي",
       "rejected": "مرفوض",
@@ -156,11 +156,11 @@
         "caption": "الطلب جاهز للانطلاق أو الاستلام"
       },
       "outForDelivery": {
-        "title": "في الطريق",
+        "title": "في الطريق إليك",
         "caption": "الطلب خرج للتوصيل"
       },
       "delivered": {
-        "title": "تم التوصيل",
+        "title": "تم التسليم",
         "caption": "صحتين وعافية!"
       }
     },

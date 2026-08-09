@@ -4,9 +4,8 @@ export const ORDER_PROGRESS_STEPS = [
   { id: 'pending', value: 'pending', aliases: ['awaiting_verification', 'unverified'], icon: '1', step: 1 },
   { id: 'confirmed', value: 'confirmed', aliases: ['accepted'], icon: '2', step: 2 },
   { id: 'preparing', value: 'preparing', icon: '3', step: 3 },
-  { id: 'ready', value: 'ready', icon: '4', step: 4 },
-  { id: 'outForDelivery', value: 'out_for_delivery', aliases: ['on_the_way'], icon: '5', step: 5 },
-  { id: 'delivered', value: 'delivered', aliases: ['completed'], icon: '6', step: 6 },
+  { id: 'outForDelivery', value: 'out_for_delivery', aliases: ['on_the_way'], icon: '4', step: 4 },
+  { id: 'delivered', value: 'delivered', aliases: ['completed'], icon: '5', step: 5 },
 ];
 
 export const NEGATIVE_FINAL_STATUSES = new Set([

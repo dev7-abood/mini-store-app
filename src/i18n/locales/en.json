@@ -51,10 +51,10 @@
       "accepted": "Accepted",
       "preparing": "Preparing",
       "ready": "Ready",
-      "out_for_delivery": "Out for delivery",
-      "on_the_way": "Out for delivery",
+      "out_for_delivery": "On the way",
+      "on_the_way": "On the way",
       "delivered": "Delivered",
-      "completed": "Completed",
+      "completed": "Delivered",
       "cancelled": "Cancelled",
       "canceled": "Cancelled",
       "rejected": "Rejected",
@@ -90,7 +90,7 @@
         "caption": "The order is ready for delivery or pickup"
       },
       "outForDelivery": {
-        "title": "Out for delivery",
+        "title": "On the way",
         "caption": "The order is on its way"
       },
       "delivered": {
