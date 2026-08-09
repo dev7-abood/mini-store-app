@@ -63,6 +63,7 @@ export function progressStateForStep(order, step) {
   const currentByValue = stepMatchesStatus(step, order?.status);
   const currentStep = hasApiStep ? apiStep : stepForStatus(order?.status)?.step ?? 1;
 
+  if (isOrderFinal(order) && step.step <= currentStep) return 'done';
   if (currentByValue) return 'current';
   if (step.step < currentStep) return 'done';
   if (step.step === currentStep) return 'current';
