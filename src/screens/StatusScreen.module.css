@@ -1,14 +1,14 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 0 16px 150px;
+  gap: 12px;
+  padding: 0 16px 148px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  max-width: 154px;
+  max-width: 168px;
   min-height: 34px;
   background: var(--card);
   border: 1px solid color-mix(in srgb, var(--line) 75%, var(--card));
@@ -24,13 +24,61 @@
 
 .hero {
   border-radius: 20px;
-  padding: 18px 16px;
-  background: var(--basil);
+  padding: 18px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--basil) 96%, #fff), var(--basil-deep));
+  border: 1px solid color-mix(in srgb, var(--basil) 88%, #fff);
   color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.heroSuccess {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--ok) 88%, var(--basil)), var(--ok));
+  border-color: color-mix(in srgb, var(--ok) 70%, #fff);
 }
 
 .heroDanger {
-  background: color-mix(in srgb, var(--tomato) 92%, var(--ink));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--tomato) 92%, var(--ink)), var(--tomato));
+  border-color: color-mix(in srgb, var(--tomato) 70%, #fff);
+}
+
+.loadingHero {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--line) 76%, var(--card));
+  color: var(--ink);
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.statusMark {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.statusMark:empty::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .eyebrow {
@@ -38,13 +86,14 @@
   color: color-mix(in srgb, #fff 70%, var(--basil));
   font-size: 12px;
   font-weight: 900;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .hero h2 {
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 900;
   line-height: 1.25;
+  letter-spacing: 0;
 }
 
 .hero p {
@@ -59,35 +108,52 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 15px;
 }
 
 .heroMeta span {
   border-radius: 999px;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.12);
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
   font-size: 11px;
   font-weight: 900;
+  line-height: 1.2;
+}
+
+.loadingHero .eyebrow,
+.loadingHero p {
+  color: var(--ink-soft);
 }
 
 .panel,
 .finalNotice {
   background: var(--card);
   border: 1px solid color-mix(in srgb, var(--line) 80%, var(--card));
-  border-radius: 18px;
-  padding: 15px;
+  border-radius: 16px;
+  padding: 16px;
 }
 
 .panel h3 {
-  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 14px;
   font-weight: 900;
   margin-bottom: 12px;
+  letter-spacing: 0;
 }
 
 .finalNotice {
   background: color-mix(in srgb, var(--tomato) 9%, var(--card));
   border-color: color-mix(in srgb, var(--tomato) 22%, var(--line));
+}
+
+.finalNoticeSuccess {
+  background: color-mix(in srgb, var(--ok) 9%, var(--card));
+  border-color: color-mix(in srgb, var(--ok) 22%, var(--line));
 }
 
 .finalNotice b {
@@ -96,6 +162,10 @@
   font-size: 15px;
   font-weight: 900;
   margin-bottom: 5px;
+}
+
+.finalNoticeSuccess b {
+  color: var(--ok);
 }
 
 .finalNotice p {
@@ -109,8 +179,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
-  padding: 9px 0;
+  gap: 16px;
+  padding: 11px 0;
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
 }
 
@@ -127,6 +197,7 @@
   color: var(--ink-soft);
   font-size: 12px;
   font-weight: 800;
+  line-height: 1.4;
 }
 
 .infoRow b {
@@ -135,6 +206,7 @@
   font-weight: 900;
   line-height: 1.5;
   text-align: end;
+  overflow-wrap: anywhere;
 }
 
 .items {
@@ -149,8 +221,9 @@
   justify-content: space-between;
   gap: 14px;
   border-radius: 14px;
-  padding: 11px;
-  background: color-mix(in srgb, var(--bg) 74%, var(--card));
+  padding: 12px;
+  background: color-mix(in srgb, var(--bg) 70%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 62%, var(--card));
 }
 
 .item b {
@@ -189,9 +262,231 @@
 }
 
 .stateWrap {
-  padding: 12vh 18px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16vh 18px 30px;
 }
 
-.stateWrap button {
-  margin-top: 22px;
+.stateCard {
+  border: 1px solid color-mix(in srgb, var(--line) 80%, var(--card));
+  border-radius: 18px;
+  background: var(--card);
+  padding: 26px 20px;
+  text-align: center;
+}
+
+.stateDanger {
+  border-color: color-mix(in srgb, var(--tomato) 22%, var(--line));
+  background: color-mix(in srgb, var(--tomato) 7%, var(--card));
+}
+
+.stateIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 14px;
+  background: color-mix(in srgb, var(--basil) 8%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--basil) 14%, var(--line));
+  color: var(--basil);
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.stateDanger .stateIcon {
+  background: color-mix(in srgb, var(--tomato) 10%, var(--card));
+  border-color: color-mix(in srgb, var(--tomato) 22%, var(--line));
+  color: var(--tomato);
+}
+
+.stateCard h2 {
+  color: var(--ink);
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.stateCard p {
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.65;
+  margin-top: 8px;
+}
+
+.skeleton {
+  display: block;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--line) 72%, var(--card)) 0%,
+      color-mix(in srgb, var(--card) 82%, var(--line)) 42%,
+      color-mix(in srgb, var(--line) 72%, var(--card)) 84%
+    );
+  background-size: 240% 100%;
+  animation: skeletonShimmer 1.25s ease-in-out infinite;
+}
+
+.skeletonChip {
+  width: 136px;
+  height: 34px;
+}
+
+.skeletonStatusTitle {
+  width: min(78%, 250px);
+  height: 31px;
+  margin-top: 10px;
+}
+
+.heroMeta .skeleton {
+  padding: 0;
+  border: 0;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--line) 72%, var(--card)) 0%,
+      color-mix(in srgb, var(--card) 88%, var(--line)) 42%,
+      color-mix(in srgb, var(--line) 72%, var(--card)) 84%
+    );
+  background-size: 240% 100%;
+}
+
+.skeletonMeta {
+  width: 156px;
+  height: 28px;
+}
+
+.skeletonMetaShort {
+  width: 112px;
+  height: 28px;
+}
+
+.skeletonTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 18px 16px;
+}
+
+.skeletonStep {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 22px;
+}
+
+.skeletonStep:last-child {
+  padding-bottom: 0;
+}
+
+.skeletonStep::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 18px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--line) 80%, var(--card));
+}
+
+.skeletonStep:last-child::before {
+  display: none;
+}
+
+.skeletonDot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: color-mix(in srgb, var(--bg) 86%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
+  z-index: 1;
+}
+
+.skeletonStepBody {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.skeletonStepTitle {
+  width: 56%;
+  height: 15px;
+}
+
+.skeletonStepCaption {
+  width: 84%;
+  height: 12px;
+  margin-top: 9px;
+}
+
+.skeletonPanelTitle {
+  width: 38%;
+  height: 16px;
+  margin-bottom: 16px;
+}
+
+.skeletonRows {
+  display: flex;
+  flex-direction: column;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+}
+
+.skeletonRow:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.skeletonRow:last-child {
+  padding-bottom: 0;
+}
+
+.skeletonRowLabel {
+  width: 34%;
+  height: 12px;
+}
+
+.skeletonRowValue {
+  width: 42%;
+  height: 13px;
+}
+
+@keyframes skeletonShimmer {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (max-width: 370px) {
+  .content {
+    padding-inline: 12px;
+  }
+
+  .infoRow {
+    gap: 10px;
+  }
+
+  .hero h2 {
+    font-size: 23px;
+  }
+
+  .chip {
+    max-width: 138px;
+  }
 }

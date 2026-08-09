@@ -21,8 +21,7 @@ export default function OrderTimeline({ order }) {
         const state = progressStateForStep(order, step);
         const className = [
           styles.step,
-          state === 'done' && styles.done,
-          state === 'current' && styles.current,
+          styles[state],
         ]
           .filter(Boolean)
           .join(' ');
@@ -31,11 +30,17 @@ export default function OrderTimeline({ order }) {
           <div
             key={step.id}
             className={className}
+            data-state={state}
             aria-current={state === 'current' ? 'step' : undefined}
           >
-            <div className={styles.dot}>{step.icon}</div>
+            <div className={styles.dot} aria-hidden="true">
+              {state === 'done' ? '✓' : step.icon}
+            </div>
             <div className={styles.info}>
-              <b>{t(`status.steps.${step.id}.title`)}</b>
+              <div className={styles.titleRow}>
+                <b>{t(`status.steps.${step.id}.title`)}</b>
+                {state === 'current' && <em>{t('status.current')}</em>}
+              </div>
               <span>{t(`status.steps.${step.id}.caption`)}</span>
             </div>
           </div>

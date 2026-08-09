@@ -14,7 +14,6 @@ import {
 } from '../lib/orderStatus';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
-import CenterIllustration from '../components/ui/CenterIllustration';
 import OrderTimeline from '../components/OrderTimeline';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
@@ -74,20 +73,89 @@ function orderItems(order) {
   });
 }
 
-function StateView({ title, body, actionLabel, onAction }) {
+function classNames(...names) {
+  return names.filter(Boolean).join(' ');
+}
+
+function SkeletonLine({ className = '' }) {
+  return <span className={classNames(styles.skeleton, className)} aria-hidden="true" />;
+}
+
+function SkeletonPanel({ rows = 3 }) {
+  return (
+    <section className={styles.panel} aria-hidden="true">
+      <SkeletonLine className={styles.skeletonPanelTitle} />
+      <div className={styles.skeletonRows}>
+        {Array.from({ length: rows }).map((_, index) => (
+          <div key={index} className={styles.skeletonRow}>
+            <SkeletonLine className={styles.skeletonRowLabel} />
+            <SkeletonLine className={styles.skeletonRowValue} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LoadingSkeleton({ t }) {
+  return (
+    <Screen>
+      <SubHeader
+        title={t('status.title')}
+        showBack={false}
+        trailing={<SkeletonLine className={styles.skeletonChip} />}
+      />
+
+      <main className={styles.content} aria-busy="true" aria-live="polite">
+        <section className={classNames(styles.hero, styles.loadingHero)}>
+          <span className={styles.eyebrow}>{t('status.loadingTitle')}</span>
+          <SkeletonLine className={styles.skeletonStatusTitle} />
+          <p>{t('status.loadingBody')}</p>
+          <div className={styles.heroMeta} aria-hidden="true">
+            <SkeletonLine className={styles.skeletonMeta} />
+            <SkeletonLine className={styles.skeletonMetaShort} />
+          </div>
+        </section>
+
+        <section className={classNames(styles.panel, styles.skeletonTimeline)} aria-hidden="true">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className={styles.skeletonStep}>
+              <span className={styles.skeletonDot} />
+              <div className={styles.skeletonStepBody}>
+                <SkeletonLine className={styles.skeletonStepTitle} />
+                <SkeletonLine className={styles.skeletonStepCaption} />
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <SkeletonPanel rows={4} />
+        <SkeletonPanel rows={3} />
+      </main>
+    </Screen>
+  );
+}
+
+function StateView({ title, body, actionLabel, onAction, icon = '!', tone = 'default' }) {
+  const toneClass = tone === 'danger' ? styles.stateDanger : '';
+
   return (
     <Screen>
       <SubHeader title={title} showBack={false} />
-      <div className={styles.stateWrap}>
-        <CenterIllustration icon="!" heading={title}>
-          {body}
-        </CenterIllustration>
+      <main className={styles.stateWrap}>
+        <section className={classNames(styles.stateCard, toneClass)} role="status">
+          <div className={styles.stateIcon} aria-hidden="true">
+            {icon}
+          </div>
+          <h2>{title}</h2>
+          <p>{body}</p>
+        </section>
         {actionLabel && (
           <Button full onClick={onAction}>
             {actionLabel}
           </Button>
         )}
-      </div>
+      </main>
     </Screen>
   );
 }
@@ -198,12 +266,7 @@ export default function StatusScreen() {
   };
 
   if (loadState === 'loading' || loadState === 'idle') {
-    return (
-      <StateView
-        title={t('status.loadingTitle')}
-        body={t('status.loadingBody')}
-      />
-    );
+    return <LoadingSkeleton t={t} />;
   }
 
   if (loadState === 'invalid' || loadState === 'missing') {
@@ -213,6 +276,7 @@ export default function StatusScreen() {
         body={t('status.invalidBody')}
         actionLabel={t('status.orderAgain')}
         onAction={orderAgain}
+        icon="?"
       />
     );
   }
@@ -224,6 +288,7 @@ export default function StatusScreen() {
         body={t('status.notFoundBody')}
         actionLabel={t('status.orderAgain')}
         onAction={orderAgain}
+        icon="?"
       />
     );
   }
@@ -235,6 +300,7 @@ export default function StatusScreen() {
         body={t('status.emptyBody')}
         actionLabel={t('status.refresh')}
         onAction={() => setReloadKey((key) => key + 1)}
+        icon="i"
       />
     );
   }
@@ -246,11 +312,13 @@ export default function StatusScreen() {
         body={loadMessage || t('status.errorBody')}
         actionLabel={t('status.refresh')}
         onAction={() => setReloadKey((key) => key + 1)}
+        tone="danger"
       />
     );
   }
 
   const negativeFinal = isNegativeFinalStatus(order.status);
+  const positiveFinal = isOrderFinal(order) && !negativeFinal;
   const orderDate = order.placedAt ?? order.createdAt;
   const parsedOrderDate = orderDate ? new Date(orderDate) : null;
   const formattedDate =
@@ -258,7 +326,13 @@ export default function StatusScreen() {
       ? dateFormat.format(parsedOrderDate)
       : null;
   const statusLabel = statusText(t, order.status, order.statusLabel);
-  const statusDescription = order.statusDescription || t('status.currentBody');
+  const finalDescription =
+    order.statusDescription ||
+    (negativeFinal ? t('status.finalNegativeBody') : t('status.steps.delivered.caption'));
+  const statusDescription =
+    negativeFinal || positiveFinal
+      ? finalDescription
+      : order.statusDescription || t('status.currentBody');
   const paymentLabel = paymentText(t, order.paymentStatus, order.paymentStatusLabel);
   const items = orderItems(order);
 
@@ -271,8 +345,19 @@ export default function StatusScreen() {
       />
 
       <main className={styles.content}>
-        <section className={`${styles.hero} ${negativeFinal ? styles.heroDanger : ''}`}>
-          <span className={styles.eyebrow}>{t('status.current')}</span>
+        <section
+          className={classNames(
+            styles.hero,
+            negativeFinal && styles.heroDanger,
+            positiveFinal && styles.heroSuccess,
+          )}
+        >
+          <div className={styles.heroTop}>
+            <span className={styles.eyebrow}>{t('status.current')}</span>
+            <span className={styles.statusMark} aria-hidden="true">
+              {negativeFinal ? '!' : positiveFinal ? '✓' : order.statusStep || ''}
+            </span>
+          </div>
           <h2>{statusLabel}</h2>
           {statusDescription && <p>{statusDescription}</p>}
           <div className={styles.heroMeta}>
@@ -284,10 +369,18 @@ export default function StatusScreen() {
         {negativeFinal ? (
           <section className={styles.finalNotice}>
             <b>{statusLabel}</b>
-            <p>{statusDescription || t('status.finalNegativeBody')}</p>
+            <p>{finalDescription}</p>
           </section>
         ) : (
-          <OrderTimeline order={order} />
+          <>
+            <OrderTimeline order={order} />
+            {positiveFinal && (
+              <section className={classNames(styles.finalNotice, styles.finalNoticeSuccess)}>
+                <b>{statusLabel}</b>
+                <p>{finalDescription}</p>
+              </section>
+            )}
+          </>
         )}
 
         <section className={styles.panel}>

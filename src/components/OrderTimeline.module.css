@@ -3,14 +3,19 @@
   border: 1px solid color-mix(in srgb, var(--line) 80%, var(--card));
   border-radius: 18px;
   padding: 18px 16px;
+  overflow: hidden;
 }
 
 .step {
   display: flex;
-  gap: 13px;
+  gap: 12px;
   position: relative;
-  padding-bottom: 26px;
+  padding-bottom: 24px;
   color: var(--ink-soft);
+  transition:
+    color 0.22s ease,
+    opacity 0.22s ease,
+    transform 0.22s ease;
 }
 
 .step:last-child {
@@ -21,11 +26,12 @@
   content: '';
   position: absolute;
   inset-inline-start: 18px;
-  top: 38px;
+  top: 40px;
   bottom: 0;
   width: 2px;
   border-radius: 2px;
   background: var(--line);
+  transition: background-color 0.25s ease;
 }
 
 .step:last-child::before {
@@ -34,6 +40,14 @@
 
 .done::before {
   background: var(--ok);
+}
+
+.current::before {
+  background: linear-gradient(
+    to bottom,
+    var(--basil) 0 18px,
+    var(--line) 18px 100%
+  );
 }
 
 .dot {
@@ -49,23 +63,65 @@
   font-weight: 900;
   flex: 0 0 auto;
   z-index: 1;
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    outline-color 0.22s ease,
+    transform 0.22s ease;
 }
 
 .done .dot {
-  background: color-mix(in srgb, var(--ok) 14%, var(--card));
+  background: var(--ok);
   border-color: var(--ok);
-  color: var(--ok);
+  color: #fff;
+  font-size: 17px;
 }
 
 .current .dot {
   background: var(--basil);
   border-color: var(--basil);
   color: #fff;
+  outline: 5px solid color-mix(in srgb, var(--basil) 14%, transparent);
+  transform: scale(1.03);
+}
+
+.upcoming .dot {
+  border-style: dashed;
+  color: color-mix(in srgb, var(--ink-soft) 58%, var(--card));
+  background: color-mix(in srgb, var(--bg) 86%, var(--card));
 }
 
 .info {
+  flex: 1;
   min-width: 0;
-  padding-top: 1px;
+  padding-top: 2px;
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    opacity 0.22s ease,
+    padding 0.22s ease,
+    transform 0.22s ease;
+}
+
+.current .info {
+  margin-top: -4px;
+  border: 1px solid color-mix(in srgb, var(--basil) 16%, var(--line));
+  border-radius: 14px;
+  padding: 10px 11px;
+  background: color-mix(in srgb, var(--basil) 6%, var(--card));
+}
+
+.upcoming .info {
+  opacity: 0.62;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .info b {
@@ -74,6 +130,18 @@
   font-size: 14px;
   font-weight: 900;
   line-height: 1.35;
+}
+
+.titleRow em {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--basil) 10%, var(--card));
+  color: var(--basil);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .info span {
@@ -87,4 +155,21 @@
 
 .step:not(.done):not(.current) .info b {
   color: color-mix(in srgb, var(--ink-soft) 78%, var(--card));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .current .dot {
+    animation: statusPulse 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes statusPulse {
+  0%,
+  100% {
+    outline-color: color-mix(in srgb, var(--basil) 12%, transparent);
+  }
+
+  50% {
+    outline-color: color-mix(in srgb, var(--basil) 22%, transparent);
+  }
 }

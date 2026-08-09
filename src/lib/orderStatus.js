@@ -33,7 +33,11 @@ export function isNegativeFinalStatus(value) {
 }
 
 export function isOrderFinal(order) {
-  return Boolean(order?.isFinal) || isNegativeFinalStatus(order?.status);
+  return (
+    Boolean(order?.isFinal) ||
+    isNegativeFinalStatus(order?.status) ||
+    stepForStatus(order?.status)?.id === 'delivered'
+  );
 }
 
 export function stepMatchesStatus(step, statusValue) {
