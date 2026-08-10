@@ -93,8 +93,9 @@ How the app handles it:
 
 ## Loading behavior
 
-- Splash waits for the real catalog request (min 900ms branding, skip button at 2.5s, hard guard at 6s).
-- The menu grid shows shimmer skeletons while loading.
+- First paint is a full-screen neutral loader only. No header, cart, category, product, business name, tenant color, or store/restaurant icon renders until tenant initialization finishes.
+- Tenant initialization calls the tenant API first. If that fails, the app uses the matched `tenants.json` entry as the fallback tenant config.
+- After tenant config is ready, the normal splash/catalog flow can render. Product skeleton cards are only used for catalog loading, never for tenant initialization.
 - No backend configured, empty catalog, or a failed/timed-out request (8s) → the app shows an error screen with a retry button. Tenant data only — never fake data.
 
 
@@ -109,7 +110,8 @@ One deployment serves many bots. The static registry maps each bot to its tenant
     {
       "telegram_bot_id": 1112563,
       "tenant_base_url": "https://exsample.com",
-      "telegram_name": "o2"
+      "telegram_name": "o2",
+      "business_type": "store"
     }
   ]
 }
@@ -135,13 +137,14 @@ App opens
   ├─ decode start_param locally ............... 0 requests
   ├─ configureApiClient(payload.u, payload.b) . 0 requests
   ├─ save payload to Telegram CloudStorage .... 0 requests to YOUR servers
-  └─ first API call (the catalog) ............. 1 request — the one you needed anyway
+  ├─ first API call (tenant config) ........... 1 request
+  └─ catalog loads after tenant config ........ 1 request
         └─ VerifyTelegramInitData middleware → authentic user + authentic payload
 ```
 
 - `src/lib/decodeTelegramPayload.js` — Base64URL + XOR with `VITE_TELEGRAM_DEEP_LINK_KEY` (must equal `TELEGRAM_DEEP_LINK_KEY` on the backend).
 - `src/lib/tenantContext.js` — deep link → CloudStorage (`tenant_ctx_v1`) → null.
-- `src/context/TenantContext.jsx` — resolves before anything loads. Fallbacks: `VITE_API_BASE_URL` (single-tenant/dev) → OpenFromBot screen, no requests made.
+- `src/context/TenantContext.jsx` — resolves tenant config before the app shell mounts. If the tenant API fails, the matched `tenants.json` entry is used as the UI fallback.
 - The API client appends `/api` to `payload.u` and sends `X-Branch-Id` when `payload.b` is present; every request carries the raw initData for the middleware.
 - Trust model: the payload routes, the HMAC proves. Since `start_param` is inside the signed initData, a forged payload dies at the first request.
 
@@ -189,19 +192,19 @@ The menu header greets the user by `first_name` (falling back to `@username`) fr
 4. Every request carries the raw `initData` in the `X-Telegram-Init-Data` header for your HMAC validation middleware.
 
 
-### Optional registry theme (instant splash colors)
+### Optional Registry Fallback Theme
 
 Each tenant entry may carry an optional `theme` block. When present, the
-app paints the loading + splash screens in these colors **immediately**
-on launch — before the `/telegram/branding` API responds — eliminating
-any flash. The API then fills in the complete branding (logo, tagline,
-exact palette):
+app uses it only if the tenant API fails. During initial tenant loading,
+the user still sees the neutral full-screen loader, not registry colors
+or business-specific content.
 
 ```json
 {
   "telegram_bot_id": 8424896554,
   "tenant_base_url": "https://test.r-gaza.store",
   "telegram_name": "staging_restaurantBot",
+  "business_type": "restaurant",
   "theme": {
     "primary_color": "#1E4D2B",
     "secondary_color": "#F2A93B",
@@ -211,6 +214,5 @@ exact palette):
 }
 ```
 
-`theme` is entirely optional — omit it and the loader uses the default
-سفرة palette until the API responds. Keep these colors in sync with each
-tenant's Filament branding for a seamless launch.
+`theme` and `business_type` are fallback UI data for API failures. When
+the tenant API succeeds, its configuration wins.

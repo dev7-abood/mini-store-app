@@ -5,5 +5,12 @@ import { getBusinessTypeConfig } from '../lib/businessType';
 /** @returns {import('../lib/businessType').BusinessTypeConfig} */
 export function useBusinessTypeConfig() {
   const { businessType } = useTenant();
-  return useMemo(() => getBusinessTypeConfig(businessType), [businessType]);
+  const config = useMemo(
+    () => (businessType ? getBusinessTypeConfig(businessType) : null),
+    [businessType],
+  );
+  if (!config) {
+    throw new Error('useBusinessTypeConfig requires an initialized tenant business_type.');
+  }
+  return config;
 }

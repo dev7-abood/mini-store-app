@@ -129,8 +129,7 @@ export function findTenantByBotId(tenants, botId) {
     baseUrl,
     name: entry.telegram_name ?? null,
     businessType: normalizeBusinessType(entry.business_type),
-    /* Optional registry theme — instant splash colors before the full
-       branding API responds. Safe to omit. */
+    /* Optional registry theme — used only when the tenant API fails. */
     theme: entry.theme ?? null,
   };
 }

@@ -10,7 +10,7 @@ import { NavigationProvider, useNavigation, SCREENS } from './context/Navigation
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { TenantProvider, useTenant } from './context/TenantContext';
 import { CatalogProvider, useCatalog } from './context/CatalogContext';
-import { BrandingProvider, useBranding } from './context/BrandingContext';
+import { BrandingProvider } from './context/BrandingContext';
 import { StoreStatusProvider } from './context/StoreStatusContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { CartProvider } from './context/CartContext';
@@ -27,8 +27,7 @@ import StatusScreen from './screens/StatusScreen';
 import OpenFromBotScreen from './screens/OpenFromBotScreen';
 import CatalogErrorScreen from './screens/CatalogErrorScreen';
 import CatalogEmptyScreen from './screens/CatalogEmptyScreen';
-import BrandingLoader from './screens/BrandingLoader';
-import BrandingErrorScreen from './screens/BrandingErrorScreen';
+import AppInitialLoader from './screens/AppInitialLoader';
 import { orderNumberFromStartParam } from './lib/telegramStartParam';
 
 /** @type {Record<string, React.ComponentType>} */
@@ -93,22 +92,11 @@ function OrderFlowScreens() {
   );
 }
 
-/** Blocks the whole flow when no tenant could be resolved in Telegram. */
+/** Blocks the app shell until tenant configuration is fully initialized. */
 function TenantGate({ children }) {
-  const { isMissing } = useTenant();
+  const { isLoading, isMissing } = useTenant();
+  if (isLoading) return <AppInitialLoader />;
   if (isMissing) return <OpenFromBotScreen />;
-  return children;
-}
-
-/**
- * Holds the app on a neutral loader until the tenant BRANDING has
- * resolved, so no screen ever paints in default (green) colors and
- * then recolors. On branding failure, shows the "sorry" screen.
- */
-function BrandingGate({ children }) {
-  const { isLoading, isError } = useBranding();
-  if (isError) return <BrandingErrorScreen />;
-  if (isLoading) return <BrandingLoader />;
   return children;
 }
 
@@ -130,17 +118,15 @@ export default function App() {
       <TenantProvider>
         <TenantGate>
           <BrandingProvider>
-            <BrandingGate>
-              <StoreStatusProvider>
-                <CustomerProvider>
-                  <OrderProvider>
-                    <OrderFlowProvider>
-                      <OrderFlowScreens />
-                    </OrderFlowProvider>
-                  </OrderProvider>
-                </CustomerProvider>
-              </StoreStatusProvider>
-            </BrandingGate>
+            <StoreStatusProvider>
+              <CustomerProvider>
+                <OrderProvider>
+                  <OrderFlowProvider>
+                    <OrderFlowScreens />
+                  </OrderFlowProvider>
+                </OrderProvider>
+              </CustomerProvider>
+            </StoreStatusProvider>
           </BrandingProvider>
         </TenantGate>
       </TenantProvider>

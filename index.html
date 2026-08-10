@@ -12,163 +12,51 @@
 <body>
   <!--
     Pre-boot loader: painted from static HTML/CSS the instant the page
-    parses, BEFORE the JS bundle downloads or React mounts. Uses the
-    default سفرة primary color; the real branded SplashScreen takes over
-    seamlessly once the app boots. #root is emptied by React on mount,
-    replacing this loader. No unstyled flash.
+    parses, BEFORE the JS bundle downloads or React mounts. It stays
+    deliberately neutral: no tenant colors, names, product placeholders,
+    or business-type icons appear before tenant initialization finishes.
   -->
   <style>
-    /* Neutral, brand-agnostic boot backdrop — NOT green. The inline
-       script below overrides these CSS vars with the tenant's colors
-       (read from tenants.json) before the first meaningful paint, so the
-       brand color is what the user actually sees. */
     :root {
-      --boot-bg: #14110f;      /* neutral near-black, no brand identity */
-      --boot-accent: #8a8a8a;  /* neutral grey until tenant color loads */
+      --boot-bg: #f6f6f4;
+      --boot-fg: #5f646b;
     }
     #preboot {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center; flex-direction: column;
       gap: 20px;
-      background:
-        radial-gradient(130% 100% at 50% -10%,
-          color-mix(in srgb, var(--boot-bg) 82%, #fff 18%) 0%,
-          var(--boot-bg) 55%,
-          color-mix(in srgb, var(--boot-bg) 70%, #000 30%) 100%);
+      background: var(--boot-bg);
+      color: var(--boot-fg);
       font-family: 'Tajawal', system-ui, sans-serif;
-      transition: opacity 0.35s ease, background 0.3s ease;
+      transition: opacity 0.35s ease;
     }
     #preboot .pb-mark {
-      width: 84px; height: 84px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
-      display: grid; place-items: center;
-      animation: pb-float 2.6s ease-in-out infinite;
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 3px solid rgba(95, 100, 107, 0.18);
+      border-top-color: currentColor;
+      animation: pb-spin 0.85s linear infinite;
     }
-    #preboot .pb-mark span { font-size: 40px; }
     #preboot .pb-dots { display: flex; gap: 8px; }
     #preboot .pb-dots i {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--boot-accent);
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor;
       display: inline-block; animation: pb-pulse 1s ease-in-out infinite;
-      transition: background 0.3s ease;
+      opacity: 0.36;
     }
     #preboot .pb-dots i:nth-child(2) { animation-delay: 0.15s; }
     #preboot .pb-dots i:nth-child(3) { animation-delay: 0.3s; }
-    @keyframes pb-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-    @keyframes pb-pulse { 0%,100%{transform:scale(0.7);opacity:0.5} 50%{transform:scale(1.15);opacity:1} }
+    @media (prefers-color-scheme: dark) {
+      :root { --boot-bg: #121316; --boot-fg: #d8dadd; }
+      #preboot .pb-mark { border-color: rgba(216, 218, 221, 0.18); border-top-color: currentColor; }
+    }
+    @keyframes pb-spin { to{transform:rotate(360deg)} }
+    @keyframes pb-pulse { 0%,100%{opacity:0.28} 50%{opacity:0.9} }
   </style>
 
   <div id="preboot">
-    <div class="pb-mark"><span>&#x1F6CD;&#xFE0F;</span></div>
+    <div class="pb-mark" aria-hidden="true"></div>
     <div class="pb-dots"><i></i><i></i><i></i></div>
   </div>
-
-  <!--
-    Config-first boot: read tenants.json and identify the launching bot
-    (via the signed initData signature, same rule the app uses), then
-    paint the tenant theme onto the boot loader BEFORE the JS bundle
-    downloads. This is why the user never sees a generic/green flash —
-    the very first colored paint is already the tenant's color.
-
-    Kept dependency-free and defensive: any failure just leaves the
-    neutral backdrop, and the full app still themes itself once booted.
-  -->
-  <script>
-    (function () {
-      var tg = window.Telegram && window.Telegram.WebApp;
-
-      /* Darken/lighten a hex colour (t<0 darker, t>0 lighter). */
-      function shade(hex, t) {
-        var m = String(hex).replace('#', '').match(/.{2}/g);
-        if (!m || m.length < 3) return hex;
-        var out = m.slice(0, 3).map(function (h) {
-          var c = parseInt(h, 16);
-          var v = t < 0 ? c * (1 + t) : c + (255 - c) * t;
-          v = Math.max(0, Math.min(255, Math.round(v)));
-          return ('0' + v.toString(16)).slice(-2);
-        });
-        return '#' + out.join('');
-      }
-
-      /*
-        Write the tenant theme onto <html> as INLINE styles. Inline beats
-        the :root block in global.css, so every screen — boot loader,
-        splash and the whole app — renders in the tenant colours from the
-        very first painted frame. Same token names the app uses.
-      */
-      function paint(theme) {
-        if (!theme) return;
-        var root = document.documentElement.style;
-
-        if (theme.primary_color) {
-          root.setProperty('--boot-bg', theme.primary_color);
-          root.setProperty('--basil', theme.primary_color);
-          root.setProperty('--basil-deep', shade(theme.primary_color, -0.18));
-        }
-        if (theme.secondary_color) {
-          root.setProperty('--boot-accent', theme.secondary_color);
-          root.setProperty('--saffron', theme.secondary_color);
-        }
-        if (theme.background_color) {
-          root.setProperty('--bg', theme.background_color);
-          /* Opaque card surface: lift toward white on light themes,
-             only slightly on dark ones so text stays readable. */
-          var bgHex = String(theme.background_color).replace('#', '');
-          var rgb = bgHex.match(/.{2}/g) || ['ff', 'ff', 'ff'];
-          var lum = parseInt(rgb[0], 16) * 0.299 + parseInt(rgb[1], 16) * 0.587 + parseInt(rgb[2], 16) * 0.114;
-          root.setProperty('--card', shade(theme.background_color, lum < 128 ? 0.12 : 0.72));
-        }
-        if (theme.text_color) root.setProperty('--ink', theme.text_color);
-
-        /* Native Telegram header, immediately. */
-        try { if (tg && theme.primary_color) tg.setHeaderColor(theme.primary_color); } catch (e) {}
-      }
-
-      function normalizeBusinessType(value) {
-        return String(value || '').trim().toLowerCase() === 'restaurant' ? 'restaurant' : 'store';
-      }
-
-      function paintBusinessType(value) {
-        var icons = {
-          store: '\uD83D\uDECD\uFE0F',
-          restaurant: '\uD83C\uDF7D\uFE0F'
-        };
-        var mark = document.querySelector('#preboot .pb-mark span');
-        if (mark) mark.textContent = icons[normalizeBusinessType(value)];
-      }
-
-      function applyTenant(entry) {
-        if (!entry) return;
-        paint(entry.theme);
-        paintBusinessType(entry.business_type);
-      }
-
-      /* Single tenant is the common case — if the registry has exactly
-         one, we can theme without needing to identify the bot at all. */
-      fetch('/tenants.json', { cache: 'no-cache' })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (data) {
-          if (!data || !data.tenants || !data.tenants.length) return;
-          var list = data.tenants;
-
-          /* One tenant: use it directly. */
-          if (list.length === 1) { applyTenant(list[0]); return; }
-
-          /* Multiple: match by bot id if the client exposed it, else
-             leave neutral (the full app will identify + theme shortly). */
-          var botId = tg && tg.initDataUnsafe && tg.initDataUnsafe.bot_id;
-          if (botId) {
-            for (var i = 0; i < list.length; i++) {
-              if (String(list[i].telegram_bot_id) === String(botId)) {
-                applyTenant(list[i]);
-                return;
-              }
-            }
-          }
-        })
-        .catch(function () { /* stay neutral; app themes itself on boot */ });
-    })();
-  </script>
 
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>

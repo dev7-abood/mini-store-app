@@ -1,0 +1,87 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: #f6f6f4;
+  color: #5f646b;
+  font-family: var(--font, system-ui, sans-serif);
+}
+
+.loader {
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.ring {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid rgba(95, 100, 107, 0.18);
+  border-top-color: currentColor;
+  animation: spin 0.85s linear infinite;
+}
+
+.dot {
+  position: absolute;
+  bottom: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.36;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  transform: translateX(-14px);
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.14s;
+}
+
+.dot:nth-child(4) {
+  transform: translateX(14px);
+  animation-delay: 0.28s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .screen {
+    background: #121316;
+    color: #d8dadd;
+  }
+
+  .ring {
+    border-color: rgba(216, 218, 221, 0.18);
+    border-top-color: currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring,
+  .dot {
+    animation-duration: 0.01ms;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}

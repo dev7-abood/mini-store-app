@@ -23,14 +23,15 @@
 | single-tenant / local development. X-Branch-Id is attached when the
 | payload carries a branch.
 */
-import { DEFAULT_BUSINESS_TYPE, normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
+import { normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
 
 /** Path prefix appended to the tenant URL from the deep-link payload. */
 const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? '/api/v1';
 
 let runtimeBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '';
 let runtimeBranchId = null;
-let runtimeBusinessType = DEFAULT_BUSINESS_TYPE;
+/** @type {import('../lib/businessType').BusinessType | null} */
+let runtimeBusinessType = null;
 
 /**
  * Point the client at the resolved tenant: `{u}/api/v1` (prefix
@@ -38,12 +39,21 @@ let runtimeBusinessType = DEFAULT_BUSINESS_TYPE;
  * any data request. Never send the decoded payload as proof of
  * anything — the initData signature is the proof.
  *
- * @param {{u: string, b?: number, businessType?: string}} ctx Decoded deep-link payload
+ * @param {{u: string, b?: number}} ctx Decoded deep-link payload
  */
 export function configureApiClient(ctx) {
   runtimeBaseUrl = `${ctx.u.replace(/\/$/, '')}${API_PREFIX}`;
   runtimeBranchId = ctx.b ?? null;
-  runtimeBusinessType = normalizeBusinessType(ctx.businessType);
+}
+
+/**
+ * Configure the resolved tenant business type after the tenant API has
+ * completed, or after the registry fallback has been intentionally used.
+ *
+ * @param {unknown} businessType
+ */
+export function configureApiBusinessType(businessType) {
+  runtimeBusinessType = normalizeBusinessType(businessType);
 }
 
 /** Whether a backend is configured at all. */
@@ -140,6 +150,10 @@ const CATALOG_TINTS = ['#FBE3C9', '#FADFD5', '#F0E6CF', '#FBF0C9', '#D9EDE0', '#
  * @returns {{categories: object[], products: object[], hasMore: boolean, deliveryFee: number|null}}
  */
 function normalizeFrontData(data, page) {
+  if (!runtimeBusinessType) {
+    throw new Error('Catalog data requested before tenant business_type was initialized.');
+  }
+
   const catalogs = Array.isArray(data?.data) ? data.data : [];
 
   const categories = catalogs.map((catalog, index) => ({
@@ -221,28 +235,30 @@ export async function fetchFrontData(page = 1) {
 
 /*
 |--------------------------------------------------------------------------
-| Branding (GET /telegram/branding)
+| Tenant Config (GET /telegram/branding)
 |--------------------------------------------------------------------------
-| The tenant's Mini App theme: name, tagline, colors, logo. Public.
-| Returns null on failure so the app keeps its default (سفرة) palette.
+| The tenant's Mini App configuration: branding plus business_type.
+| Returns null on failure so TenantProvider can choose its registry fallback.
 */
 
 /**
- * Fetch the tenant branding.
+ * Fetch the tenant UI configuration.
  *
  * @returns {Promise<{name: string, tagline: string, primary_color: string,
  *   secondary_color: string, background_color: string, text_color: string,
- *   logo_url: string|null, logo_size: number} | null>}
+ *   logo_url: string|null, logo_size: number, business_type?: string} | null>}
  */
-export async function fetchBranding() {
+export async function fetchTenantConfig() {
   try {
     const data = await request('/telegram/branding', { timeoutMs: 6000 });
     return data?.success ? data.data : null;
   } catch (error) {
-    console.warn('Branding fetch failed — using defaults:', error);
+    console.warn('Tenant config fetch failed:', error);
     return null;
   }
 }
+
+export const fetchBranding = fetchTenantConfig;
 
 /*
 |--------------------------------------------------------------------------

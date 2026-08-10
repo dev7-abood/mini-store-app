@@ -8,10 +8,9 @@
 :root {
   /* ------------------------------------------------------------------
    | Brand tokens — NEUTRAL by default (deliberately NOT the سفرة green).
-   | The real values are written as inline styles on <html> by the boot
-   | script in index.html, which reads them from tenants.json BEFORE
-   | first paint, and later refreshed from the branding API. Inline
-   | styles outrank this :root block, so the tenant color always wins.
+   | The real values are written as inline styles on <html> only after
+   | TenantProvider has resolved the tenant API or the explicit registry
+   | fallback. Until then, AppInitialLoader uses its own neutral colors.
    |
    | Never hardcode a brand color here: whatever sits in this block is
    | what a non-matching tenant would flash before its own theme loads.
@@ -82,7 +81,3 @@ img {
   }
 }
 
-
-/* Shared boot-loader keyframes (BrandingLoader + pre-boot in index.html). */
-@keyframes pb-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-@keyframes pb-pulse { 0%,100%{transform:scale(0.7);opacity:0.5} 50%{transform:scale(1.15);opacity:1} }

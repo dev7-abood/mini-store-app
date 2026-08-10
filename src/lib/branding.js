@@ -96,18 +96,11 @@ export function normalizeBranding(incoming) {
 }
 
 /**
- * Resolve the final branding from all three layers.
+ * Resolve branding from layered inputs.
  *
- * PRECEDENCE (highest last — later spreads overwrite earlier ones):
- *   1. DEFAULT_BRANDING — neutral built-in fallback
- *   2. registry theme   — tenants.json, the per-tenant default shipped
- *                         with the app; used when the DB has nothing
- *   3. API payload      — what the merchant actually configured in the
- *                         admin panel. Wins for every key it defines.
- *
- * The API returns null for keys the tenant never configured, and
- * definedOnly() drops those — so an unconfigured field falls through to
- * the registry rather than overwriting it with a null.
+ * The startup flow no longer merges registry theme into successful API
+ * responses. TenantProvider chooses either API config or registry
+ * fallback first, then normalizes the selected source.
  *
  * @param {{registryTheme?: object|null, apiPayload?: object|null}} layers
  * @returns {Branding}
