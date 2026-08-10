@@ -6,9 +6,10 @@
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 32%, rgba(112, 119, 132, 0.14), transparent 34%),
-    linear-gradient(180deg, #fafaf8 0%, #f1f2f4 100%);
-  color: #5f6671;
+    radial-gradient(circle at 50% 25%, rgba(217, 227, 246, 0.74), transparent 35%),
+    radial-gradient(circle at 43% 62%, rgba(232, 244, 240, 0.72), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #fbfcfe 48%, #f2f5f9 100%);
+  color: #46515f;
   font-family: var(--font, system-ui, sans-serif);
   opacity: 1;
   transition: opacity 280ms ease;
@@ -20,20 +21,25 @@
 }
 
 .bars {
-  width: 46px;
-  height: 28px;
+  width: 58px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  border: 1px solid rgba(70, 81, 95, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 18px 46px rgba(38, 48, 61, 0.1);
+  backdrop-filter: blur(12px);
 }
 
 .bars span {
   width: 5px;
-  height: 18px;
+  height: 16px;
   border-radius: 999px;
   background: currentColor;
-  opacity: 0.42;
+  opacity: 0.38;
   transform-origin: center;
   animation: barPulse 0.9s ease-in-out infinite;
 }
@@ -49,9 +55,10 @@
 @media (prefers-color-scheme: dark) {
   .screen {
     background:
-      radial-gradient(circle at 50% 30%, rgba(82, 91, 110, 0.16), transparent 36%),
-      linear-gradient(180deg, #151820 0%, #0f1115 100%);
-    color: #d8dce3;
+      radial-gradient(circle at 50% 25%, rgba(217, 227, 246, 0.68), transparent 35%),
+      radial-gradient(circle at 43% 62%, rgba(232, 244, 240, 0.66), transparent 34%),
+      linear-gradient(180deg, #ffffff 0%, #fbfcfe 48%, #f2f5f9 100%);
+    color: #46515f;
   }
 }
 
