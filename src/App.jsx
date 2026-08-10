@@ -5,7 +5,7 @@
 | Renders the active screen from the navigation state machine. Providers
 | are composed here: Navigation (screen flow) -> Cart -> Order.
 */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavigationProvider, useNavigation, SCREENS } from './context/NavigationContext';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { TenantProvider, useTenant } from './context/TenantContext';
@@ -95,9 +95,32 @@ function OrderFlowScreens() {
 /** Blocks the app shell until tenant configuration is fully initialized. */
 function TenantGate({ children }) {
   const { isLoading, isMissing } = useTenant();
+  const [showLoader, setShowLoader] = useState(isLoading);
+  const [loaderExiting, setLoaderExiting] = useState(false);
+
+  useEffect(() => {
+    if (isLoading) {
+      setShowLoader(true);
+      setLoaderExiting(false);
+      return undefined;
+    }
+
+    if (!showLoader) return undefined;
+
+    setLoaderExiting(true);
+    const timer = setTimeout(() => setShowLoader(false), 300);
+    return () => clearTimeout(timer);
+  }, [isLoading, showLoader]);
+
   if (isLoading) return <AppInitialLoader />;
-  if (isMissing) return <OpenFromBotScreen />;
-  return children;
+
+  const content = isMissing ? <OpenFromBotScreen /> : children;
+  return (
+    <>
+      {content}
+      {showLoader && <AppInitialLoader exiting={loaderExiting} />}
+    </>
+  );
 }
 
 /**

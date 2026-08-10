@@ -18,44 +18,47 @@
   -->
   <style>
     :root {
-      --boot-bg: #f6f6f4;
-      --boot-fg: #5f646b;
+      --boot-bg-top: #fafaf8;
+      --boot-bg-bottom: #f1f2f4;
+      --boot-glow: rgba(112, 119, 132, 0.14);
+      --boot-fg: #5f6671;
     }
     #preboot {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center; flex-direction: column;
-      gap: 20px;
-      background: var(--boot-bg);
+      background:
+        radial-gradient(circle at 50% 32%, var(--boot-glow), transparent 34%),
+        linear-gradient(180deg, var(--boot-bg-top) 0%, var(--boot-bg-bottom) 100%);
       color: var(--boot-fg);
       font-family: 'Tajawal', system-ui, sans-serif;
       transition: opacity 0.35s ease;
     }
-    #preboot .pb-mark {
-      width: 48px; height: 48px; border-radius: 50%;
-      border: 3px solid rgba(95, 100, 107, 0.18);
-      border-top-color: currentColor;
-      animation: pb-spin 0.85s linear infinite;
-    }
-    #preboot .pb-dots { display: flex; gap: 8px; }
-    #preboot .pb-dots i {
-      width: 6px; height: 6px; border-radius: 50%;
+    #preboot .pb-bars { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    #preboot .pb-bars i {
+      width: 5px; height: 18px; border-radius: 999px;
       background: currentColor;
-      display: inline-block; animation: pb-pulse 1s ease-in-out infinite;
-      opacity: 0.36;
+      display: inline-block; animation: pb-bar-pulse 0.9s ease-in-out infinite;
+      opacity: 0.42;
+      transform-origin: center;
     }
-    #preboot .pb-dots i:nth-child(2) { animation-delay: 0.15s; }
-    #preboot .pb-dots i:nth-child(3) { animation-delay: 0.3s; }
+    #preboot .pb-bars i:nth-child(2) { animation-delay: 0.12s; }
+    #preboot .pb-bars i:nth-child(3) { animation-delay: 0.24s; }
     @media (prefers-color-scheme: dark) {
-      :root { --boot-bg: #121316; --boot-fg: #d8dadd; }
-      #preboot .pb-mark { border-color: rgba(216, 218, 221, 0.18); border-top-color: currentColor; }
+      :root {
+        --boot-bg-top: #151820;
+        --boot-bg-bottom: #0f1115;
+        --boot-glow: rgba(82, 91, 110, 0.16);
+        --boot-fg: #d8dce3;
+      }
     }
-    @keyframes pb-spin { to{transform:rotate(360deg)} }
-    @keyframes pb-pulse { 0%,100%{opacity:0.28} 50%{opacity:0.9} }
+    @keyframes pb-bar-pulse {
+      0%,100%{opacity:0.32;transform:scaleY(0.55)}
+      50%{opacity:0.92;transform:scaleY(1)}
+    }
   </style>
 
   <div id="preboot">
-    <div class="pb-mark" aria-hidden="true"></div>
-    <div class="pb-dots"><i></i><i></i><i></i></div>
+    <div class="pb-bars" aria-hidden="true"><i></i><i></i><i></i></div>
   </div>
 
   <div id="root"></div>

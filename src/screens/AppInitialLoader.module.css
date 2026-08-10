@@ -5,83 +5,72 @@
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  background: #f6f6f4;
-  color: #5f646b;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(112, 119, 132, 0.14), transparent 34%),
+    linear-gradient(180deg, #fafaf8 0%, #f1f2f4 100%);
+  color: #5f6671;
   font-family: var(--font, system-ui, sans-serif);
+  opacity: 1;
+  transition: opacity 280ms ease;
 }
 
-.loader {
-  width: 88px;
-  height: 88px;
-  display: grid;
-  place-items: center;
-  position: relative;
+.exiting {
+  opacity: 0;
+  pointer-events: none;
 }
 
-.ring {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 3px solid rgba(95, 100, 107, 0.18);
-  border-top-color: currentColor;
-  animation: spin 0.85s linear infinite;
+.bars {
+  width: 46px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.dot {
-  position: absolute;
-  bottom: 8px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+.bars span {
+  width: 5px;
+  height: 18px;
+  border-radius: 999px;
   background: currentColor;
-  opacity: 0.36;
-  animation: pulse 1s ease-in-out infinite;
+  opacity: 0.42;
+  transform-origin: center;
+  animation: barPulse 0.9s ease-in-out infinite;
 }
 
-.dot:nth-child(2) {
-  transform: translateX(-14px);
+.bars span:nth-child(2) {
+  animation-delay: 0.12s;
 }
 
-.dot:nth-child(3) {
-  animation-delay: 0.14s;
-}
-
-.dot:nth-child(4) {
-  transform: translateX(14px);
-  animation-delay: 0.28s;
+.bars span:nth-child(3) {
+  animation-delay: 0.24s;
 }
 
 @media (prefers-color-scheme: dark) {
   .screen {
-    background: #121316;
-    color: #d8dadd;
-  }
-
-  .ring {
-    border-color: rgba(216, 218, 221, 0.18);
-    border-top-color: currentColor;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(82, 91, 110, 0.16), transparent 36%),
+      linear-gradient(180deg, #151820 0%, #0f1115 100%);
+    color: #d8dce3;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ring,
-  .dot {
+  .screen,
+  .bars span {
     animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
+@keyframes barPulse {
   0%,
   100% {
-    opacity: 0.28;
+    opacity: 0.32;
+    transform: scaleY(0.55);
   }
   50% {
-    opacity: 0.9;
+    opacity: 0.92;
+    transform: scaleY(1);
   }
 }
