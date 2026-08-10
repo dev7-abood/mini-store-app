@@ -20,36 +20,32 @@
     :root {
       --boot-bg-top: #ffffff;
       --boot-bg-mid: #fbfcfe;
-      --boot-bg-bottom: #f2f5f9;
-      --boot-glow-top: rgba(217, 227, 246, 0.74);
-      --boot-glow-bottom: rgba(232, 244, 240, 0.72);
+      --boot-bg-bottom: #f5f7fb;
+      --boot-glow-top: rgba(226, 234, 248, 0.9);
+      --boot-glow-bottom: rgba(235, 247, 244, 0.68);
       --boot-fg: #46515f;
     }
     #preboot {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center; flex-direction: column;
       background:
-        radial-gradient(circle at 50% 25%, var(--boot-glow-top), transparent 35%),
-        radial-gradient(circle at 43% 62%, var(--boot-glow-bottom), transparent 34%),
-        linear-gradient(180deg, var(--boot-bg-top) 0%, var(--boot-bg-mid) 48%, var(--boot-bg-bottom) 100%);
+        radial-gradient(ellipse at 50% 28%, var(--boot-glow-top), transparent 42%),
+        radial-gradient(circle at 48% 70%, var(--boot-glow-bottom), transparent 36%),
+        linear-gradient(180deg, var(--boot-bg-top) 0%, var(--boot-bg-mid) 55%, var(--boot-bg-bottom) 100%);
       color: var(--boot-fg);
       font-family: 'Tajawal', system-ui, sans-serif;
       transition: opacity 0.35s ease;
     }
     #preboot .pb-bars {
-      width: 58px; height: 36px;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      border: 1px solid rgba(70, 81, 95, 0.08);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
-      box-shadow: 0 18px 46px rgba(38, 48, 61, 0.1);
-      backdrop-filter: blur(12px);
+      width: 52px; height: 34px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
     }
     #preboot .pb-bars i {
-      width: 5px; height: 16px; border-radius: 999px;
-      background: currentColor;
-      display: inline-block; animation: pb-bar-pulse 0.9s ease-in-out infinite;
-      opacity: 0.38;
+      width: 6px; height: 20px; border-radius: 999px;
+      background: linear-gradient(180deg, #7e8ca0 0%, #46515f 100%);
+      box-shadow: 0 8px 18px rgba(70, 81, 95, 0.16);
+      display: inline-block; animation: pb-bar-pulse 0.95s ease-in-out infinite;
+      opacity: 0.36;
       transform-origin: center;
     }
     #preboot .pb-bars i:nth-child(2) { animation-delay: 0.12s; }
@@ -58,15 +54,15 @@
       :root {
         --boot-bg-top: #ffffff;
         --boot-bg-mid: #fbfcfe;
-        --boot-bg-bottom: #f2f5f9;
-        --boot-glow-top: rgba(217, 227, 246, 0.68);
-        --boot-glow-bottom: rgba(232, 244, 240, 0.66);
+        --boot-bg-bottom: #f5f7fb;
+        --boot-glow-top: rgba(226, 234, 248, 0.9);
+        --boot-glow-bottom: rgba(235, 247, 244, 0.68);
         --boot-fg: #46515f;
       }
     }
     @keyframes pb-bar-pulse {
-      0%,100%{opacity:0.32;transform:scaleY(0.55)}
-      50%{opacity:0.92;transform:scaleY(1)}
+      0%,100%{opacity:0.32;transform:translateY(2px) scaleY(0.52)}
+      50%{opacity:0.95;transform:translateY(-1px) scaleY(1)}
     }
   </style>
 
