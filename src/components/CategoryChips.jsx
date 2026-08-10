@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCatalog } from '../context/CatalogContext';
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
 import Photo from './ui/Photo';
 import styles from './CategoryChips.module.css';
 
@@ -13,6 +14,7 @@ import styles from './CategoryChips.module.css';
  */
 export default function CategoryChips({ activeId, onPick }) {
   const { categories } = useCatalog();
+  const { placeholders } = useBusinessTypeConfig();
   const stripRef = useRef(null);
   const dragRef = useRef({ isDown: false, startX: 0, startScroll: 0, moved: false });
   const [dragging, setDragging] = useState(false);
@@ -91,7 +93,7 @@ export default function CategoryChips({ activeId, onPick }) {
           <Photo
             className={styles.thumb}
             src={category.image}
-            fallback={category.fallback}
+            fallback={category.fallback || placeholders.category[0]}
             tint={category.tint}
             fallbackSize="16px"
           />

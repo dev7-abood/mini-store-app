@@ -23,6 +23,7 @@
 */
 
 import { identifyBotBySignature } from './botIdentity';
+import { normalizeBusinessType } from './businessType';
 
 const REGISTRY_URL = '/tenants.json';
 const CLOUD_BOT_KEY = 'bot_id_v1';
@@ -34,7 +35,7 @@ const tg = () => (typeof window === 'undefined' ? null : window.Telegram?.WebApp
  * through to the next resolution source.
  *
  * @returns {Promise<Array<{telegram_bot_id: number|string, tenant_base_url?: string,
- *           ttenant_base_url?: string, telegram_name?: string}>>}
+ *           ttenant_base_url?: string, telegram_name?: string, business_type?: string}>>}
  */
 export async function loadTenantRegistry() {
   try {
@@ -113,7 +114,7 @@ export async function detectBotId(tenants = []) {
  * @param {Array<object>} tenants
  * @param {string | null} botId
  * @returns {{baseUrl: string, name: string | null,
- *           theme: object | null} | null}
+ *           theme: object | null, businessType: import('./businessType').BusinessType} | null}
  */
 export function findTenantByBotId(tenants, botId) {
   if (!botId) return null;
@@ -127,6 +128,7 @@ export function findTenantByBotId(tenants, botId) {
   return {
     baseUrl,
     name: entry.telegram_name ?? null,
+    businessType: normalizeBusinessType(entry.business_type),
     /* Optional registry theme — instant splash colors before the full
        branding API responds. Safe to omit. */
     theme: entry.theme ?? null,

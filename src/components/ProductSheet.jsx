@@ -4,6 +4,7 @@ import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useMoney } from '../hooks/useMoney';
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
 import Photo from './ui/Photo';
 import Stepper from './ui/Stepper';
 import Button from './ui/Button';
@@ -20,6 +21,7 @@ export default function ProductSheet({ product, onClose }) {
   const { categoryById } = useCatalog();
   const { addItem } = useCart();
   const { haptic } = useTelegram();
+  const { placeholders } = useBusinessTypeConfig();
   const [qty, setQty] = useState(1);
 
   /* Reset quantity every time a new product opens. */
@@ -66,7 +68,7 @@ export default function ProductSheet({ product, onClose }) {
               key={product.id}
               className={styles.img}
               src={product.image}
-              fallback={product.fallback}
+              fallback={product.fallback || placeholders.product[0]}
               tint={tint}
               fallbackSize="80px"
             />
@@ -87,12 +89,12 @@ export default function ProductSheet({ product, onClose }) {
                 </div>
               </div>
             ) : (
-            <div className={styles.qtyRow}>
-              <Stepper value={qty} onChange={changeQty} />
-              <Button grow onClick={addToCart}>
-                {t('sheet.add', { price: money(product.price * qty) })}
-              </Button>
-            </div>
+              <div className={styles.qtyRow}>
+                <Stepper value={qty} onChange={changeQty} />
+                <Button grow onClick={addToCart}>
+                  {t('sheet.add', { price: money(product.price * qty) })}
+                </Button>
+              </div>
             )}
           </>
         )}

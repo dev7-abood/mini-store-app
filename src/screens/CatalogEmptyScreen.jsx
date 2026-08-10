@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useCatalog } from '../context/CatalogContext';
 import { useBranding } from '../context/BrandingContext';
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
 import Screen from '../components/ui/Screen';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import FixedCta from '../components/ui/FixedCta';
@@ -11,7 +12,7 @@ import Button from '../components/ui/Button';
 | Catalog Empty Screen
 |--------------------------------------------------------------------------
 | Shown when /front-data succeeds but the merchant has no products yet.
-| Deliberately warm rather than alarming — nothing is broken, the menu
+| Deliberately warm rather than alarming — nothing is broken, the catalog
 | just isn't published. Offers a refresh so the customer can check again
 | without relaunching the app.
 */
@@ -19,11 +20,15 @@ export default function CatalogEmptyScreen() {
   const { t } = useTranslation();
   const { reload, isLoading } = useCatalog();
   const { branding } = useBranding();
+  const { icons } = useBusinessTypeConfig();
 
   return (
     <Screen>
       <div style={{ paddingTop: '16vh' }}>
-        <CenterIllustration icon="🍽️" heading={t('catalogEmpty.heading', { name: branding.name })}>
+        <CenterIllustration
+          icon={icons.catalogEmpty}
+          heading={t('catalogEmpty.heading', { name: branding.name })}
+        >
           {t('catalogEmpty.body')}
         </CenterIllustration>
       </div>

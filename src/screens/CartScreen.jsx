@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useMoney } from '../hooks/useMoney';
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import CenterIllustration from '../components/ui/CenterIllustration';
@@ -19,6 +20,7 @@ export default function CartScreen() {
   const { entries, count, subtotal, deliveryFee, total } = useCart();
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
+  const { icons } = useBusinessTypeConfig();
 
   const isEmpty = count === 0;
 
@@ -27,7 +29,7 @@ export default function CartScreen() {
       <SubHeader title={t('cart.title')} />
       <div className={styles.pad}>
         {isEmpty ? (
-          <CenterIllustration icon="🛒">{t('cart.empty')}</CenterIllustration>
+          <CenterIllustration icon={icons.cart}>{t('cart.empty')}</CenterIllustration>
         ) : (
           <>
             {entries.map(({ product, qty }) => (

@@ -8,7 +8,7 @@ import Button from '../components/ui/Button';
 /**
  * Shown when a tenant backend is configured but /front-data failed or
  * returned no products. Tenant data only — the demo seed is never shown
- * in place of a real restaurant's menu.
+ * in place of a real tenant catalog.
  */
 export default function CatalogErrorScreen() {
   const { t } = useTranslation();

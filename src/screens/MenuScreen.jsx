@@ -6,6 +6,7 @@ import { searchProducts } from '../lib/search';
 import { useCart } from '../context/CartContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
 import Screen from '../components/ui/Screen';
 import BrandLogo from '../components/BrandLogo';
 import CategoryChips from '../components/CategoryChips';
@@ -17,8 +18,6 @@ import CartBar from '../components/CartBar';
 import { StoreStatusNotice, StoreStatusPill } from '../components/StoreStatus';
 import styles from './MenuScreen.module.css';
 
-const SKELETON_COUNT = 6;
-
 /** Main catalog screen: category chips, product grid, cart bar + sheet. */
 export default function MenuScreen() {
   const { t } = useTranslation();
@@ -27,6 +26,7 @@ export default function MenuScreen() {
   const { addItem, count } = useCart();
   const { haptic, user } = useTelegram();
   const { branding } = useBranding();
+  const { icons, skeleton } = useBusinessTypeConfig();
 
   const [pickedCategory, setPickedCategory] = useState(null);
   const [sheetProduct, setSheetProduct] = useState(null);
@@ -97,7 +97,7 @@ export default function MenuScreen() {
           onClick={() => navigate(SCREENS.CART)}
           aria-label={t('cart.title')}
         >
-          🛒
+          {icons.cart}
           {count > 0 && <span className={styles.badge}>{count}</span>}
         </button>
       </header>
@@ -112,12 +112,14 @@ export default function MenuScreen() {
 
       <main className={styles.grid}>
         {isLoading ? (
-          Array.from({ length: SKELETON_COUNT }, (_, i) => <ProductCardSkeleton key={i} />)
+          Array.from({ length: skeleton.defaultItems }, (_, i) => (
+            <ProductCardSkeleton key={`initial-${i}`} />
+          ))
         ) : (
           <>
             {isSearching && visibleProducts.length === 0 && (
               <div className={styles.noResults}>
-                <span className={styles.noResultsIcon}>🔎</span>
+                <span className={styles.noResultsIcon}>{icons.searchEmpty}</span>
                 <b>{t('search.emptyTitle')}</b>
                 <p>{t('search.emptyBody', { query })}</p>
               </div>
@@ -138,8 +140,9 @@ export default function MenuScreen() {
             {/* Bottom-of-grid loader while the next page fetches. */}
             {isLoadingMore && (
               <>
-                <ProductCardSkeleton />
-                <ProductCardSkeleton />
+                {Array.from({ length: skeleton.nextPageItems }, (_, i) => (
+                  <ProductCardSkeleton key={`more-${i}`} />
+                ))}
               </>
             )}
           </>

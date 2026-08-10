@@ -4,6 +4,7 @@
       "telegram_bot_id": 8424896554,
       "tenant_base_url": "https://o2.r-gaza.store",
       "telegram_name": "staging_restaurantBot",
+      "business_type": "restaurant",
       "theme": {
         "primary_color": "#870413",
         "secondary_color": "#fce300",

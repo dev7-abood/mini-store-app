@@ -83,17 +83,28 @@
   transform: scale(0.85);
 }
 
-/* Skeleton placeholders (for the future fetchCatalog() loading state) */
+/* Skeleton placeholders driven by the tenant business_type config. */
 .skImg,
-.skLine {
+.skLine,
+.skPrice,
+.skAction {
   background: linear-gradient(90deg, #efe7da 25%, #f8f3ea 50%, #efe7da 75%);
   background-size: 200% 100%;
   animation: shimmer 1.2s infinite;
 }
 
+.skeletonCard {
+  min-height: 222px;
+  pointer-events: none;
+}
+
 .skImg {
   height: 112px;
   border-radius: 15px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  position: relative;
 }
 
 .skLine {
@@ -103,6 +114,74 @@
 
 .skShort {
   width: 60%;
+}
+
+.skAccent {
+  display: none;
+}
+
+.skFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.skPrice {
+  width: 46%;
+  height: 13px;
+  border-radius: 999px;
+}
+
+.skAction {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  flex: 0 0 auto;
+}
+
+.storeSkeleton {
+  justify-content: flex-start;
+}
+
+.restaurantSkeleton {
+  align-items: stretch;
+}
+
+.restaurantSkeleton .skImg {
+  width: 104px;
+  height: 104px;
+  align-self: center;
+  border-radius: 50%;
+}
+
+.restaurantSkeleton .skAccent {
+  display: block;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 10px solid color-mix(in srgb, var(--card) 70%, transparent);
+  background: color-mix(in srgb, var(--saffron) 20%, transparent);
+}
+
+.restaurantSkeleton .skLine {
+  width: 86%;
+  align-self: center;
+}
+
+.restaurantSkeleton .skShort {
+  width: 70%;
+}
+
+.restaurantSkeleton .skPrice {
+  width: 40%;
+}
+
+.restaurantSkeleton .skAction {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
 }
 
 @keyframes shimmer {

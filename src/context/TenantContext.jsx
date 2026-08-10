@@ -2,7 +2,7 @@
 |--------------------------------------------------------------------------
 | Tenant Context
 |--------------------------------------------------------------------------
-| Resolves WHICH restaurant this launch belongs to, before any data
+| Resolves WHICH tenant business this launch belongs to, before any data
 | loads. Resolution order (first hit wins the base URL):
 |
 |   1. registry  — bot id identified via signed initData matched
@@ -25,6 +25,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { resolveTenantContext, isInsideTelegram } from '../lib/tenantContext';
 import { loadTenantRegistry, detectBotId, findTenantByBotId } from '../lib/tenantRegistry';
+import { DEFAULT_BUSINESS_TYPE } from '../lib/businessType';
 import { configureApiClient, hasBackend } from '../api/client';
 
 const TenantContext = createContext(null);
@@ -37,6 +38,7 @@ export function TenantProvider({ children }) {
     tenantName: null,
     botId: null,
     registryTheme: null,
+    businessType: DEFAULT_BUSINESS_TYPE,
   });
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export function TenantProvider({ children }) {
           u: registryEntry.baseUrl,
           /* branch from the deep link still applies when present */
           b: resolved?.payload?.b,
+          businessType: registryEntry.businessType,
         });
         setState({
           status: 'ready',
@@ -70,26 +73,37 @@ export function TenantProvider({ children }) {
           tenantName: registryEntry.name,
           botId,
           registryTheme: registryEntry.theme ?? null,
+          businessType: registryEntry.businessType,
         });
         return;
       }
 
       /* 2–3. Deep-link payload (fresh or from CloudStorage). */
       if (resolved) {
-        configureApiClient(resolved.payload);
+        configureApiClient({ ...resolved.payload, businessType: DEFAULT_BUSINESS_TYPE });
         setState({
           status: 'ready',
           source: resolved.source,
           ctx: resolved.payload,
           tenantName: null,
           botId,
+          registryTheme: null,
+          businessType: DEFAULT_BUSINESS_TYPE,
         });
         return;
       }
 
       /* 4. Env fallback — VITE_API_BASE_URL already configured. */
       if (hasBackend()) {
-        setState({ status: 'ready', source: 'env', ctx: null, tenantName: null, botId });
+        setState({
+          status: 'ready',
+          source: 'env',
+          ctx: null,
+          tenantName: null,
+          botId,
+          registryTheme: null,
+          businessType: DEFAULT_BUSINESS_TYPE,
+        });
         return;
       }
 
@@ -99,7 +113,7 @@ export function TenantProvider({ children }) {
       const single = tenants.length === 1 ? findTenantByBotId(tenants, tenants[0].telegram_bot_id) : null;
       if (single && isInsideTelegram()) {
         console.warn('Tenant resolution: falling back to the single registry tenant.');
-        configureApiClient({ u: single.baseUrl });
+        configureApiClient({ u: single.baseUrl, businessType: single.businessType });
         setState({
           status: 'ready',
           source: 'registry-single',
@@ -107,12 +121,21 @@ export function TenantProvider({ children }) {
           tenantName: single.name,
           botId: String(tenants[0].telegram_bot_id),
           registryTheme: single.theme ?? null,
+          businessType: single.businessType,
         });
         return;
       }
 
       /* Nothing resolvable — user must start from the bot. */
-      setState({ status: 'missing', source: null, ctx: null, tenantName: null, botId: null });
+      setState({
+        status: 'missing',
+        source: null,
+        ctx: null,
+        tenantName: null,
+        botId: null,
+        registryTheme: null,
+        businessType: DEFAULT_BUSINESS_TYPE,
+      });
     })();
 
     return () => {
@@ -127,6 +150,7 @@ export function TenantProvider({ children }) {
       isMissing: state.status === 'missing',
       branchId: state.ctx?.b ?? null,
       registryTheme: state.registryTheme,
+      businessType: state.businessType,
     }),
     [state],
   );

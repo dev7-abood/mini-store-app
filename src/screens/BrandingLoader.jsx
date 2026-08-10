@@ -9,7 +9,11 @@
 | network wait. Falls back to the default سفرة palette when the registry
 | has no theme.
 */
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
+
 export default function BrandingLoader() {
+  const { icons } = useBusinessTypeConfig();
+
   return (
     <div
       style={{
@@ -40,7 +44,7 @@ export default function BrandingLoader() {
           animation: 'pb-float 2.6s ease-in-out infinite',
         }}
       >
-        <span style={{ fontSize: 40 }}>🍽️</span>
+        <span style={{ fontSize: 40 }}>{icons.loading}</span>
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         {[0, 0.15, 0.3].map((d) => (

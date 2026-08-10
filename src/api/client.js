@@ -23,12 +23,14 @@
 | single-tenant / local development. X-Branch-Id is attached when the
 | payload carries a branch.
 */
+import { DEFAULT_BUSINESS_TYPE, normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
 
 /** Path prefix appended to the tenant URL from the deep-link payload. */
 const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? '/api/v1';
 
 let runtimeBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '';
 let runtimeBranchId = null;
+let runtimeBusinessType = DEFAULT_BUSINESS_TYPE;
 
 /**
  * Point the client at the resolved tenant: `{u}/api/v1` (prefix
@@ -36,11 +38,12 @@ let runtimeBranchId = null;
  * any data request. Never send the decoded payload as proof of
  * anything — the initData signature is the proof.
  *
- * @param {{u: string, b?: number}} ctx Decoded deep-link payload
+ * @param {{u: string, b?: number, businessType?: string}} ctx Decoded deep-link payload
  */
 export function configureApiClient(ctx) {
   runtimeBaseUrl = `${ctx.u.replace(/\/$/, '')}${API_PREFIX}`;
   runtimeBranchId = ctx.b ?? null;
+  runtimeBusinessType = normalizeBusinessType(ctx.businessType);
 }
 
 /** Whether a backend is configured at all. */
@@ -142,10 +145,12 @@ function normalizeFrontData(data, page) {
   const categories = catalogs.map((catalog, index) => ({
     id: String(catalog.id),
     name: String(catalog.name ?? ''),
-    fallback: '🍽️',
+    fallback: pickPlaceholderIcon(runtimeBusinessType, 'category', index),
     tint: CATALOG_TINTS[index % CATALOG_TINTS.length],
     image: catalog.image ?? '',
   }));
+
+  let productIconIndex = 0;
 
   const products = catalogs.flatMap((catalog) =>
     (catalog.products ?? []).map((p) => {
@@ -176,7 +181,7 @@ function normalizeFrontData(data, page) {
            are withheld by the API entirely. */
         available: p.available !== false,
         discount,
-        fallback: '🍽️',
+        fallback: pickPlaceholderIcon(runtimeBusinessType, 'product', productIconIndex++),
         image: p.image ?? '',
       };
     }),

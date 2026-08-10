@@ -59,7 +59,7 @@
   </style>
 
   <div id="preboot">
-    <div class="pb-mark"><span>🍽️</span></div>
+    <div class="pb-mark"><span>&#x1F6CD;&#xFE0F;</span></div>
     <div class="pb-dots"><i></i><i></i><i></i></div>
   </div>
 
@@ -124,6 +124,25 @@
         try { if (tg && theme.primary_color) tg.setHeaderColor(theme.primary_color); } catch (e) {}
       }
 
+      function normalizeBusinessType(value) {
+        return String(value || '').trim().toLowerCase() === 'restaurant' ? 'restaurant' : 'store';
+      }
+
+      function paintBusinessType(value) {
+        var icons = {
+          store: '\uD83D\uDECD\uFE0F',
+          restaurant: '\uD83C\uDF7D\uFE0F'
+        };
+        var mark = document.querySelector('#preboot .pb-mark span');
+        if (mark) mark.textContent = icons[normalizeBusinessType(value)];
+      }
+
+      function applyTenant(entry) {
+        if (!entry) return;
+        paint(entry.theme);
+        paintBusinessType(entry.business_type);
+      }
+
       /* Single tenant is the common case — if the registry has exactly
          one, we can theme without needing to identify the bot at all. */
       fetch('/tenants.json', { cache: 'no-cache' })
@@ -133,7 +152,7 @@
           var list = data.tenants;
 
           /* One tenant: use it directly. */
-          if (list.length === 1) { paint(list[0].theme); return; }
+          if (list.length === 1) { applyTenant(list[0]); return; }
 
           /* Multiple: match by bot id if the client exposed it, else
              leave neutral (the full app will identify + theme shortly). */
@@ -141,7 +160,7 @@
           if (botId) {
             for (var i = 0; i < list.length; i++) {
               if (String(list[i].telegram_bot_id) === String(botId)) {
-                paint(list[i].theme);
+                applyTenant(list[i]);
                 return;
               }
             }

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useCatalog } from '../context/CatalogContext';
 import { useCart } from '../context/CartContext';
 import { useMoney } from '../hooks/useMoney';
+import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
 import Photo from './ui/Photo';
 import Stepper from './ui/Stepper';
 import styles from './CartItem.module.css';
@@ -16,6 +17,7 @@ export default function CartItem({ product, qty }) {
   const money = useMoney();
   const { categoryById } = useCatalog();
   const { changeQty } = useCart();
+  const { placeholders } = useBusinessTypeConfig();
   const tint = categoryById.get(product.category)?.tint;
 
   return (
@@ -23,7 +25,7 @@ export default function CartItem({ product, qty }) {
       <Photo
         className={styles.thumb}
         src={product.image}
-        fallback={product.fallback}
+        fallback={product.fallback || placeholders.product[0]}
         tint={tint}
         fallbackSize="28px"
       />
