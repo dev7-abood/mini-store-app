@@ -56,8 +56,7 @@
   font-family: inherit;
   overflow: hidden;
   outline: none;
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 5%, transparent);
-  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s, background 0.18s;
+  transition: border-color 0.18s, outline-color 0.18s, transform 0.12s, background 0.18s;
 }
 
 .card > * {
@@ -87,9 +86,6 @@
       var(--card) 52%,
       color-mix(in srgb, var(--saffron) 15%, var(--card)) 100%
     );
-  box-shadow:
-    0 12px 28px color-mix(in srgb, var(--basil) 14%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--saffron) 12%, transparent) inset;
 }
 
 .recommended::before {
@@ -114,9 +110,8 @@
 
 .card:focus-visible {
   border-color: var(--saffron);
-  box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--saffron) 24%, transparent),
-    0 8px 20px color-mix(in srgb, var(--ink) 5%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--saffron) 24%, transparent);
+  outline-offset: 0;
 }
 
 .card:active {
@@ -125,16 +120,13 @@
 
 .selected {
   border-color: var(--basil);
-  box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--basil) 14%, transparent),
-    0 10px 24px color-mix(in srgb, var(--basil) 10%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--basil) 14%, transparent);
+  outline-offset: 0;
 }
 
 .selected.recommended {
   border-color: color-mix(in srgb, var(--basil) 76%, var(--saffron));
-  box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--basil) 16%, transparent),
-    0 14px 30px color-mix(in srgb, var(--basil) 17%, transparent);
+  outline-color: color-mix(in srgb, var(--basil) 16%, transparent);
 }
 
 /* Logo plate: a raised neutral tint keeps provider marks legible on any
@@ -159,9 +151,6 @@
   place-items: center;
   overflow: hidden;
   padding: 6px;
-  box-shadow:
-    0 6px 12px color-mix(in srgb, var(--ink) 8%, transparent),
-    0 1px 0 rgba(255, 255, 255, 0.32) inset;
 }
 
 .recommended .mark {
@@ -176,12 +165,9 @@
       color-mix(in srgb, var(--basil) 78%, #000),
       color-mix(in srgb, var(--basil) 64%, var(--saffron)) 58%,
       color-mix(in srgb, var(--saffron) 36%, var(--basil))
-    );
+    )
+  );
   border-color: color-mix(in srgb, var(--saffron) 52%, var(--basil));
-  box-shadow:
-    0 7px 15px color-mix(in srgb, var(--basil) 18%, transparent),
-    0 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .logo {
@@ -283,13 +269,12 @@
   border: 2px solid var(--line);
   display: grid;
   place-items: center;
-  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  transition: border-color 0.18s, background 0.18s;
 }
 
 .selected .radio {
   background: var(--basil);
   border-color: var(--basil);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--basil) 12%, transparent);
 }
 
 .radio::after {
@@ -363,12 +348,6 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .mark {
-    box-shadow:
-      0 6px 13px color-mix(in srgb, #000 18%, transparent),
-      0 1px 0 rgba(255, 255, 255, 0.12) inset;
-  }
-
   .recommended::before {
     opacity: 0.5;
   }
