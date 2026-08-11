@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
+import { useOrderFlow } from '../context/OrderFlowContext';
+import { findPaymentMethod } from '../lib/paymentMethods';
+import { normalizeStatusValue } from '../lib/orderStatus';
 import Screen from '../components/ui/Screen';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import FixedCta from '../components/ui/FixedCta';
@@ -10,8 +13,13 @@ import styles from './SuccessScreen.module.css';
 /** Order confirmed screen with the generated order number. */
 export default function SuccessScreen() {
   const { t } = useTranslation();
-  const { orderNumber } = useOrder();
+  const { orderNumber, paymentMethod } = useOrder();
+  const { order } = useOrderFlow();
   const navigate = useNavigate();
+  const method = findPaymentMethod(order?.paymentMethod ?? paymentMethod);
+  const proofSubmitted =
+    method?.type === 'manual'
+    && normalizeStatusValue(order?.paymentStatus ?? order?.status) === 'awaiting_verification';
 
   const trackOrder = () => {
     if (!orderNumber) return;
@@ -32,7 +40,9 @@ export default function SuccessScreen() {
             />
           </svg>
         </div>
-        <CenterIllustration heading={t('success.heading')}>{t('success.body')}</CenterIllustration>
+        <CenterIllustration heading={t(proofSubmitted ? 'success.manualHeading' : 'success.heading')}>
+          {t(proofSubmitted ? 'success.manualBody' : 'success.body')}
+        </CenterIllustration>
         <div style={{ textAlign: 'center' }}>
           <span className={styles.chip}>🧾 {orderNumber}</span>
         </div>

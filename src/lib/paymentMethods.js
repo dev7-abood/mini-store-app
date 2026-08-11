@@ -14,9 +14,37 @@
 | when a method has no logo the icon is used instead.
 */
 
+/** @typedef {{
+ *   receiverName?: string,
+ *   accountNumber?: string,
+ *   bankOrWalletName?: string,
+ *   iban?: string,
+ *   branchName?: string,
+ *   additionalInstructions?: string,
+ *   additionalInstructionsKey?: string,
+ * }} ManualPaymentReceivingInfo */
+
 /** @typedef {{id: string, labelKey: string, hintKey: string,
  *   type: 'smart'|'manual', enabled: boolean, logo?: string, icon?: string,
- *   badgeKey?: string, recommended?: boolean}} PaymentMethod */
+ *   badgeKey?: string, recommended?: boolean,
+ *   receivingInfo?: ManualPaymentReceivingInfo}} PaymentMethod */
+
+const manualEnv = (methodKey, field) =>
+  import.meta.env?.[`VITE_MANUAL_PAYMENT_${methodKey}_${field}`] ?? '';
+
+const manualReceivingInfo = (methodKey, defaults = {}) => ({
+  receiverName: manualEnv(methodKey, 'RECEIVER_NAME'),
+  accountNumber:
+    manualEnv(methodKey, 'ACCOUNT_NUMBER')
+    || manualEnv(methodKey, 'WALLET_PHONE_NUMBER')
+    || manualEnv(methodKey, 'WALLET_PHONE'),
+  bankOrWalletName: manualEnv(methodKey, 'BANK_OR_WALLET_NAME') || defaults.bankOrWalletName || '',
+  iban: manualEnv(methodKey, 'IBAN'),
+  branchName: manualEnv(methodKey, 'BRANCH_NAME'),
+  additionalInstructions:
+    manualEnv(methodKey, 'ADDITIONAL_INSTRUCTIONS') || defaults.additionalInstructions || '',
+  additionalInstructionsKey: defaults.additionalInstructionsKey,
+});
 
 /** @type {PaymentMethod[]} */
 export const PAYMENT_METHODS = [
@@ -35,6 +63,10 @@ export const PAYMENT_METHODS = [
     hintKey: 'payment.palpay.hint',
     type: 'manual',
     logo: 'https://www.palpay.ps/assets/images/logo-icon.svg',
+    receivingInfo: manualReceivingInfo('PALPAY', {
+      bankOrWalletName: 'PalPay',
+      additionalInstructionsKey: 'payment.palpay.instructions',
+    }),
     enabled: true,
   },
   {
@@ -43,6 +75,10 @@ export const PAYMENT_METHODS = [
     hintKey: 'payment.bankOfPalestine.hint',
     type: 'manual',
     logo: 'https://bopwebsitestorage.blob.core.windows.net/assets/uploads/orPNSWQejpvlClB5nqmeg18jfbDJGyFO9Vn9KLeO.png',
+    receivingInfo: manualReceivingInfo('BANK_OF_PALESTINE', {
+      bankOrWalletName: 'Bank of Palestine',
+      additionalInstructionsKey: 'payment.bankOfPalestine.instructions',
+    }),
     enabled: true,
   },
   {
@@ -65,3 +101,73 @@ export const AVAILABLE_PAYMENT_METHODS = PAYMENT_METHODS.filter((m) => m.enabled
  * @type {string}
  */
 export const DEFAULT_PAYMENT_METHOD = AVAILABLE_PAYMENT_METHODS[0]?.id ?? '';
+
+/** @param {string | null | undefined} id */
+export function findPaymentMethod(id) {
+  return PAYMENT_METHODS.find((method) => method.id === id) ?? null;
+}
+
+/** @param {string | null | undefined} id */
+export function isManualPaymentMethod(id) {
+  return findPaymentMethod(id)?.type === 'manual';
+}
+
+/** @param {any} raw */
+export function normalizeManualPaymentReceivingInfo(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const info = {
+    receiverName: raw.receiverName ?? raw.receiver_name ?? raw.account_name ?? raw.name ?? '',
+    accountNumber:
+      raw.accountNumber
+      ?? raw.account_number
+      ?? raw.walletPhoneNumber
+      ?? raw.wallet_phone_number
+      ?? raw.wallet_phone
+      ?? raw.phone
+      ?? '',
+    bankOrWalletName:
+      raw.bankOrWalletName
+      ?? raw.bank_or_wallet_name
+      ?? raw.bank_name
+      ?? raw.wallet_name
+      ?? raw.provider_name
+      ?? '',
+    iban: raw.iban ?? raw.IBAN ?? '',
+    branchName: raw.branchName ?? raw.branch_name ?? '',
+    additionalInstructions:
+      raw.additionalInstructions
+      ?? raw.additional_instructions
+      ?? raw.instructions
+      ?? raw.note
+      ?? '',
+    additionalInstructionsKey: raw.additionalInstructionsKey ?? raw.additional_instructions_key ?? '',
+  };
+
+  const normalized = Object.fromEntries(
+    Object.entries(info).map(([key, value]) => [key, String(value ?? '').trim()]),
+  );
+
+  return Object.values(normalized).some(Boolean) ? normalized : null;
+}
+
+/**
+ * Frontend configured receiving details, optionally overridden by the order
+ * payload returned from the backend.
+ *
+ * @param {string | null | undefined} id
+ * @param {any} [override]
+ */
+export function manualReceivingInfoForMethod(id, override = null) {
+  const method = findPaymentMethod(id);
+  if (!method || method.type !== 'manual') return null;
+
+  const configured = normalizeManualPaymentReceivingInfo(method.receivingInfo) ?? {};
+  const backend = Object.fromEntries(
+    Object.entries(normalizeManualPaymentReceivingInfo(override) ?? {})
+      .filter(([, value]) => Boolean(value)),
+  );
+  const merged = { ...configured, ...backend };
+
+  return Object.values(merged).some(Boolean) ? merged : null;
+}

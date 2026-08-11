@@ -1,5 +1,9 @@
 {
   "success": {
+    "heading": "Order placed!",
+    "body": "Your order was confirmed and the kitchen will start preparing it.",
+    "manualHeading": "Payment proof submitted",
+    "manualBody": "We received your transfer details. Your order is awaiting payment verification.",
     "track": "Track my order"
   },
   "cart": {
@@ -30,12 +34,45 @@
     },
     "palpay": {
       "label": "PalPay",
-      "hint": "Complete payment with PalPay after placing the order"
+      "hint": "Complete payment with PalPay after placing the order",
+      "instructions": "Use the order number as the transfer note so we can match your payment quickly."
     },
     "bankOfPalestine": {
       "label": "Bank of Palestine",
-      "hint": "Complete a Bank of Palestine transfer after placing the order"
+      "hint": "Complete a Bank of Palestine transfer after placing the order",
+      "instructions": "Use the order number as the transfer reference, then upload the receipt below."
     }
+  },
+  "paymentInstructions": {
+    "title": "Payment Instructions",
+    "manualPayment": "Manual payment",
+    "sendPaymentTo": "Send payment to",
+    "awaitingPaymentNote": "Your order is awaiting payment. Complete the transfer, then submit the proof below.",
+    "receiverName": "Receiver name",
+    "accountOrPhone": "Account number / wallet phone number",
+    "bankOrWalletName": "Bank or wallet name",
+    "iban": "IBAN",
+    "branchName": "Branch name",
+    "amountToPay": "Amount to pay",
+    "referenceNumber": "Order/reference number",
+    "copy": "Copy",
+    "copiedShort": "Copied",
+    "copied": "{{label}} copied",
+    "copyFailed": "Could not copy this value.",
+    "copyValue": "Copy {{label}}",
+    "notConfigured": "Not configured",
+    "afterTransferTitle": "After completing the transfer",
+    "proofStatus": "Submit proof",
+    "transactionReference": "Payment transaction/reference number",
+    "transactionReferencePlaceholder": "Example: 78349210",
+    "receiptPlaceholder": "Payment receipt/screenshot",
+    "receiptHint": "Upload an image or PDF of the transfer receipt.",
+    "missingTransaction": "Enter the payment transaction/reference number.",
+    "missingReceipt": "Upload the payment receipt or screenshot.",
+    "submitProof": "I've Paid — Submit Payment Proof",
+    "submitting": "Submitting proof...",
+    "submitted": "Payment proof submitted for verification.",
+    "submitFailed": "Could not submit payment proof. Try again."
   },
   "status": {
     "title": "Order Status",
@@ -70,6 +107,7 @@
     "itemQuantity": "Quantity: {{count}}",
     "finalNegativeBody": "This order has stopped and will not continue toward delivery.",
     "values": {
+      "awaiting_payment": "Awaiting payment",
       "awaiting_verification": "Awaiting verification",
       "unverified": "Awaiting verification",
       "pending": "Pending",
@@ -87,6 +125,8 @@
       "failed": "Failed"
     },
     "paymentValues": {
+      "awaiting_payment": "Awaiting payment",
+      "awaiting_verification": "Awaiting verification",
       "pending": "Payment pending",
       "awaiting": "Payment pending",
       "processing": "Processing",
@@ -130,5 +170,16 @@
     "cancelled": "Order cancelled",
     "cancelFailed": "Could not cancel the order.",
     "refresh": "Refresh status"
+  },
+  "botMessage": {
+    "title": "New order {{number}}",
+    "items": "Items",
+    "customer": "Name",
+    "address": "Address",
+    "phone": "Phone",
+    "note": "Note",
+    "deliveryPhone": "Delivery phone",
+    "paymentMethod": "Payment method",
+    "paymentStatus": "Payment status"
   }
 }

@@ -24,6 +24,7 @@
 | payload carries a branch.
 */
 import { normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
+import { normalizeManualPaymentReceivingInfo } from '../lib/paymentMethods';
 
 /** Path prefix appended to the tenant URL from the deep-link payload. */
 const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? '/api/v1';
@@ -102,6 +103,51 @@ async function request(path, { timeoutMs = 10000, ...options } = {}) {
         payload = JSON.parse(text);
       } catch {
         /* non-JSON error body (HTML error page, proxy timeout, ...) */
+      }
+
+      const error = new Error(`API ${response.status}: ${text}`);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
+    }
+
+    return await response.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Multipart request helper for file uploads. Do not set Content-Type here;
+ * the browser adds the form-data boundary.
+ *
+ * @param {string} path
+ * @param {RequestInit & {timeoutMs?: number}} [options]
+ * @returns {Promise<any>}
+ */
+async function formRequest(path, { timeoutMs = 15000, ...options } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${runtimeBaseUrl}${path}`, {
+      signal: controller.signal,
+      ...options,
+      headers: {
+        Accept: 'application/json',
+        'X-Telegram-Init-Data': telegramInitData(),
+        ...(runtimeBranchId != null ? { 'X-Branch-Id': String(runtimeBranchId) } : {}),
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      let payload = null;
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        /* non-JSON error body */
       }
 
       const error = new Error(`API ${response.status}: ${text}`);
@@ -617,6 +663,40 @@ async function orderRequest(path, options = {}) {
 }
 
 /**
+ * Envelope for multipart order-flow calls.
+ *
+ * @param {string} path
+ * @param {{method?: string, body?: FormData, timeoutMs?: number}} [options]
+ * @returns {Promise<{ok: boolean, data: any, message: string|null,
+ *   status: number|null, code?: string|null}>}
+ */
+async function orderFormRequest(path, options = {}) {
+  try {
+    const payload = await formRequest(path, {
+      timeoutMs: 15000,
+      ...options,
+    });
+    return {
+      ok: payload?.success !== false,
+      data: payload?.data ?? payload ?? null,
+      message: payload?.message ?? null,
+      status: 200,
+    };
+  } catch (error) {
+    const status = Number(error?.status) || null;
+    const payload = error?.payload ?? null;
+    console.warn(`Order upload failed (${path}):`, error);
+    return {
+      ok: false,
+      data: payload?.data ?? null,
+      message: payload?.message ?? payload?.error?.message ?? error?.message ?? null,
+      status,
+      code: payload?.error?.code ?? payload?.code ?? null,
+    };
+  }
+}
+
+/**
  * Normalize an order payload into the shape the screens consume.
  *
  * @param {any} raw
@@ -630,6 +710,23 @@ export function normalizeOrder(raw) {
   const payment = o.payment && typeof o.payment === 'object' ? o.payment : null;
   const totals = o.totals && typeof o.totals === 'object' ? o.totals : null;
   const verification = o.verification && typeof o.verification === 'object' ? o.verification : null;
+  const proof = payment?.proof && typeof payment.proof === 'object'
+    ? payment.proof
+    : o.payment_proof && typeof o.payment_proof === 'object'
+      ? o.payment_proof
+      : o.paymentProof && typeof o.paymentProof === 'object'
+        ? o.paymentProof
+        : null;
+  const receivingInfo = normalizeManualPaymentReceivingInfo(
+    payment?.receiving_info
+    ?? payment?.receivingInfo
+    ?? payment?.receiver
+    ?? payment?.destination
+    ?? o.payment_receiving_info
+    ?? o.paymentReceivingInfo
+    ?? o.manual_payment_info
+    ?? o.manualPaymentInfo,
+  );
   const statusValue = status?.value ?? (status ? null : o.status) ?? 'pending';
   const items = Array.isArray(o.items)
     ? o.items
@@ -672,6 +769,19 @@ export function normalizeOrder(raw) {
     paymentIsRetryable: Boolean(payment?.is_retryable ?? payment?.isRetryable ?? false),
     paymentPaidAt: payment?.paid_at ?? payment?.paidAt ?? null,
     paymentUrl: payment?.url ?? o.payment_url ?? null,
+    paymentReceivingInfo: receivingInfo,
+    paymentProofTransactionReference:
+      proof?.transaction_reference
+      ?? proof?.transactionReference
+      ?? payment?.transaction_reference
+      ?? payment?.transactionReference
+      ?? null,
+    paymentReceiptUrl:
+      proof?.receipt_url
+      ?? proof?.receiptUrl
+      ?? proof?.screenshot_url
+      ?? proof?.screenshotUrl
+      ?? null,
     phoneNumber: o.phone_number ?? o.phoneNumber ?? null,
     deliveryPhone: o.delivery_phone ?? o.deliveryPhone ?? null,
     hasThirdPartyDelivery: Boolean(o.has_third_party_delivery ?? o.hasThirdPartyDelivery ?? false),
@@ -757,6 +867,24 @@ export const fetchOrderPayment = (orderNumber) =>
  */
 export const retryOrderPayment = (orderNumber) =>
   orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment/retry`, { method: 'POST' });
+
+/**
+ * Submit manual payment proof after the customer completes a transfer.
+ *
+ * @param {string} orderNumber
+ * @param {{transactionReference: string, receiptFile: File}} proof
+ */
+export const submitOrderPaymentProof = (orderNumber, proof) => {
+  const body = new FormData();
+  body.append('transaction_reference', String(proof.transactionReference ?? '').trim());
+  body.append('receipt', proof.receiptFile);
+
+  return orderFormRequest(`/orders/${encodeURIComponent(orderNumber)}/payment/proof`, {
+    method: 'POST',
+    body,
+    timeoutMs: 20000,
+  });
+};
 
 /**
  * Submit a confirmed order.

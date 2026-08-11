@@ -72,6 +72,8 @@
   "success": {
     "heading": "تم الطلب! 🎉",
     "body": "تم تأكيد طلبك والمطبخ بدأ يجهزه.",
+    "manualHeading": "تم إرسال إثبات الدفع",
+    "manualBody": "استلمنا بيانات التحويل. طلبك الآن بانتظار التحقق من الدفع.",
     "track": "تتبع طلبي"
   },
   "status": {
@@ -110,6 +112,7 @@
     "etaInitial": "25–35 د",
     "etaOnTheWay": "10–15 د",
     "values": {
+      "awaiting_payment": "بانتظار الدفع",
       "awaiting_verification": "بانتظار التحقق",
       "unverified": "بانتظار التحقق",
       "pending": "قيد الانتظار",
@@ -127,6 +130,8 @@
       "failed": "فشل"
     },
     "paymentValues": {
+      "awaiting_payment": "بانتظار الدفع",
+      "awaiting_verification": "بانتظار التحقق",
       "pending": "بانتظار الدفع",
       "awaiting": "بانتظار الدفع",
       "processing": "قيد المعالجة",
@@ -187,7 +192,9 @@
     "address": "العنوان",
     "phone": "الهاتف",
     "note": "ملاحظة",
-    "deliveryPhone": "هاتف التوصيل"
+    "deliveryPhone": "هاتف التوصيل",
+    "paymentMethod": "طريقة الدفع",
+    "paymentStatus": "حالة الدفع"
   },
   "openFromBot": {
     "heading": "افتح التطبيق من البوت",
@@ -234,12 +241,45 @@
     },
     "palpay": {
       "label": "بال باي",
-      "hint": "أكمل الدفع عبر بال باي بعد إرسال الطلب"
+      "hint": "أكمل الدفع عبر بال باي بعد إرسال الطلب",
+      "instructions": "استخدم رقم الطلب كملاحظة للتحويل حتى نطابق الدفع بسرعة."
     },
     "bankOfPalestine": {
       "label": "بنك فلسطين",
-      "hint": "أكمل التحويل عبر بنك فلسطين بعد إرسال الطلب"
+      "hint": "أكمل التحويل عبر بنك فلسطين بعد إرسال الطلب",
+      "instructions": "استخدم رقم الطلب كمرجع للتحويل، ثم ارفع الإيصال بالأسفل."
     }
+  },
+  "paymentInstructions": {
+    "title": "تعليمات الدفع",
+    "manualPayment": "دفع يدوي",
+    "sendPaymentTo": "أرسل الدفع إلى",
+    "awaitingPaymentNote": "طلبك بانتظار الدفع. أكمل التحويل، ثم أرسل إثبات الدفع بالأسفل.",
+    "receiverName": "اسم المستلم",
+    "accountOrPhone": "رقم الحساب / رقم محفظة الهاتف",
+    "bankOrWalletName": "اسم البنك أو المحفظة",
+    "iban": "IBAN",
+    "branchName": "اسم الفرع",
+    "amountToPay": "المبلغ المطلوب",
+    "referenceNumber": "رقم الطلب/المرجع",
+    "copy": "نسخ",
+    "copiedShort": "تم",
+    "copied": "تم نسخ {{label}}",
+    "copyFailed": "تعذر نسخ هذه القيمة.",
+    "copyValue": "نسخ {{label}}",
+    "notConfigured": "غير مهيأ",
+    "afterTransferTitle": "بعد إتمام التحويل",
+    "proofStatus": "إرسال الإثبات",
+    "transactionReference": "رقم عملية/مرجع الدفع",
+    "transactionReferencePlaceholder": "مثال: 78349210",
+    "receiptPlaceholder": "إيصال/لقطة شاشة الدفع",
+    "receiptHint": "ارفع صورة أو ملف PDF لإيصال التحويل.",
+    "missingTransaction": "أدخل رقم عملية/مرجع الدفع.",
+    "missingReceipt": "ارفع إيصال الدفع أو لقطة الشاشة.",
+    "submitProof": "دفعت — إرسال إثبات الدفع",
+    "submitting": "جارٍ إرسال الإثبات...",
+    "submitted": "تم إرسال إثبات الدفع للتحقق.",
+    "submitFailed": "تعذر إرسال إثبات الدفع. حاول مرة أخرى."
   },
   "search": {
     "placeholder": "دور على أكلة...",

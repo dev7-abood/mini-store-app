@@ -1,7 +1,13 @@
 export const ORDER_NUMBER_PATTERN = /^[A-Za-z0-9-]+$/;
 
 export const ORDER_PROGRESS_STEPS = [
-  { id: 'pending', value: 'pending', aliases: ['awaiting_verification', 'unverified'], icon: '1', step: 1 },
+  {
+    id: 'pending',
+    value: 'pending',
+    aliases: ['awaiting_payment', 'awaiting_verification', 'unverified'],
+    icon: '1',
+    step: 1,
+  },
   { id: 'confirmed', value: 'confirmed', aliases: ['accepted'], icon: '2', step: 2 },
   { id: 'preparing', value: 'preparing', icon: '3', step: 3 },
   { id: 'outForDelivery', value: 'out_for_delivery', aliases: ['on_the_way'], icon: '4', step: 4 },

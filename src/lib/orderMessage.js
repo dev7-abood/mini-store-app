@@ -27,6 +27,8 @@ function escapeHtml(text) {
  *   details: {name: string, address: string, note: string},
  *   phone: string,
  *   deliveryPhone: string,
+ *   paymentMethodLabel?: string,
+ *   paymentStatus?: string,
  * }} order
  * @returns {string} HTML message body
  */
@@ -56,6 +58,14 @@ export function buildOrderMessage(order) {
   /* Show the delivery contact only when it differs from the main phone. */
   if (order.deliveryPhone && order.deliveryPhone !== order.phone) {
     parts.push(`🛵 ${t('botMessage.deliveryPhone')}: ${escapeHtml(order.deliveryPhone)}`);
+  }
+
+  if (order.paymentMethodLabel) {
+    parts.push(`${t('botMessage.paymentMethod')}: ${escapeHtml(order.paymentMethodLabel)}`);
+  }
+
+  if (order.paymentStatus) {
+    parts.push(`${t('botMessage.paymentStatus')}: ${escapeHtml(order.paymentStatus)}`);
   }
 
   if (order.details.note.trim()) {

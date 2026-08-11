@@ -37,9 +37,11 @@ import {
   cancelOrder,
   fetchOrderPayment,
   retryOrderPayment,
+  submitOrderPaymentProof,
   normalizeOrder,
   hasBackend,
 } from '../api/client';
+import { isManualPaymentMethod } from '../lib/paymentMethods';
 import { useStoreStatus } from './StoreStatusContext';
 
 const OrderFlowContext = createContext(null);
@@ -51,6 +53,19 @@ const PAYMENT_SETTLED = new Set(['approved', 'paid', 'completed', 'declined', 'f
 const PAYMENT_POLL_MS = 3000;
 /** Give up polling after this long so we never loop forever. */
 const PAYMENT_POLL_TIMEOUT_MS = 5 * 60 * 1000;
+const MANUAL_AWAITING_PAYMENT = 'awaiting_payment';
+const MANUAL_AWAITING_VERIFICATION = 'awaiting_verification';
+
+function withManualPaymentStatus(order, methodId, status) {
+  if (!order || !isManualPaymentMethod(methodId ?? order.paymentMethod)) return order;
+
+  return {
+    ...order,
+    status,
+    paymentMethod: order.paymentMethod ?? methodId,
+    paymentStatus: status,
+  };
+}
 
 export function OrderFlowProvider({ children }) {
   const { markClosed } = useStoreStatus();
@@ -111,7 +126,7 @@ export function OrderFlowProvider({ children }) {
    * navigates to the OTP screen.
    *
    * @param {{name: string, address: string, phone: string,
-   *          delivery_phone?: string, note?: string}} details
+   *          delivery_phone?: string, note?: string, payment_method?: string}} details
    * @returns {Promise<{ok: boolean, order: object|null,
    *   message: string|null, code?: string|null}>}
    */
@@ -129,7 +144,11 @@ export function OrderFlowProvider({ children }) {
       return { ok: false, order: null, message: result.message, code: result.code };
     }
 
-    const placed = normalizeOrder(result.data);
+    const placed = withManualPaymentStatus(
+      normalizeOrder(result.data),
+      details.payment_method,
+      MANUAL_AWAITING_PAYMENT,
+    );
     setOrder(placed);
     return { ok: true, order: placed, message: null };
   }, [markClosed]);
@@ -347,6 +366,55 @@ export function OrderFlowProvider({ children }) {
     return true;
   }, [order, startPaymentPolling]);
 
+  /**
+   * Submit the transaction number and receipt for a manual transfer.
+   *
+   * @param {{transactionReference: string, receiptFile: File}} proof
+   * @returns {Promise<{ok: boolean, order: object|null, message: string|null}>}
+   */
+  const submitManualProof = useCallback(async (proof) => {
+    if (!order?.orderNumber) {
+      return { ok: false, order: null, message: null };
+    }
+
+    if (!hasBackend()) {
+      const next = withManualPaymentStatus(
+        {
+          ...order,
+          paymentProofTransactionReference: proof.transactionReference,
+        },
+        order.paymentMethod,
+        MANUAL_AWAITING_VERIFICATION,
+      );
+      setOrder(next);
+      setPayment({ status: MANUAL_AWAITING_VERIFICATION, data: next });
+      return { ok: true, order: next, message: null };
+    }
+
+    setError(null);
+    setIsBusy(true);
+    const result = await submitOrderPaymentProof(order.orderNumber, proof);
+    setIsBusy(false);
+
+    if (!result.ok) {
+      setError(result.message);
+      return { ok: false, order: null, message: result.message };
+    }
+
+    const submitted = normalizeOrder(result.data) ?? {
+      ...order,
+      paymentProofTransactionReference: proof.transactionReference,
+    };
+    const next = withManualPaymentStatus(
+      submitted,
+      submitted.paymentMethod ?? order.paymentMethod,
+      MANUAL_AWAITING_VERIFICATION,
+    );
+    setOrder(next);
+    setPayment({ status: MANUAL_AWAITING_VERIFICATION, data: result.data });
+    return { ok: true, order: next, message: result.message };
+  }, [order]);
+
   /** Clear everything (after a completed or abandoned order). */
   const reset = useCallback(() => {
     stopPolling();
@@ -374,12 +442,13 @@ export function OrderFlowProvider({ children }) {
       startPaymentPolling,
       stopPolling,
       retryPayment,
+      submitManualProof,
       reset,
     }),
     [
       order, pricing, payment, isBusy, error,
       preview, place, verify, resend, loadOrder, refresh, cancel,
-      startPaymentPolling, stopPolling, retryPayment, reset,
+      startPaymentPolling, stopPolling, retryPayment, submitManualProof, reset,
     ],
   );
 

@@ -16,6 +16,7 @@ export const SCREENS = Object.freeze({
   CHECKOUT: 'checkout',
   PHONE: 'phone',
   OTP: 'otp',
+  PAYMENT_INSTRUCTIONS: 'payment_instructions',
   SUCCESS: 'success',
   STATUS: 'status',
 });
