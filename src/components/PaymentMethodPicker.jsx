@@ -81,8 +81,10 @@ export default function PaymentMethodPicker({ value, onChange }) {
                         <span className={styles.badge}>{t(method.badgeKey)}</span>
                       )}
                     </span>
-                    <small>{t(method.hintKey)}</small>
-                    <span className={styles.typePill}>{methodTypeLabel}</span>
+                    <span className={styles.metaRow}>
+                      <small>{t(method.hintKey)}</small>
+                      <span className={styles.typePill}>{methodTypeLabel}</span>
+                    </span>
                   </span>
 
                   <span className={styles.radio} aria-hidden="true" />

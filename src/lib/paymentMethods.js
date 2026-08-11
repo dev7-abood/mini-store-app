@@ -35,7 +35,7 @@ export const PAYMENT_METHODS = [
     labelKey: 'payment.palpay.label',
     hintKey: 'payment.palpay.hint',
     type: 'manual',
-    logo: 'https://www.palpay.ps/storage/2025/01/07/bG9nbzE3MzYyNTQwNzg=.svg',
+    logo: 'https://www.palpay.ps/assets/images/logo-icon.svg',
     enabled: true,
   },
   {
