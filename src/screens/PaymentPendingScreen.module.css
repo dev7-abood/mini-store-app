@@ -30,6 +30,7 @@
   background: var(--card);
   border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
   border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(34, 24, 14, 0.055);
 }
 
 .hero {
@@ -200,7 +201,7 @@
 
 .panel,
 .reminderCard {
-  padding: 14px;
+  padding: 15px;
 }
 
 .panelTitle,
@@ -346,6 +347,16 @@
 .receiverHeader {
   justify-content: flex-start;
   align-items: center;
+  border-radius: 14px;
+  padding: 11px;
+  margin-bottom: 10px;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--saffron) 12%, var(--card)),
+      color-mix(in srgb, var(--bg) 60%, var(--card))
+    );
+  border: 1px solid color-mix(in srgb, var(--saffron) 24%, var(--line));
 }
 
 .receiverHeader strong {
@@ -396,17 +407,58 @@
 
 .copyRows {
   display: grid;
-  gap: 0;
+  gap: 8px;
+  border-radius: 14px;
+  padding: 6px;
+  background: color-mix(in srgb, var(--bg) 58%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 62%, var(--card));
+}
+
+.copyRows .copyRow {
+  border-top: 0;
+  border-radius: 11px;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 54%, var(--card));
+}
+
+.copyableRow {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--saffron) 8%, var(--card)),
+      var(--card) 66%
+    ) !important;
+}
+
+.noCopyRow {
+  grid-template-columns: 1fr;
+  background: color-mix(in srgb, var(--bg) 44%, var(--card)) !important;
+}
+
+.noCopyRow > div {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.noCopyRow span {
+  align-self: center;
+}
+
+.noCopyRow b {
+  color: var(--basil);
+  font-size: 14px;
+  text-align: end;
 }
 
 .copyButton {
-  min-width: 58px;
+  min-width: 50px;
   min-height: 32px;
   border-radius: 999px;
-  padding: 7px 10px;
-  background: color-mix(in srgb, var(--basil) 8%, var(--card));
-  border: 1px solid color-mix(in srgb, var(--basil) 16%, var(--line));
-  color: var(--basil);
+  padding: 7px 9px;
+  background: color-mix(in srgb, var(--tomato) 8%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--tomato) 24%, var(--line));
+  color: var(--tomato);
   font-size: 11px;
   font-weight: 900;
   transition: transform 0.12s, background 0.16s, border-color 0.16s;
@@ -479,7 +531,11 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .copyButton:hover,
+  .copyButton:hover {
+    border-color: color-mix(in srgb, var(--tomato) 36%, var(--line));
+    background: color-mix(in srgb, var(--tomato) 11%, var(--card));
+  }
+
   .reminderButton:hover:not(:disabled) {
     border-color: color-mix(in srgb, var(--basil) 32%, var(--line));
     background: color-mix(in srgb, var(--basil) 11%, var(--card));

@@ -73,7 +73,7 @@ function CopyRow({ label, value, copyable = false, valueDir = 'auto', copied, on
   if (!value) return null;
 
   return (
-    <div className={styles.copyRow}>
+    <div className={classNames(styles.copyRow, copyable ? styles.copyableRow : styles.noCopyRow)}>
       <div>
         <span>{label}</span>
         <b dir={valueDir}>{value}</b>
@@ -166,14 +166,12 @@ export default function PaymentPendingScreen() {
         key: 'amount',
         label: t('paymentPending.amount'),
         value: amountText,
-        copyable: true,
         valueDir: 'ltr',
       },
       {
         key: 'reference',
         label: t('paymentPending.reference'),
         value: order.reference,
-        copyable: true,
         valueDir: 'ltr',
       },
     ],
