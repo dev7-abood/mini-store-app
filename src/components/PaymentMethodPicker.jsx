@@ -10,6 +10,8 @@ import styles from './PaymentMethodPicker.module.css';
 | primary color, so it themes automatically with branding.
 */
 
+const PAYMENT_TYPE_ORDER = ['smart', 'manual'];
+
 /**
  * @param {{value: string, onChange: (id: string) => void}} props
  */
@@ -19,41 +21,77 @@ export default function PaymentMethodPicker({ value, onChange }) {
   /* A single method is informational, not a decision: the card is shown
      (so the customer knows how they're paying) but not interactive. */
   const single = AVAILABLE_PAYMENT_METHODS.length === 1;
+  const groups = PAYMENT_TYPE_ORDER
+    .map((type) => ({
+      type,
+      methods: AVAILABLE_PAYMENT_METHODS.filter((method) => method.type === type),
+    }))
+    .filter((group) => group.methods.length > 0);
 
   return (
     <div className={styles.group} role="radiogroup" aria-label={t('payment.title')}>
-      {AVAILABLE_PAYMENT_METHODS.map((method) => {
-        const selected = value === method.id;
+      {groups.map((group) => (
+        <section key={group.type} className={styles.category}>
+          <div className={styles.categoryHeader}>
+            <span>{t(`payment.types.${group.type}`)}</span>
+          </div>
 
-        return (
-          <button
-            key={method.id}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            className={`${styles.card} ${selected ? styles.selected : ''} ${single ? styles.single : ''}`}
-            disabled={single}
-            onClick={() => onChange(method.id)}
-          >
-            <span className={styles.mark}>
-              {method.logo ? (
-                <img src={method.logo} alt="" className={styles.logo} />
-              ) : (
-                <span className={styles.emoji}>{method.icon}</span>
-              )}
-            </span>
+          <div className={styles.cards}>
+            {group.methods.map((method) => {
+              const selected = value === method.id;
+              const methodTypeLabel = t(`payment.types.${method.type}`);
+              const methodBadgeLabel = method.badgeKey ? t(method.badgeKey) : '';
+              const ariaLabel = [
+                t(method.labelKey),
+                methodBadgeLabel,
+                t(method.hintKey),
+                methodTypeLabel,
+              ].filter(Boolean).join(' ');
+              const cardClassName = [
+                styles.card,
+                styles[method.type],
+                method.recommended ? styles.recommended : '',
+                selected ? styles.selected : '',
+                single ? styles.single : '',
+              ].filter(Boolean).join(' ');
 
-            <span className={styles.text}>
-              <b>{t(method.labelKey)}</b>
-              <small>{t(method.hintKey)}</small>
-            </span>
+              return (
+                <button
+                  key={method.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-label={ariaLabel}
+                  className={cardClassName}
+                  disabled={single}
+                  onClick={() => onChange(method.id)}
+                >
+                  <span className={styles.mark}>
+                    {method.logo ? (
+                      <img src={method.logo} alt="" className={styles.logo} />
+                    ) : (
+                      <span className={styles.emoji}>{method.icon}</span>
+                    )}
+                  </span>
 
-            <span className={styles.radio} aria-hidden="true">
-              {selected && <span className={styles.dot} />}
-            </span>
-          </button>
-        );
-      })}
+                  <span className={styles.text}>
+                    <span className={styles.titleRow}>
+                      <b>{t(method.labelKey)}</b>
+                      {method.badgeKey && (
+                        <span className={styles.badge}>{t(method.badgeKey)}</span>
+                      )}
+                    </span>
+                    <small>{t(method.hintKey)}</small>
+                    <span className={styles.typePill}>{methodTypeLabel}</span>
+                  </span>
+
+                  <span className={styles.radio} aria-hidden="true" />
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

@@ -11,6 +11,32 @@
     "back": "Back",
     "currency": "₪{{amount}}"
   },
+  "payment": {
+    "title": "Payment method",
+    "types": {
+      "smart": "Smart Payment",
+      "manual": "Manual Payment"
+    },
+    "badges": {
+      "recommended": "Recommended"
+    },
+    "cash": {
+      "label": "Cash on delivery",
+      "hint": "Pay the driver in cash when your order arrives"
+    },
+    "jawwalpay": {
+      "label": "Jawwal Pay",
+      "hint": "Pay from your wallet with a confirmation request"
+    },
+    "palpay": {
+      "label": "PalPay",
+      "hint": "Complete payment with PalPay after placing the order"
+    },
+    "bankOfPalestine": {
+      "label": "Bank of Palestine",
+      "hint": "Complete a Bank of Palestine transfer after placing the order"
+    }
+  },
   "status": {
     "title": "Order Status",
     "loadingTitle": "Loading order",

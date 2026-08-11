@@ -8,14 +8,45 @@
 .group {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-inline: 2px;
+}
+
+.categoryHeader span {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.cards {
+  display: grid;
   gap: 10px;
 }
 
 .card {
-  display: flex;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 22px;
   align-items: center;
   gap: 12px;
   width: 100%;
+  min-height: 88px;
   padding: 14px;
   background: var(--card);
   border: 1.5px solid var(--line);
@@ -23,7 +54,69 @@
   cursor: pointer;
   text-align: start;
   font-family: inherit;
-  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+  overflow: hidden;
+  outline: none;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 5%, transparent);
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s, background 0.18s;
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.manual {
+  background: linear-gradient(
+    180deg,
+    var(--card),
+    color-mix(in srgb, var(--card) 92%, var(--bg))
+  );
+}
+
+.recommended {
+  border-color: color-mix(in srgb, var(--basil) 34%, var(--line));
+  background:
+    radial-gradient(
+      circle at 88% 0%,
+      color-mix(in srgb, var(--saffron) 26%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--basil) 9%, var(--card)) 0%,
+      var(--card) 52%,
+      color-mix(in srgb, var(--saffron) 18%, var(--card)) 100%
+    );
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--basil) 14%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--saffron) 12%, transparent) inset;
+}
+
+.recommended::before {
+  content: "";
+  position: absolute;
+  top: -45%;
+  bottom: -45%;
+  left: -58%;
+  z-index: 0;
+  width: 42%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.46),
+    transparent
+  );
+  opacity: 0.72;
+  transform: translateX(-15%) skewX(-18deg);
+  animation: shine 5.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.card:focus-visible {
+  border-color: var(--saffron);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--saffron) 24%, transparent),
+    0 8px 20px color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 .card:active {
@@ -32,25 +125,36 @@
 
 .selected {
   border-color: var(--basil);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--basil) 14%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--basil) 14%, transparent),
+    0 10px 24px color-mix(in srgb, var(--basil) 10%, transparent);
+}
+
+.selected.recommended {
+  border-color: color-mix(in srgb, var(--basil) 76%, var(--saffron));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--basil) 16%, transparent),
+    0 14px 30px color-mix(in srgb, var(--basil) 17%, transparent);
 }
 
 /* Logo plate: white so brand logos keep their intended colors on any
    tenant background, and transparent PNGs never sit on a clashing tint. */
 .mark {
-  flex: 0 0 auto;
-  width: 54px;
-  height: 38px;
-  border-radius: 10px;
+  width: 58px;
+  height: 42px;
+  border-radius: 12px;
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--line) 74%, #fff);
   display: grid;
   place-items: center;
   overflow: hidden;
+  padding: 6px;
+  box-shadow: 0 6px 14px rgba(24, 18, 12, 0.07);
 }
 
 .logo {
-  width: 44px;
+  width: 100%;
+  max-width: 48px;
   height: 30px;
   object-fit: contain;
 }
@@ -60,14 +164,24 @@
 }
 
 .text {
-  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
   min-width: 0;
 }
 
-.text b {
-  display: block;
+.titleRow b {
+  min-width: 0;
   font-size: 14.5px;
   font-weight: 800;
+  line-height: 1.15;
   color: var(--ink);
 }
 
@@ -75,29 +189,76 @@
   display: block;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--ink-soft);
-  margin-top: 2px;
+}
+
+.badge,
+.typePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  min-height: 23px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge {
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--saffron) 36%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--saffron) 54%, transparent);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.typePill {
+  width: fit-content;
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--line) 54%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 64%, transparent);
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.smart .typePill {
+  background: color-mix(in srgb, var(--saffron) 25%, var(--card));
+  border-color: color-mix(in srgb, var(--saffron) 46%, transparent);
+  color: var(--ink);
 }
 
 .radio {
-  flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid var(--line);
   display: grid;
   place-items: center;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
 }
 
 .selected .radio {
+  background: var(--basil);
   border-color: var(--basil);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--basil) 12%, transparent);
 }
 
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--basil);
+.radio::after {
+  content: "";
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  opacity: 0;
+  transform: rotate(-45deg) scale(0.62);
+  transition: opacity 0.16s, transform 0.16s;
+}
+
+.selected .radio::after {
+  opacity: 1;
+  transform: rotate(-45deg) scale(1);
 }
 
 /* Only one method offered: shown for clarity, not interactive. */
@@ -107,4 +268,62 @@
 
 .single:active {
   transform: none;
+}
+
+@keyframes shine {
+  0%,
+  44% {
+    transform: translateX(-15%) skewX(-18deg);
+  }
+
+  62% {
+    transform: translateX(390%) skewX(-18deg);
+  }
+
+  100% {
+    transform: translateX(390%) skewX(-18deg);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--basil) 36%, var(--line));
+    transform: translateY(-1px);
+  }
+
+  .card:hover:not(:disabled):active {
+    transform: translateY(0) scale(0.99);
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    grid-template-columns: 50px minmax(0, 1fr) 22px;
+    gap: 10px;
+    min-height: 84px;
+    padding: 12px;
+  }
+
+  .mark {
+    width: 50px;
+    height: 38px;
+  }
+
+  .logo {
+    max-width: 42px;
+    height: 27px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .recommended::before {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recommended::before {
+    animation: none;
+    opacity: 0;
+  }
 }
