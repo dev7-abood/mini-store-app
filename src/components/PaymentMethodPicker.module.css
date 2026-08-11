@@ -138,15 +138,15 @@
   background:
     radial-gradient(
       circle at 26% 18%,
-      rgba(255, 255, 255, 0.66),
+      color-mix(in srgb, var(--saffron) 22%, #fff),
       transparent 39%
     ),
     linear-gradient(
       145deg,
-      color-mix(in srgb, var(--card) 82%, var(--ink) 8%),
-      color-mix(in srgb, var(--card) 68%, var(--ink) 14%)
+      color-mix(in srgb, var(--card) 86%, var(--basil) 10%),
+      color-mix(in srgb, var(--card) 74%, var(--saffron) 18%)
     );
-  border: 1px solid color-mix(in srgb, var(--ink) 13%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--basil) 20%, var(--line));
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -162,9 +162,9 @@
     ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--basil) 78%, #000),
-      color-mix(in srgb, var(--basil) 64%, var(--saffron)) 58%,
-      color-mix(in srgb, var(--saffron) 36%, var(--basil))
+      color-mix(in srgb, var(--basil) 82%, var(--card)),
+      color-mix(in srgb, var(--basil) 68%, var(--saffron)) 58%,
+      color-mix(in srgb, var(--saffron) 42%, var(--basil))
     )
   );
   border-color: color-mix(in srgb, var(--saffron) 52%, var(--basil));

@@ -25,7 +25,6 @@ export const PAYMENT_METHODS = [
     labelKey: 'payment.jawwalpay.label',
     hintKey: 'payment.jawwalpay.hint',
     type: 'smart',
-    badgeKey: 'payment.badges.recommended',
     recommended: true,
     logo: '/payments/jawwalpay.png',
     enabled: true,
