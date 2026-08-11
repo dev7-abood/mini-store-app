@@ -16,8 +16,11 @@
 
 /** @typedef {{
  *   receiverName?: string,
+ *   accountHolderName?: string,
+ *   walletPhoneNumber?: string,
  *   accountNumber?: string,
  *   bankOrWalletName?: string,
+ *   bankName?: string,
  *   iban?: string,
  *   branchName?: string,
  *   additionalInstructions?: string,
@@ -34,11 +37,15 @@ const manualEnv = (methodKey, field) =>
 
 const manualReceivingInfo = (methodKey, defaults = {}) => ({
   receiverName: manualEnv(methodKey, 'RECEIVER_NAME'),
-  accountNumber:
-    manualEnv(methodKey, 'ACCOUNT_NUMBER')
-    || manualEnv(methodKey, 'WALLET_PHONE_NUMBER')
-    || manualEnv(methodKey, 'WALLET_PHONE'),
-  bankOrWalletName: manualEnv(methodKey, 'BANK_OR_WALLET_NAME') || defaults.bankOrWalletName || '',
+  accountHolderName: manualEnv(methodKey, 'ACCOUNT_HOLDER_NAME'),
+  walletPhoneNumber: manualEnv(methodKey, 'WALLET_PHONE_NUMBER') || manualEnv(methodKey, 'WALLET_PHONE'),
+  accountNumber: manualEnv(methodKey, 'ACCOUNT_NUMBER'),
+  bankOrWalletName:
+    manualEnv(methodKey, 'BANK_OR_WALLET_NAME')
+    || manualEnv(methodKey, 'BANK_NAME')
+    || defaults.bankOrWalletName
+    || '',
+  bankName: manualEnv(methodKey, 'BANK_NAME'),
   iban: manualEnv(methodKey, 'IBAN'),
   branchName: manualEnv(methodKey, 'BRANCH_NAME'),
   additionalInstructions:
@@ -118,13 +125,21 @@ export function normalizeManualPaymentReceivingInfo(raw) {
 
   const info = {
     receiverName: raw.receiverName ?? raw.receiver_name ?? raw.account_name ?? raw.name ?? '',
-    accountNumber:
-      raw.accountNumber
-      ?? raw.account_number
-      ?? raw.walletPhoneNumber
+    accountHolderName:
+      raw.accountHolderName
+      ?? raw.account_holder_name
+      ?? raw.holder_name
+      ?? raw.account_name
+      ?? '',
+    walletPhoneNumber:
+      raw.walletPhoneNumber
       ?? raw.wallet_phone_number
       ?? raw.wallet_phone
       ?? raw.phone
+      ?? '',
+    accountNumber:
+      raw.accountNumber
+      ?? raw.account_number
       ?? '',
     bankOrWalletName:
       raw.bankOrWalletName
@@ -132,6 +147,12 @@ export function normalizeManualPaymentReceivingInfo(raw) {
       ?? raw.bank_name
       ?? raw.wallet_name
       ?? raw.provider_name
+      ?? '',
+    bankName:
+      raw.bankName
+      ?? raw.bank_name
+      ?? raw.bankOrWalletName
+      ?? raw.bank_or_wallet_name
       ?? '',
     iban: raw.iban ?? raw.IBAN ?? '',
     branchName: raw.branchName ?? raw.branch_name ?? '',

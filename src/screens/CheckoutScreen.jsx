@@ -1,8 +1,12 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
+import { useCart } from '../context/CartContext';
 import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
+import { createMockManualPaymentOrder } from '../lib/manualPaymentMockService';
+import { isManualPaymentMethod } from '../lib/paymentMethods';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import Field from '../components/ui/Field';
@@ -15,9 +19,17 @@ import styles from './CheckoutScreen.module.css';
 /** Delivery details form (name, address, kitchen note). */
 export default function CheckoutScreen() {
   const { t } = useTranslation();
-  const { details, updateDetails, paymentMethod, setPaymentMethod } = useOrder();
+  const {
+    details,
+    updateDetails,
+    paymentMethod,
+    setPaymentMethod,
+    confirmOrder,
+  } = useOrder();
+  const { entries, total } = useCart();
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
+  const routeNavigate = useNavigate();
   const { notify } = useTelegram();
 
   const submit = () => {
@@ -30,6 +42,18 @@ export default function CheckoutScreen() {
       notify(t('checkout.missingFields'));
       return;
     }
+
+    if (isManualPaymentMethod(paymentMethod)) {
+      const order = createMockManualPaymentOrder({
+        entries,
+        total,
+        paymentMethodId: paymentMethod,
+      });
+      confirmOrder(order.orderNumber);
+      routeNavigate(`/orders/${encodeURIComponent(order.id)}/payment/pending`);
+      return;
+    }
+
     navigate(SCREENS.PHONE);
   };
 

@@ -1,0 +1,520 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 28px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 156px;
+  min-height: 32px;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: color-mix(in srgb, var(--saffron) 22%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--saffron) 40%, var(--line));
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero,
+.progressCard,
+.panel,
+.reminderCard {
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
+  border-radius: 16px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 13px;
+  padding: 15px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--saffron) 17%, var(--card)), var(--card) 58%),
+    var(--card);
+  overflow: hidden;
+}
+
+.heroIcon {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--saffron) 24%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--saffron) 42%, var(--line));
+}
+
+.heroIcon::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--basil) 22%, transparent);
+  border-top-color: var(--basil);
+  animation: pendingSpin 1.15s linear infinite;
+}
+
+.heroIcon span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--saffron);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--saffron) 20%, transparent);
+}
+
+.heroText {
+  min-width: 0;
+}
+
+.heroText span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.heroText h2 {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.22;
+  letter-spacing: 0;
+  margin-top: 4px;
+}
+
+.heroText p {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-top: 7px;
+}
+
+.progressCard {
+  padding: 14px;
+}
+
+.progressStep {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 15px;
+}
+
+.progressStep:last-child {
+  padding-bottom: 0;
+}
+
+.progressStep::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 13px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.progressStep:last-child::before {
+  display: none;
+}
+
+.progressStep span {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+}
+
+.progressStep b {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.done::before {
+  background: var(--ok);
+}
+
+.done span {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+
+.done span::after {
+  content: "";
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg);
+}
+
+.current span {
+  border-color: var(--basil);
+  background: var(--basil);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--basil) 12%, transparent);
+}
+
+.current span::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.upcoming b {
+  color: color-mix(in srgb, var(--ink-soft) 80%, var(--card));
+}
+
+.upcoming span::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--ink-soft) 54%, var(--card));
+}
+
+.panel,
+.reminderCard {
+  padding: 14px;
+}
+
+.panelTitle,
+.receiverHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.panelTitle span,
+.receiverHeader span {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.panelTitle b {
+  color: var(--basil);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 0;
+}
+
+.compactRow,
+.copyRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+}
+
+.compactRow:first-child,
+.copyRow:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.compactRow:last-child,
+.copyRow:last-child {
+  padding-bottom: 0;
+}
+
+.compactRow span,
+.copyRow span {
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.compactRow b,
+.copyRow b {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.45;
+  text-align: end;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
+}
+
+.copyRow > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.copyRow b {
+  text-align: start;
+}
+
+.strongValue {
+  color: var(--basil) !important;
+  font-size: 14px !important;
+}
+
+.items {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+}
+
+.itemRow,
+.totalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.itemRow {
+  padding: 9px 0;
+}
+
+.itemRow b {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.itemRow span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.itemRow strong,
+.totalRow b {
+  color: var(--basil);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.totalRow {
+  border-radius: 12px;
+  margin-top: 4px;
+  padding: 11px 12px;
+  background: color-mix(in srgb, var(--saffron) 11%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--saffron) 22%, var(--line));
+}
+
+.totalRow span {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.receiverHeader {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.receiverHeader strong {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+.methodMark {
+  width: 54px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  padding: 7px;
+  background:
+    radial-gradient(
+      circle at 24% 18%,
+      color-mix(in srgb, var(--saffron) 28%, #fff),
+      transparent 40%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--card) 78%, var(--basil) 12%),
+      color-mix(in srgb, var(--card) 72%, var(--saffron) 20%)
+    );
+  border: 1px solid color-mix(in srgb, var(--basil) 22%, var(--line));
+  overflow: hidden;
+}
+
+.methodMark img {
+  width: 100%;
+  max-width: 40px;
+  height: 27px;
+  object-fit: contain;
+}
+
+.methodMark span {
+  color: var(--basil);
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.copyRows {
+  display: grid;
+  gap: 0;
+}
+
+.copyButton {
+  min-width: 58px;
+  min-height: 32px;
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: color-mix(in srgb, var(--basil) 8%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--basil) 16%, var(--line));
+  color: var(--basil);
+  font-size: 11px;
+  font-weight: 900;
+  transition: transform 0.12s, background 0.16s, border-color 0.16s;
+}
+
+.copyButton:active {
+  transform: scale(0.96);
+}
+
+.copyDone {
+  background: color-mix(in srgb, var(--ok) 13%, var(--card));
+  border-color: color-mix(in srgb, var(--ok) 25%, var(--line));
+  color: var(--ok);
+}
+
+.instructions {
+  display: grid;
+  gap: 8px;
+  padding-inline-start: 20px;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.note {
+  margin-top: 12px;
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: color-mix(in srgb, var(--saffron) 12%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--saffron) 22%, var(--line));
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.reminderCard {
+  display: grid;
+  gap: 9px;
+}
+
+.reminderButton {
+  background: color-mix(in srgb, var(--basil) 8%, var(--card));
+  color: var(--basil);
+  border: 1px solid color-mix(in srgb, var(--basil) 16%, var(--line));
+  box-shadow: none;
+}
+
+.reminderSuccess,
+.cooldown {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.reminderSuccess {
+  color: var(--ok);
+}
+
+.cooldown {
+  color: var(--ink-soft);
+}
+
+@keyframes pendingSpin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .copyButton:hover,
+  .reminderButton:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--basil) 32%, var(--line));
+    background: color-mix(in srgb, var(--basil) 11%, var(--card));
+  }
+}
+
+@media (max-width: 360px) {
+  .content {
+    padding-inline: 12px;
+  }
+
+  .hero,
+  .progressCard,
+  .panel,
+  .reminderCard {
+    padding: 12px;
+  }
+
+  .hero {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .heroIcon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .heroText h2 {
+    font-size: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroIcon::before {
+    animation: none;
+  }
+}

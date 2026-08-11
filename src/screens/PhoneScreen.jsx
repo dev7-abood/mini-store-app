@@ -6,7 +6,6 @@ import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useOrderFlow } from '../context/OrderFlowContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { formatLocalPhone, toLocalDigits, LOCAL_DIGITS } from '../lib/phone';
-import { isManualPaymentMethod } from '../lib/paymentMethods';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import CenterIllustration from '../components/ui/CenterIllustration';
@@ -61,7 +60,7 @@ export default function PhoneScreen() {
   const mainRef = useRef(null);
   const {
     phone, setPhone, deliveryPhone, setDeliveryPhone,
-    details, fullPhone, fullDeliveryPhone, paymentMethod, confirmOrder,
+    details, fullPhone, fullDeliveryPhone, paymentMethod,
   } = useOrder();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
@@ -115,12 +114,6 @@ export default function PhoneScreen() {
           ? t('storeStatus.closedFallback')
           : result.message || t('phone.orderFailed'),
       );
-      return;
-    }
-
-    if (isManualPaymentMethod(paymentMethod)) {
-      confirmOrder(result.order?.orderNumber);
-      navigate(SCREENS.PAYMENT_INSTRUCTIONS);
       return;
     }
 
