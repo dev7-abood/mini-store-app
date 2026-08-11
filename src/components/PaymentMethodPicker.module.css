@@ -35,19 +35,19 @@
 
 .cards {
   display: grid;
-  gap: 9px;
+  gap: 10px;
 }
 
 .card {
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) 20px;
+  grid-template-columns: 54px minmax(0, 1fr) 20px;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   width: 100%;
-  min-height: 82px;
-  padding: 12px 13px;
+  min-height: 88px;
+  padding: 14px;
   background: var(--card);
   border: 1.5px solid var(--line);
   border-radius: 15px;
@@ -132,59 +132,80 @@
 /* Logo plate: a raised neutral tint keeps provider marks legible on any
    tenant surface without feeling like a flat square. */
 .mark {
-  width: 52px;
-  height: 40px;
-  border-radius: 12px;
+  position: relative;
+  isolation: isolate;
+  width: 54px;
+  height: 42px;
+  border-radius: 13px;
   background:
     radial-gradient(
-      circle at 26% 18%,
-      color-mix(in srgb, var(--saffron) 22%, #fff),
-      transparent 39%
+      circle at 24% 18%,
+      color-mix(in srgb, var(--saffron) 30%, #fff),
+      transparent 38%
     ),
     linear-gradient(
       145deg,
-      color-mix(in srgb, var(--card) 86%, var(--basil) 10%),
-      color-mix(in srgb, var(--card) 74%, var(--saffron) 18%)
+      color-mix(in srgb, var(--card) 78%, var(--basil) 13%),
+      color-mix(in srgb, var(--card) 70%, var(--saffron) 22%)
     );
-  border: 1px solid color-mix(in srgb, var(--basil) 20%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--basil) 24%, var(--line));
   display: grid;
   place-items: center;
   overflow: hidden;
   padding: 6px;
 }
 
+.mark::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  border-radius: 11px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.26),
+      transparent 46%
+    );
+  pointer-events: none;
+}
+
 .recommended .mark {
   background:
     radial-gradient(
       circle at 24% 18%,
-      rgba(255, 255, 255, 0.22),
-      transparent 34%
+      color-mix(in srgb, var(--saffron) 28%, #fff),
+      transparent 36%
     ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--basil) 82%, var(--card)),
-      color-mix(in srgb, var(--basil) 68%, var(--saffron)) 58%,
-      color-mix(in srgb, var(--saffron) 42%, var(--basil))
+      color-mix(in srgb, var(--basil) 76%, var(--card)),
+      color-mix(in srgb, var(--basil) 62%, var(--saffron)) 58%,
+      color-mix(in srgb, var(--saffron) 46%, var(--basil))
     )
   );
-  border-color: color-mix(in srgb, var(--saffron) 52%, var(--basil));
+  border-color: color-mix(in srgb, var(--saffron) 58%, var(--basil));
 }
 
 .logo {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 39px;
-  height: 26px;
+  max-width: 40px;
+  height: 27px;
   object-fit: contain;
 }
 
 .emoji {
+  position: relative;
+  z-index: 1;
   font-size: 20px;
 }
 
 .text {
   min-width: 0;
   display: grid;
-  gap: 5px;
+  gap: 6px;
 }
 
 .titleRow {
@@ -197,7 +218,7 @@
 
 .titleRow b {
   min-width: 0;
-  font-size: 14.3px;
+  font-size: 14.5px;
   font-weight: 800;
   line-height: 1.15;
   color: var(--ink);
@@ -207,7 +228,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
+  gap: 7px 8px;
   min-width: 0;
 }
 
@@ -216,7 +237,7 @@
   flex: 1 1 122px;
   display: -webkit-box;
   overflow: hidden;
-  font-size: 11.8px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.28;
   color: var(--ink-soft);
@@ -247,8 +268,8 @@
 .typePill {
   flex: 0 0 auto;
   width: fit-content;
-  min-height: 21px;
-  padding: 3px 8px;
+  min-height: 22px;
+  padding: 3px 9px;
   background: color-mix(in srgb, var(--line) 44%, transparent);
   border: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
   color: var(--ink-soft);
@@ -330,20 +351,20 @@
 
 @media (max-width: 360px) {
   .card {
-    grid-template-columns: 48px minmax(0, 1fr) 20px;
-    gap: 9px;
-    min-height: 78px;
-    padding: 11px 10px;
+    grid-template-columns: 50px minmax(0, 1fr) 20px;
+    gap: 10px;
+    min-height: 82px;
+    padding: 12px 11px;
   }
 
   .mark {
-    width: 48px;
-    height: 37px;
+    width: 50px;
+    height: 39px;
   }
 
   .logo {
-    max-width: 36px;
-    height: 24px;
+    max-width: 37px;
+    height: 25px;
   }
 }
 
