@@ -29,6 +29,10 @@ export function OrderProvider({ children }) {
   const [deliveryEdited, setDeliveryEdited] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(DEFAULT_PAYMENT_METHOD);
+  const [manualPaymentSender, setManualPaymentSender] = useState({
+    fullName: '',
+    accountIdentifier: '',
+  });
   const prefilled = useRef(false);
 
   /* Pre-fill for returning customers: when the launch sync delivers a
@@ -75,6 +79,9 @@ export function OrderProvider({ children }) {
       },
       paymentMethod,
       setPaymentMethod,
+      manualPaymentSender,
+      updateManualPaymentSender: (patch) =>
+        setManualPaymentSender((prev) => ({ ...prev, ...patch })),
       fullPhone: toE164(phone),
       /** Falls back to the main phone when the delivery field is empty. */
       /* Delivery phone: the number the driver calls. Falls back to the
@@ -102,9 +109,18 @@ export function OrderProvider({ children }) {
         setDeliveryEdited(false);
         setOrderNumber(null);
         setPaymentMethod(DEFAULT_PAYMENT_METHOD);
+        setManualPaymentSender({ fullName: '', accountIdentifier: '' });
       },
     }),
-    [details, phone, deliveryPhone, deliveryEdited, orderNumber, paymentMethod],
+    [
+      details,
+      phone,
+      deliveryPhone,
+      deliveryEdited,
+      orderNumber,
+      paymentMethod,
+      manualPaymentSender,
+    ],
   );
 
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;

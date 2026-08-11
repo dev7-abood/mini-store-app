@@ -119,6 +119,14 @@ export default function PaymentPendingScreen() {
     : order.paymentMethod.name || t('paymentPending.manualPayment');
   const statusLabel = t(`status.paymentValues.${order.verification.status}`);
   const amountText = money(order.totalAmount);
+  const customerPayment = {
+    fullName: order.customerPayment.fullName ?? order.customerPayment.senderName,
+    accountIdentifier:
+      order.customerPayment.accountIdentifier
+      ?? order.customerPayment.senderPhoneOrAccountNumber,
+    transactionNumber: order.customerPayment.transactionNumber,
+    paymentNote: order.customerPayment.paymentNote,
+  };
   const receiverRows = useMemo(
     () => [
       {
@@ -274,7 +282,7 @@ export default function PaymentPendingScreen() {
           <div className={styles.receiverHeader}>
             <MethodMark method={order.paymentMethod} label={methodLabel} />
             <div>
-              <span>{t('paymentPending.sendPaymentTo')}</span>
+              <span>{t('paymentPending.paymentTo')}</span>
               <strong>{methodLabel}</strong>
             </div>
           </div>
@@ -309,18 +317,18 @@ export default function PaymentPendingScreen() {
             <span>{t('paymentPending.paymentFrom')}</span>
           </div>
           <div className={styles.summaryGrid}>
-            <CompactRow label={t('paymentPending.senderName')} value={order.customerPayment.senderName} />
+            <CompactRow label={t('paymentPending.senderName')} value={customerPayment.fullName} />
             <CompactRow
               label={t('paymentPending.senderPhoneOrAccount')}
-              value={order.customerPayment.senderPhoneOrAccountNumber}
+              value={customerPayment.accountIdentifier}
               valueDir="ltr"
             />
             <CompactRow
               label={t('paymentPending.transactionNumber')}
-              value={order.customerPayment.transactionNumber}
+              value={customerPayment.transactionNumber}
               valueDir="ltr"
             />
-            <CompactRow label={t('paymentPending.paymentNote')} value={order.customerPayment.paymentNote} />
+            <CompactRow label={t('paymentPending.paymentNote')} value={customerPayment.paymentNote} />
           </div>
         </section>
 

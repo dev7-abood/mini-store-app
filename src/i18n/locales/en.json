@@ -11,6 +11,33 @@
     "delivery": "Delivery",
     "total": "Total"
   },
+  "checkout": {
+    "title": "Delivery Details",
+    "nameLabel": "Full name",
+    "namePlaceholder": "Example: Abdulrahman",
+    "addressLabel": "Delivery address",
+    "addressPlaceholder": "Street, building, floor...",
+    "noteLabel": "Kitchen note (optional)",
+    "notePlaceholder": "No onions, extra sauce...",
+    "continue": "Continue",
+    "missingFields": "Please enter your name and address",
+    "manualSender": {
+      "title": "Payment Sender Information",
+      "fromBadge": "Payment From",
+      "helper": "Enter the full name and phone number/account number that you will use to send the payment. We will use this information to identify and verify your transfer.",
+      "fullName": "Full Name *",
+      "fullNamePlaceholder": "Example: Abdulrahman Hassan",
+      "accountIdentifier": "Phone Number / Sender Account Number *",
+      "accountPlaceholder": "Example: 059XXXXXXX or account number",
+      "errors": {
+        "fullNameRequired": "Enter the sender full name.",
+        "fullNameShort": "Enter a full name with at least 3 characters.",
+        "accountRequired": "Enter the sender phone number or account number.",
+        "accountShort": "Enter at least 5 characters.",
+        "accountInvalid": "Use letters, numbers, spaces, +, -, _, or . only."
+      }
+    }
+  },
   "common": {
     "back": "Back",
     "currency": "₪{{amount}}"
@@ -93,6 +120,7 @@
     "paymentStatus": "Payment Status",
     "itemQuantity": "Quantity: {{count}}",
     "sendPaymentTo": "Send Payment To",
+    "paymentTo": "Payment To",
     "receiverName": "Receiver",
     "accountHolderName": "Account Holder Name",
     "walletPhoneNumber": "Wallet Phone Number",

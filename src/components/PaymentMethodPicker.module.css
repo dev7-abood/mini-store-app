@@ -38,6 +38,10 @@
   gap: 10px;
 }
 
+.selectedAddon {
+  min-width: 0;
+}
+
 .card {
   position: relative;
   isolation: isolate;

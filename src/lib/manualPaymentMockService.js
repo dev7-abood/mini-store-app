@@ -17,8 +17,8 @@ const REMINDER_COOLDOWN_MS = 5 * 60 * 1000;
  *   branchName?: string,
  * }} PaymentReceiver
  * @typedef {{
- *   senderName: string,
- *   senderPhoneOrAccountNumber: string,
+ *   fullName: string,
+ *   accountIdentifier: string,
  *   transactionNumber: string,
  *   paymentNote: string,
  * }} CustomerPayment
@@ -66,8 +66,8 @@ const MOCK_RECEIVERS = {
 };
 
 const MOCK_CUSTOMER_PAYMENT = {
-  senderName: 'Ahmad Saleh',
-  senderPhoneOrAccountNumber: '0598765432',
+  fullName: 'Ahmad Saleh',
+  accountIdentifier: '0598765432',
   transactionNumber: 'TXN-58392014',
   paymentNote: 'Paid from mobile wallet',
 };
@@ -151,12 +151,25 @@ function cartEntriesToItems(entries) {
  * call later without changing the pending screen.
  *
  * @param {{entries: Array<{product: object, qty: number}>,
- *   total: number, paymentMethodId: string}} payload
+ *   total: number, paymentMethodId: string,
+ *   manualPaymentSender?: {fullName: string, accountIdentifier: string}}} payload
  * @returns {Order}
  */
-export function createMockManualPaymentOrder({ entries = [], total = 0, paymentMethodId }) {
+export function createMockManualPaymentOrder({
+  entries = [],
+  total = 0,
+  paymentMethodId,
+  manualPaymentSender = null,
+}) {
   const id = nextOrderId();
-  return makeMockManualPaymentOrder({ id, entries, total, paymentMethodId, persist: true });
+  return makeMockManualPaymentOrder({
+    id,
+    entries,
+    total,
+    paymentMethodId,
+    manualPaymentSender,
+    persist: true,
+  });
 }
 
 function makeMockManualPaymentOrder({
@@ -164,6 +177,7 @@ function makeMockManualPaymentOrder({
   entries = [],
   total = 0,
   paymentMethodId = 'palpay',
+  manualPaymentSender = null,
   persist = false,
 }) {
   const items = cartEntriesToItems(entries);
@@ -179,7 +193,16 @@ function makeMockManualPaymentOrder({
     currency: 'ILS',
     paymentMethod: methodSummary(paymentMethodId),
     receiver: normalizeReceiver(paymentMethodId),
-    customerPayment: { ...MOCK_CUSTOMER_PAYMENT },
+    customerPayment: {
+      ...MOCK_CUSTOMER_PAYMENT,
+      ...(manualPaymentSender
+        ? {
+          fullName: manualPaymentSender.fullName,
+          accountIdentifier: manualPaymentSender.accountIdentifier,
+          paymentNote: 'Customer provided sender details during checkout',
+        }
+        : {}),
+    },
     verification: {
       status: 'awaiting_verification',
       createdAt: now,

@@ -44,7 +44,23 @@
     "noteLabel": "ملاحظة للمطبخ (اختياري)",
     "notePlaceholder": "بدون بصل، صوص زيادة…",
     "continue": "متابعة",
-    "missingFields": "رجاءً أدخل الاسم والعنوان"
+    "missingFields": "رجاءً أدخل الاسم والعنوان",
+    "manualSender": {
+      "title": "بيانات مُرسل الدفعة",
+      "fromBadge": "الدفع من",
+      "helper": "أدخل اسم صاحب الحساب ورقم الهاتف أو الحساب الذي ستستخدمه لإرسال الدفعة. سنستخدم هذه البيانات للتعرف على عملية التحويل والتحقق منها.",
+      "fullName": "الاسم الكامل *",
+      "fullNamePlaceholder": "مثال: عبدالرحمن حسن",
+      "accountIdentifier": "رقم الهاتف / رقم الحساب المُرسل منه *",
+      "accountPlaceholder": "مثال: 059XXXXXXX أو رقم الحساب",
+      "errors": {
+        "fullNameRequired": "أدخل الاسم الكامل لصاحب الحساب.",
+        "fullNameShort": "أدخل اسماً لا يقل عن 3 أحرف.",
+        "accountRequired": "أدخل رقم الهاتف أو رقم الحساب المُرسل منه.",
+        "accountShort": "أدخل 5 أحرف أو أرقام على الأقل.",
+        "accountInvalid": "استخدم الأحرف أو الأرقام أو المسافات أو + أو - أو _ أو . فقط."
+      }
+    }
   },
   "phone": {
     "title": "تأكيد رقم الهاتف",
@@ -254,6 +270,7 @@
     "title": "تعليمات الدفع",
     "manualPayment": "دفع يدوي",
     "sendPaymentTo": "أرسل الدفع إلى",
+    "paymentTo": "الدفع إلى",
     "awaitingPaymentNote": "طلبك بانتظار الدفع. أكمل التحويل، ثم أرسل إثبات الدفع بالأسفل.",
     "receiverName": "اسم المستلم",
     "accountOrPhone": "رقم الحساب / رقم محفظة الهاتف",
@@ -300,6 +317,7 @@
     "paymentStatus": "حالة الدفع",
     "itemQuantity": "الكمية: {{count}}",
     "sendPaymentTo": "أرسل الدفع إلى",
+    "paymentTo": "الدفع إلى",
     "receiverName": "المستلم",
     "accountHolderName": "اسم صاحب الحساب",
     "walletPhoneNumber": "رقم محفظة الهاتف",
