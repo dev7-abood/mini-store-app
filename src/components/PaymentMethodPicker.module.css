@@ -8,13 +8,13 @@
 .group {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .category {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
 }
 
 .categoryHeader {
@@ -35,22 +35,22 @@
 
 .cards {
   display: grid;
-  gap: 8px;
+  gap: 9px;
 }
 
 .card {
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 20px;
+  grid-template-columns: 52px minmax(0, 1fr) 20px;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   width: 100%;
-  min-height: 74px;
-  padding: 10px 12px;
+  min-height: 82px;
+  padding: 12px 13px;
   background: var(--card);
   border: 1.5px solid var(--line);
-  border-radius: 14px;
+  border-radius: 15px;
   cursor: pointer;
   text-align: start;
   font-family: inherit;
@@ -78,8 +78,8 @@
   background:
     radial-gradient(
       circle at 88% 0%,
-      color-mix(in srgb, var(--saffron) 24%, transparent),
-      transparent 30%
+      color-mix(in srgb, var(--saffron) 22%, transparent),
+      transparent 32%
     ),
     linear-gradient(
       135deg,
@@ -106,7 +106,7 @@
     rgba(255, 255, 255, 0.42),
     transparent
   );
-  opacity: 0.58;
+  opacity: 0.52;
   transform: translateX(-15%) skewX(-18deg);
   animation: shine 5.8s ease-in-out infinite;
   pointer-events: none;
@@ -137,43 +137,57 @@
     0 14px 30px color-mix(in srgb, var(--basil) 17%, transparent);
 }
 
-/* Logo plate: a neutral raised tint keeps provider marks legible on any
-   tenant surface without adding card height. */
+/* Logo plate: a raised neutral tint keeps provider marks legible on any
+   tenant surface without feeling like a flat square. */
 .mark {
-  width: 48px;
-  height: 36px;
-  border-radius: 11px;
+  width: 52px;
+  height: 40px;
+  border-radius: 12px;
   background:
+    radial-gradient(
+      circle at 26% 18%,
+      rgba(255, 255, 255, 0.66),
+      transparent 39%
+    ),
     linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--ink) 8%, var(--card)),
-      color-mix(in srgb, var(--ink) 12%, var(--card))
+      145deg,
+      color-mix(in srgb, var(--card) 82%, var(--ink) 8%),
+      color-mix(in srgb, var(--card) 68%, var(--ink) 14%)
     );
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--ink) 13%, var(--line));
   display: grid;
   place-items: center;
   overflow: hidden;
-  padding: 5px;
-  box-shadow: 0 4px 10px color-mix(in srgb, var(--ink) 7%, transparent);
+  padding: 6px;
+  box-shadow:
+    0 6px 12px color-mix(in srgb, var(--ink) 8%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.32) inset;
 }
 
 .recommended .mark {
   background:
+    radial-gradient(
+      circle at 24% 18%,
+      rgba(255, 255, 255, 0.22),
+      transparent 34%
+    ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--basil) 92%, #000),
-      color-mix(in srgb, var(--basil) 72%, var(--saffron))
+      color-mix(in srgb, var(--basil) 78%, #000),
+      color-mix(in srgb, var(--basil) 64%, var(--saffron)) 58%,
+      color-mix(in srgb, var(--saffron) 36%, var(--basil))
     );
-  border-color: color-mix(in srgb, var(--saffron) 42%, var(--basil));
+  border-color: color-mix(in srgb, var(--saffron) 52%, var(--basil));
   box-shadow:
-    0 5px 12px color-mix(in srgb, var(--basil) 18%, transparent),
-    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+    0 7px 15px color-mix(in srgb, var(--basil) 18%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .logo {
   width: 100%;
-  max-width: 36px;
-  height: 24px;
+  max-width: 39px;
+  height: 26px;
   object-fit: contain;
 }
 
@@ -184,20 +198,20 @@
 .text {
   min-width: 0;
   display: grid;
-  gap: 4px;
+  gap: 5px;
 }
 
 .titleRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   min-width: 0;
 }
 
 .titleRow b {
   min-width: 0;
-  font-size: 14px;
+  font-size: 14.3px;
   font-weight: 800;
   line-height: 1.15;
   color: var(--ink);
@@ -207,7 +221,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px 7px;
+  gap: 6px 8px;
   min-width: 0;
 }
 
@@ -216,9 +230,9 @@
   flex: 1 1 122px;
   display: -webkit-box;
   overflow: hidden;
-  font-size: 11.5px;
+  font-size: 11.8px;
   font-weight: 600;
-  line-height: 1.22;
+  line-height: 1.28;
   color: var(--ink-soft);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -235,8 +249,8 @@
 }
 
 .badge {
-  min-height: 21px;
-  padding: 3px 7px;
+  min-height: 22px;
+  padding: 3px 8px;
   background: color-mix(in srgb, var(--saffron) 36%, var(--card));
   border: 1px solid color-mix(in srgb, var(--saffron) 54%, transparent);
   color: var(--ink);
@@ -247,8 +261,8 @@
 .typePill {
   flex: 0 0 auto;
   width: fit-content;
-  min-height: 20px;
-  padding: 3px 7px;
+  min-height: 21px;
+  padding: 3px 8px;
   background: color-mix(in srgb, var(--line) 44%, transparent);
   border: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
   color: var(--ink-soft);
@@ -331,24 +345,30 @@
 
 @media (max-width: 360px) {
   .card {
-    grid-template-columns: 44px minmax(0, 1fr) 20px;
-    gap: 8px;
-    min-height: 70px;
-    padding: 9px 10px;
+    grid-template-columns: 48px minmax(0, 1fr) 20px;
+    gap: 9px;
+    min-height: 78px;
+    padding: 11px 10px;
   }
 
   .mark {
-    width: 44px;
-    height: 34px;
+    width: 48px;
+    height: 37px;
   }
 
   .logo {
-    max-width: 33px;
-    height: 22px;
+    max-width: 36px;
+    height: 24px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
+  .mark {
+    box-shadow:
+      0 6px 13px color-mix(in srgb, #000 18%, transparent),
+      0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  }
+
   .recommended::before {
     opacity: 0.5;
   }
