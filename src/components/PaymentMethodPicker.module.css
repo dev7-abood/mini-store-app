@@ -56,7 +56,7 @@
   font-family: inherit;
   overflow: hidden;
   outline: none;
-  transition: border-color 0.18s, outline-color 0.18s, transform 0.12s, background 0.18s;
+  transition: border-color 0.18s, transform 0.12s, background 0.18s;
 }
 
 .card > * {
@@ -120,13 +120,10 @@
 
 .selected {
   border-color: var(--basil);
-  outline: 3px solid color-mix(in srgb, var(--basil) 14%, transparent);
-  outline-offset: 0;
 }
 
 .selected.recommended {
-  border-color: color-mix(in srgb, var(--basil) 76%, var(--saffron));
-  outline-color: color-mix(in srgb, var(--basil) 16%, transparent);
+  border-color: var(--basil);
 }
 
 /* Logo plate: a raised neutral tint keeps provider marks legible on any
