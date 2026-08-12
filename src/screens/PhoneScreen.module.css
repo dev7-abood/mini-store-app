@@ -1,91 +1,5 @@
 .pad {
-  padding: 8px 16px 130px;
-}
-
-.paymentPanel {
-  padding: 16px;
-  border-radius: 18px;
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--saffron) 10%, var(--card)),
-      var(--card) 58%,
-      color-mix(in srgb, var(--bg) 58%, var(--card))
-    );
-  border: 1px solid color-mix(in srgb, var(--saffron) 28%, var(--line));
-  box-shadow: 0 10px 28px rgba(34, 24, 14, 0.06);
-}
-
-.brandHeader {
-  display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 13px;
-  align-items: center;
-}
-
-.logoFrame {
-  display: grid;
-  place-items: center;
-  width: 76px;
-  height: 56px;
-  border-radius: 15px;
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--basil) 70%, var(--card)),
-      color-mix(in srgb, var(--basil) 58%, var(--saffron)) 62%,
-      color-mix(in srgb, var(--saffron) 42%, var(--basil))
-    );
-  border: 1px solid color-mix(in srgb, var(--saffron) 48%, var(--basil));
-  overflow: hidden;
-  padding: 9px;
-}
-
-.logoFrame img {
-  width: 100%;
-  max-width: 58px;
-  max-height: 36px;
-  object-fit: contain;
-}
-
-.brandText {
-  min-width: 0;
-}
-
-.brandText span {
-  display: block;
-  color: var(--ink-soft);
-  font-size: 11.5px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0;
-  margin-bottom: 4px;
-}
-
-.brandText h2 {
-  color: var(--ink);
-  font-size: 20px;
-  font-weight: 900;
-  line-height: 1.15;
-  letter-spacing: 0;
-}
-
-.body {
-  color: var(--ink-soft);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.55;
-  margin-top: 13px;
-}
-
-.fields {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.fieldBlock {
-  margin-bottom: 0;
+  padding: 22px 16px 130px;
 }
 
 .label {
@@ -95,52 +9,21 @@
   margin-bottom: 7px;
 }
 
-.textInput {
-  width: 100%;
-  border-radius: 14px;
-  border: 1.5px solid color-mix(in srgb, var(--line) 88%, var(--card));
-  background: var(--card);
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 700;
-  outline: none;
-  padding: 14px;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-}
-
-.textInput:focus {
-  border-color: var(--saffron);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 28%, transparent);
-}
-
-.textInput::placeholder {
-  color: color-mix(in srgb, var(--ink-soft) 62%, var(--card));
-  font-weight: 650;
-}
-
-.invalidInput {
-  border-color: color-mix(in srgb, var(--tomato) 58%, var(--line));
-  background: color-mix(in srgb, var(--tomato) 4%, var(--card));
-}
-
+/* One merged field: prefix (right, RTL start) + digits input (left).
+   The border/focus ring lives on the container. */
 .phoneField {
   display: flex;
   align-items: center;
   background: var(--card);
   border: 1.5px solid var(--line);
   border-radius: 14px;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-  direction: ltr;
+  transition: 0.2s;
+  direction: ltr; /* prefix on the left, digits flow left-to-right */
 }
 
 .phoneField:focus-within {
   border-color: var(--saffron);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 40%, transparent);
-}
-
-.invalidField {
-  border-color: color-mix(in srgb, var(--tomato) 58%, var(--line));
-  background: color-mix(in srgb, var(--tomato) 4%, var(--card));
 }
 
 .prefix {
@@ -162,12 +45,12 @@
   background: none;
   border: none;
   padding: 14px;
-  font-size: 16px;
+  font-size: 16px; /* >= 16px prevents iOS zoom-on-focus */
   font-weight: 700;
   color: var(--ink);
   outline: none;
   direction: ltr;
-  text-align: left;
+  text-align: left; /* digits read left-to-right next to the prefix */
   letter-spacing: 1px;
   font-variant-numeric: tabular-nums;
 }
@@ -178,38 +61,14 @@
   letter-spacing: 0.5px;
 }
 
+.fieldBlock {
+  margin-bottom: 18px;
+}
+
 .hintText {
   margin-top: 7px;
   font-size: 12px;
   color: var(--ink-soft);
   font-weight: 700;
   line-height: 1.5;
-}
-
-.errorText {
-  color: var(--tomato);
-  font-size: 11.5px;
-  font-weight: 800;
-  line-height: 1.45;
-  margin-top: 6px;
-}
-
-@media (max-width: 360px) {
-  .paymentPanel {
-    padding: 14px;
-  }
-
-  .brandHeader {
-    grid-template-columns: 68px minmax(0, 1fr);
-    gap: 11px;
-  }
-
-  .logoFrame {
-    width: 68px;
-    height: 52px;
-  }
-
-  .brandText h2 {
-    font-size: 18px;
-  }
 }
