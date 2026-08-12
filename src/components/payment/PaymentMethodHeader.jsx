@@ -1,6 +1,6 @@
 import styles from './PaymentMethodHeader.module.css';
 
-export default function PaymentMethodHeader({ method, label, kicker, headingId }) {
+export default function PaymentMethodHeader({ method, label, kicker, headingId, variant = 'default' }) {
   const mark = method?.logo ? (
     <img src={method.logo} alt="" />
   ) : (
@@ -10,7 +10,7 @@ export default function PaymentMethodHeader({ method, label, kicker, headingId }
   );
 
   return (
-    <div className={styles.header}>
+    <div className={`${styles.header} ${styles[variant] ?? ''}`}>
       <span className={styles.logoFrame}>{mark}</span>
       <div className={styles.text}>
         <span>{kicker}</span>

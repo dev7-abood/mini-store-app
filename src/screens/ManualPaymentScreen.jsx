@@ -107,6 +107,7 @@ export default function ManualPaymentScreen() {
             label={methodLabel}
             kicker={t('manualPayment.kicker')}
             headingId="manual-payment-heading"
+            variant="manual"
           />
 
           <p className={styles.body}>{t('manualPayment.body')}</p>
