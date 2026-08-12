@@ -6,9 +6,9 @@
 .paymentPanel {
   padding: var(--space-4);
   border-radius: var(--radius-2xl);
-  background: var(--card);
-  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--card));
-  box-shadow: var(--shadow-md);
+  background: var(--bg);
+  border: 1px solid var(--bg);
+  box-shadow: none;
 }
 
 .body {
