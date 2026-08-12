@@ -1,12 +1,13 @@
 .pad {
   padding: var(--space-2) var(--edge) var(--bottom-cta-space);
+  background: var(--bg);
 }
 
 .paymentPanel {
   padding: var(--space-4);
   border-radius: var(--radius-2xl);
   background: var(--card);
-  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--card));
   box-shadow: var(--shadow-md);
 }
 
@@ -24,8 +25,8 @@
   margin-top: var(--space-3-5);
   padding: var(--space-3);
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--bg) 58%, var(--card));
-  border: 1px solid color-mix(in srgb, var(--line) 62%, var(--card));
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--card));
 }
 
 .infoRow {
