@@ -3,15 +3,15 @@
   top: 0;
   z-index: 20;
   background: linear-gradient(var(--bg) 75%, transparent);
-  padding: 14px 16px 8px;
+  padding: var(--space-3-5) var(--edge) var(--space-2);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .miniLogo {
-  width: 44px;
-  height: 44px;
+  width: var(--tap-size);
+  height: var(--tap-size);
   border-radius: 50%;
   background: var(--basil);
   display: grid;
@@ -26,12 +26,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: var(--space-0-5);
 }
 
 .title h1 {
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 1.1875rem;
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -39,9 +40,9 @@
 }
 
 .title p {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--ink-soft);
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -49,14 +50,14 @@
 }
 
 .cartBtn {
-  width: 44px;
-  height: 44px;
+  width: var(--tap-size);
+  height: var(--tap-size);
   border-radius: 50%;
   background: var(--card);
   display: grid;
   place-items: center;
   box-shadow: var(--shadow);
-  font-size: 18px;
+  font-size: 1.125rem;
   position: relative;
 }
 
@@ -64,23 +65,23 @@
   position: absolute;
   top: -4px;
   inset-inline-start: -4px;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
+  min-width: var(--space-5);
+  height: var(--space-5);
+  border-radius: var(--radius-pill);
   background: var(--tomato);
   color: #fff;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
   display: grid;
   place-items: center;
-  padding: 0 5px;
+  padding: 0 var(--space-1);
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 13px;
-  padding: 2px 16px 110px;
+  gap: var(--space-3);
+  padding: var(--space-0-5) var(--edge) 112px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -98,34 +99,34 @@
 
 /* Search bar sits between the header and the chips. */
 .searchWrap {
-  padding: 4px 16px 10px;
+  padding: var(--space-1) var(--edge) var(--space-2-5);
 }
 
 /* No-results panel spans the whole grid. */
 .noResults {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 40px 20px;
+  padding: var(--space-10) var(--space-5);
 }
 
 .noResultsIcon {
-  font-size: 44px;
+  font-size: 2.5rem;
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   opacity: 0.75;
 }
 
 .noResults b {
   display: block;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
   color: var(--ink);
 }
 
 .noResults p {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-meta);
+  font-weight: var(--font-semibold);
   color: var(--ink-soft);
-  margin-top: 6px;
-  line-height: 1.6;
+  margin-top: var(--space-1-5);
+  line-height: var(--leading-relaxed);
 }

@@ -1,20 +1,20 @@
 .item {
   background: var(--card);
-  border-radius: 18px;
-  padding: 12px;
+  border-radius: var(--radius-2xl);
+  padding: var(--space-3);
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
-  margin-bottom: 11px;
-  box-shadow: 0 3px 10px rgba(34, 24, 14, 0.05);
+  margin-bottom: var(--space-3);
+  box-shadow: var(--shadow-sm);
 }
 
 .thumb {
-  width: 58px;
-  height: 58px;
-  border-radius: 14px;
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  border-radius: var(--radius-lg);
   flex: 0 0 auto;
-  font-size: 28px;
+  font-size: var(--text-display);
 }
 
 .info {
@@ -23,13 +23,14 @@
 }
 
 .name {
-  font-weight: 800;
-  font-size: 14px;
+  font-weight: var(--font-bold);
+  font-size: var(--text-body);
+  line-height: var(--leading-snug);
 }
 
 .price {
   color: var(--basil);
-  font-weight: 800;
-  font-size: 13.5px;
-  margin-top: 2px;
+  font-weight: var(--font-bold);
+  font-size: var(--text-meta);
+  margin-top: var(--space-0-5);
 }

@@ -1,10 +1,10 @@
 .pad {
-  padding: 8px 16px 130px;
+  padding: var(--space-2) var(--edge) var(--bottom-cta-space);
 }
 
 .paymentPanel {
-  padding: 16px;
-  border-radius: 18px;
+  padding: var(--space-4);
+  border-radius: var(--radius-2xl);
   background:
     linear-gradient(
       135deg,
@@ -13,21 +13,21 @@
       color-mix(in srgb, var(--bg) 58%, var(--card))
     );
   border: 1px solid color-mix(in srgb, var(--saffron) 28%, var(--line));
-  box-shadow: 0 10px 28px rgba(34, 24, 14, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .body {
   color: var(--ink-soft);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.55;
-  margin-top: 13px;
+  font-size: var(--text-meta);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-relaxed);
+  margin-top: var(--space-3);
 }
 
 .fields {
   display: grid;
-  gap: 12px;
-  margin-top: 16px;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .fields > * {
@@ -40,9 +40,10 @@
 
 .label {
   display: block;
-  font-weight: 800;
-  font-size: 13px;
-  margin-bottom: 7px;
+  font-weight: var(--font-bold);
+  font-size: var(--text-meta);
+  line-height: var(--leading-snug);
+  margin-bottom: var(--space-1-5);
 }
 
 .phoneField {
@@ -50,7 +51,8 @@
   align-items: center;
   background: var(--card);
   border: 1.5px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
+  min-height: var(--control-height);
   transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
   direction: ltr;
 }
@@ -68,10 +70,10 @@
 .prefix {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 14px 14px 14px 12px;
-  font-weight: 800;
-  font-size: 15px;
+  gap: var(--space-1-5);
+  padding: var(--space-3) var(--space-3-5) var(--space-3) var(--space-3);
+  font-weight: var(--font-bold);
+  font-size: var(--text-control);
   direction: ltr;
   color: var(--ink);
   border-right: 1.5px solid var(--line);
@@ -83,9 +85,9 @@
   min-width: 0;
   background: none;
   border: none;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 700;
+  padding: var(--space-3) var(--space-3-5);
+  font-size: var(--text-control);
+  font-weight: var(--font-semibold);
   color: var(--ink);
   outline: none;
   direction: ltr;
@@ -96,28 +98,28 @@
 
 .input::placeholder {
   color: #c9bda9;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   letter-spacing: 0.5px;
 }
 
 .hintText {
-  margin-top: 7px;
-  font-size: 12px;
+  margin-top: var(--space-1-5);
+  font-size: var(--text-sm);
   color: var(--ink-soft);
-  font-weight: 700;
-  line-height: 1.5;
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-normal);
 }
 
 .errorText {
   color: var(--tomato);
-  font-size: 11.5px;
-  font-weight: 800;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
   line-height: 1.45;
-  margin-top: 6px;
+  margin-top: var(--space-1-5);
 }
 
 @media (max-width: 360px) {
   .paymentPanel {
-    padding: 14px;
+    padding: var(--space-3-5);
   }
 }

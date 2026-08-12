@@ -1,21 +1,22 @@
 .bar {
   position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-3-5));
   left: 50%;
   transform: translateX(-50%) translateY(140%);
-  width: calc(100% - 32px);
+  width: calc(100% - (var(--edge) * 2));
   max-width: 448px;
   background: var(--basil);
   color: #fdf9f1;
-  border-radius: 18px;
-  padding: 15px 18px;
+  border-radius: var(--radius-2xl);
+  padding: var(--space-3-5) var(--space-4);
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 14px 34px color-mix(in srgb, var(--basil-deep) 45%, transparent);
   transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
   z-index: 30;
-  font-weight: 800;
+  font-weight: var(--font-bold);
+  min-height: var(--icon-xl);
 }
 
 .show {
@@ -24,20 +25,22 @@
 
 .bar small {
   display: block;
-  font-size: 11px;
+  font-size: var(--text-xs);
   opacity: 0.7;
-  font-weight: 700;
+  font-weight: var(--font-semibold);
 }
 
 .total {
-  font-size: 17px;
+  font-size: var(--text-section);
+  line-height: var(--leading-tight);
 }
 
 .go {
   background: var(--saffron);
   color: var(--ink);
-  padding: 9px 16px;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 14px;
+  min-height: var(--control-height-sm);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-bold);
+  font-size: var(--text-body);
 }

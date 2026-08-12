@@ -1,41 +1,42 @@
 .stepper {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--space-3);
   background: var(--bg);
-  border-radius: 14px;
-  padding: 7px 12px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-1-5) var(--space-3);
 }
 
 .stepper button {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  border-radius: var(--radius-sm);
   background: var(--card);
-  font-size: 19px;
-  font-weight: 800;
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
   box-shadow: 0 2px 6px rgba(34, 24, 14, 0.1);
 }
 
 .stepper b {
-  min-width: 22px;
+  min-width: var(--icon-sm);
   text-align: center;
-  font-size: 17px;
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
 }
 
 .mini {
-  gap: 10px;
+  gap: var(--space-2);
   background: none;
   padding: 0;
 }
 
 .mini button {
-  width: 27px;
-  height: 27px;
-  border-radius: 9px;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  border-radius: var(--radius-sm);
   background: var(--bg);
-  font-weight: 800;
-  font-size: 16px;
+  font-weight: var(--font-bold);
+  font-size: var(--text-section);
   box-shadow: none;
 }
 

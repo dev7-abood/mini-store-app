@@ -1,20 +1,20 @@
 .row {
   display: flex;
-  gap: 9px;
+  gap: var(--space-2);
   justify-content: center;
-  margin: 26px 0 10px;
+  margin: var(--space-6) 0 var(--space-2-5);
   direction: ltr;
 }
 
 .box {
-  width: 48px;
-  height: 58px;
-  border-radius: 14px;
+  width: 46px;
+  height: 54px;
+  border-radius: var(--radius-lg);
   border: 1.5px solid var(--line);
   background: var(--card);
   text-align: center;
-  font-size: 24px;
-  font-weight: 800;
+  font-size: var(--text-hero);
+  font-weight: var(--font-bold);
   outline: none;
   transition: 0.2s;
 }

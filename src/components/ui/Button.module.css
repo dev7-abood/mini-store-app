@@ -1,10 +1,12 @@
 .cta {
   background: var(--saffron);
   color: var(--ink);
-  border-radius: 14px;
-  padding: 14px;
-  font-weight: 800;
-  font-size: 15px;
+  min-height: var(--control-height);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-bold);
+  font-size: var(--text-control);
+  line-height: var(--leading-tight);
   transition: transform 0.15s;
   box-shadow: 0 6px 16px color-mix(in srgb, var(--saffron) 40%, transparent);
 }

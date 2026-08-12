@@ -4,8 +4,8 @@
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 480px;
-  padding: 14px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  max-width: var(--app-width);
+  padding: var(--space-3-5) var(--edge) calc(env(safe-area-inset-bottom, 0px) + var(--space-4));
   background: linear-gradient(transparent, var(--bg) 35%);
   z-index: 25;
 }

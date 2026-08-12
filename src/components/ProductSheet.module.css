@@ -19,10 +19,10 @@
   left: 50%;
   transform: translate(-50%, 105%);
   width: 100%;
-  max-width: 480px;
+  max-width: var(--app-width);
   background: var(--card);
-  border-radius: 26px 26px 0 0;
-  padding: 10px 20px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  padding: var(--space-2-5) var(--space-5) calc(env(safe-area-inset-bottom, 0px) + var(--space-5));
   z-index: 41;
   transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.1);
 }
@@ -32,83 +32,84 @@
 }
 
 .grab {
-  width: 44px;
+  width: var(--tap-size);
   height: 5px;
-  border-radius: 99px;
+  border-radius: var(--radius-pill);
   background: var(--line);
-  margin: 4px auto 14px;
+  margin: var(--space-1) auto var(--space-3-5);
 }
 
 .img {
-  height: 170px;
-  border-radius: 20px;
-  margin-bottom: 14px;
+  height: 164px;
+  border-radius: var(--radius-2xl);
+  margin-bottom: var(--space-3-5);
   width: 100%;
 }
 
 .name {
-  font-size: 21px;
-  font-weight: 800;
+  font-size: var(--text-title);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
 }
 
 .priceRow {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-top: 4px;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
   color: var(--basil);
-  font-size: 17px;
-  font-weight: 800;
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
 }
 
 .priceRow s {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--text-meta);
+  font-weight: var(--font-semibold);
   color: var(--ink-soft);
 }
 
 .desc {
   color: var(--ink-soft);
-  font-size: 13.5px;
-  font-weight: 600;
-  margin: 6px 0 16px;
-  line-height: 1.5;
+  font-size: var(--text-meta);
+  font-weight: var(--font-semibold);
+  margin: var(--space-1-5) 0 var(--space-4);
+  line-height: var(--leading-normal);
 }
 
 .qtyRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: var(--space-3);
 }
 
 /* Out-of-stock notice replacing the qty/add row. */
 .soldOutNotice {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   background: color-mix(in srgb, var(--line) 45%, var(--card));
   border: 1.5px dashed var(--line);
-  border-radius: 16px;
-  padding: 14px 16px;
+  border-radius: var(--radius-xl);
+  padding: var(--space-3-5) var(--space-4);
 }
 
 .soldOutIcon {
-  font-size: 26px;
+  font-size: var(--text-hero);
   flex: 0 0 auto;
 }
 
 .soldOutNotice b {
   display: block;
-  font-size: 14.5px;
-  font-weight: 800;
+  font-size: var(--text-body);
+  font-weight: var(--font-bold);
   color: var(--ink);
 }
 
 .soldOutNotice p {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
   color: var(--ink-soft);
-  line-height: 1.5;
-  margin-top: 2px;
+  line-height: var(--leading-normal);
+  margin-top: var(--space-0-5);
 }

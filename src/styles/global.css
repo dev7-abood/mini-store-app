@@ -30,7 +30,62 @@
   --line: #eae1d3;
   --ok: #2e9e5b;
   --shadow: 0 10px 30px rgba(34, 24, 14, 0.1);
+  --shadow-sm: 0 3px 10px rgba(34, 24, 14, 0.05);
+  --shadow-md: 0 8px 22px rgba(34, 24, 14, 0.055);
   --font: 'Noto Sans Arabic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --text-xs: 0.6875rem;   /* 11px */
+  --text-sm: 0.75rem;     /* 12px */
+  --text-meta: 0.8125rem; /* 13px */
+  --text-body: 0.875rem;  /* 14px */
+  --text-control: 0.9375rem; /* 15px */
+  --text-section: 1rem;   /* 16px */
+  --text-title: 1.25rem;  /* 20px */
+  --text-hero: 1.5rem;    /* 24px */
+  --text-display: 1.75rem; /* 28px */
+
+  --leading-tight: 1.25;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-3-5: 14px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 18px;
+  --radius-sheet: 24px;
+  --radius-pill: 999px;
+
+  --tap-size: 44px;
+  --control-height: 46px;
+  --control-height-sm: 34px;
+  --icon-xs: 16px;
+  --icon-sm: 22px;
+  --icon-md: 32px;
+  --icon-lg: 48px;
+  --icon-xl: 56px;
+  --app-width: 480px;
+  --edge: 16px;
+  --bottom-cta-space: 130px;
 }
 
 * {
@@ -42,13 +97,16 @@
 
 html {
   font-family: var(--font);
+  font-size: 16px;
 }
 
 body {
   font-family: inherit;
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
   background: var(--bg);
   color: var(--ink);
-  max-width: 480px;
+  max-width: var(--app-width);
   min-height: 100dvh;
   margin: 0 auto;
   -webkit-font-smoothing: antialiased;
@@ -66,6 +124,15 @@ input,
 textarea,
 select {
   font-family: inherit;
+  font-size: var(--text-control);
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  overflow-wrap: anywhere;
 }
 
 img {
