@@ -28,7 +28,7 @@ export default function BrandingErrorScreen() {
         textAlign: 'center',
         background: '#F7F2EA',
         color: '#22180E',
-        fontFamily: "'Tajawal', system-ui, sans-serif",
+        fontFamily: 'var(--font)',
       }}
     >
       <div style={{ fontSize: 56 }}>😔</div>
