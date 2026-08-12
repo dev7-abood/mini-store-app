@@ -42,21 +42,12 @@
   background: color-mix(in srgb, var(--tomato) 46%, var(--saffron));
 }
 
-.smartSenderCard::before {
-  background: color-mix(in srgb, var(--basil) 48%, var(--saffron));
-}
-
 .senderHeader {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 11px;
   align-items: start;
   margin-bottom: 12px;
-}
-
-.smartSenderHeader {
-  grid-template-columns: 70px minmax(0, 1fr);
-  align-items: center;
 }
 
 .senderBadge {
@@ -71,41 +62,6 @@
   font-size: 11px;
   font-weight: 900;
   white-space: nowrap;
-}
-
-.smartSenderCard .senderBadge {
-  width: fit-content;
-  min-height: 24px;
-  margin-bottom: 5px;
-  padding: 4px 8px;
-  background: color-mix(in srgb, var(--saffron) 18%, var(--card));
-  border-color: color-mix(in srgb, var(--saffron) 34%, var(--line));
-  color: var(--ink-soft);
-}
-
-.smartLogoFrame {
-  display: grid;
-  place-items: center;
-  width: 70px;
-  height: 52px;
-  border-radius: 14px;
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--basil) 68%, var(--card)),
-      color-mix(in srgb, var(--basil) 56%, var(--saffron)) 62%,
-      color-mix(in srgb, var(--saffron) 42%, var(--basil))
-    );
-  border: 1px solid color-mix(in srgb, var(--saffron) 50%, var(--basil));
-  overflow: hidden;
-  padding: 9px;
-}
-
-.smartLogoFrame img {
-  width: 100%;
-  max-width: 54px;
-  max-height: 34px;
-  object-fit: contain;
 }
 
 .senderHeader h2 {
@@ -150,68 +106,9 @@
   transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
 }
 
-.phoneField {
-  display: flex;
-  align-items: center;
-  background: var(--card);
-  border: 1.5px solid color-mix(in srgb, var(--line) 88%, var(--card));
-  border-radius: 13px;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-  direction: ltr;
-}
-
-.phoneField:focus-within {
-  border-color: var(--saffron);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 30%, transparent);
-}
-
-.invalidPhoneField {
-  border-color: color-mix(in srgb, var(--tomato) 55%, var(--line));
-  background: color-mix(in srgb, var(--tomato) 4%, var(--card));
-}
-
-.phonePrefix {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 12px 13px 12px 11px;
-  border-right: 1.5px solid var(--line);
-  color: var(--ink);
-  font-size: 14.5px;
-  font-weight: 850;
-  direction: ltr;
-  user-select: none;
-}
-
-.phoneField input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  border-radius: 0;
-  background: none;
-  padding: 12px 13px;
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 750;
-  outline: none;
-  direction: ltr;
-  text-align: left;
-  letter-spacing: 0.5px;
-  font-variant-numeric: tabular-nums;
-}
-
-.phoneField input:focus {
-  box-shadow: none;
-}
-
 .senderField input:focus {
   border-color: var(--saffron);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 30%, transparent);
-}
-
-.senderField .phoneField input:focus {
-  border-color: transparent;
-  box-shadow: none;
 }
 
 .senderField input[aria-invalid="true"] {
@@ -222,14 +119,6 @@
 .senderField input::placeholder {
   color: color-mix(in srgb, var(--ink-soft) 62%, var(--card));
   font-weight: 650;
-}
-
-.hintText {
-  color: var(--ink-soft);
-  font-size: 11.5px;
-  font-weight: 800;
-  line-height: 1.45;
-  margin-top: 5px;
 }
 
 .errorText {
@@ -252,15 +141,5 @@
 
   .senderBadge {
     justify-self: start;
-  }
-
-  .smartSenderHeader {
-    grid-template-columns: 62px minmax(0, 1fr);
-    align-items: center;
-  }
-
-  .smartLogoFrame {
-    width: 62px;
-    height: 48px;
   }
 }
