@@ -41,19 +41,46 @@
   "smartPayment": {
     "title": "Smart Payment",
     "kicker": "Payment sender",
-    "body": "Enter the full name and Palestinian mobile number for the person who will approve and send this Jawwal Pay payment.",
+    "body": "Enter the full name, Palestinian mobile number, and delivery address for the person who will approve and send this Jawwal Pay payment.",
     "fullName": "Full Name *",
     "fullNamePlaceholder": "Example: Abdulrahman Hassan",
     "phoneNumber": "Phone Number *",
     "phoneHint": "Use the Palestinian mobile number connected to the Jawwal Pay wallet, without the leading 0.",
-    "invalid": "Enter the payment sender full name and a valid Palestinian phone number.",
+    "address": "Address *",
+    "addressPlaceholder": "Street, building, floor...",
+    "invalid": "Enter the payment sender full name, valid Palestinian phone number, and address.",
     "sending": "Continuing...",
     "orderFailed": "Could not create the order. Try again.",
     "errors": {
       "fullNameRequired": "Enter the payment sender full name.",
       "fullNameShort": "Enter a full name with at least 3 characters.",
       "phoneRequired": "Enter the payment sender phone number.",
-      "phoneInvalid": "Enter a valid Palestinian mobile number, for example +970 598 304 517."
+      "phoneInvalid": "Enter a valid Palestinian mobile number, for example +970 598 304 517.",
+      "addressRequired": "Enter the delivery address.",
+      "addressShort": "Enter a more complete delivery address."
+    }
+  },
+  "manualPayment": {
+    "title": "Manual Payment",
+    "kicker": "Payment details",
+    "body": "Send the payment from your wallet or bank, then enter the sender details and delivery address so we can match your transfer.",
+    "receiverDetails": "Payment receiver details",
+    "fullName": "Full Name *",
+    "fullNamePlaceholder": "Example: Abdulrahman Hassan",
+    "accountIdentifier": "Phone Number / Sender Account Number *",
+    "accountPlaceholder": "Example: 059XXXXXXX or account number",
+    "address": "Address *",
+    "addressPlaceholder": "Street, building, floor...",
+    "invalid": "Enter the sender full name, phone/account number, and address.",
+    "sending": "Continuing...",
+    "errors": {
+      "fullNameRequired": "Enter the sender full name.",
+      "fullNameShort": "Enter a full name with at least 3 characters.",
+      "accountRequired": "Enter the sender phone number or account number.",
+      "accountShort": "Enter at least 5 characters.",
+      "accountInvalid": "Use letters, numbers, spaces, +, -, _, or . only.",
+      "addressRequired": "Enter the delivery address.",
+      "addressShort": "Enter a more complete delivery address."
     }
   },
   "common": {
@@ -61,6 +88,8 @@
     "currency": "₪{{amount}}"
   },
   "payment": {
+    "selectTitle": "Select Payment Method",
+    "selectBody": "Choose how you want to pay for this order. Details are entered on the next step.",
     "title": "Payment method",
     "types": {
       "smart": "Smart Payment",

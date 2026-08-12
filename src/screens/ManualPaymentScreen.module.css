@@ -1,0 +1,79 @@
+.pad {
+  padding: 8px 16px 130px;
+}
+
+.paymentPanel {
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
+  box-shadow: 0 10px 28px rgba(34, 24, 14, 0.055);
+}
+
+.body {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  margin-top: 13px;
+}
+
+.receiverBox {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg) 58%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 62%, var(--card));
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.infoRow span {
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.infoRow b {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+.fields {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.fields > * {
+  margin-bottom: 0;
+}
+
+@media (max-width: 360px) {
+  .paymentPanel {
+    padding: 14px;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .infoRow b {
+    text-align: start;
+  }
+}

@@ -21,6 +21,8 @@ import MenuScreen from './screens/MenuScreen';
 import CartScreen from './screens/CartScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import PhoneScreen from './screens/PhoneScreen';
+import SmartPaymentScreen from './screens/SmartPaymentScreen';
+import ManualPaymentScreen from './screens/ManualPaymentScreen';
 import OtpScreen from './screens/OtpScreen';
 import PaymentPendingScreen from './screens/PaymentPendingScreen';
 import SuccessScreen from './screens/SuccessScreen';
@@ -38,6 +40,8 @@ const SCREEN_COMPONENTS = {
   [SCREENS.CART]: CartScreen,
   [SCREENS.CHECKOUT]: CheckoutScreen,
   [SCREENS.PHONE]: PhoneScreen,
+  [SCREENS.SMART_PAYMENT]: SmartPaymentScreen,
+  [SCREENS.MANUAL_PAYMENT]: ManualPaymentScreen,
   [SCREENS.OTP]: OtpScreen,
   [SCREENS.SUCCESS]: SuccessScreen,
   [SCREENS.STATUS]: StatusScreen,

@@ -15,6 +15,8 @@ export const SCREENS = Object.freeze({
   CART: 'cart',
   CHECKOUT: 'checkout',
   PHONE: 'phone',
+  SMART_PAYMENT: 'smartPayment',
+  MANUAL_PAYMENT: 'manualPayment',
   OTP: 'otp',
   SUCCESS: 'success',
   STATUS: 'status',
@@ -25,7 +27,9 @@ const BACK_MAP = {
   [SCREENS.CART]: SCREENS.MENU,
   [SCREENS.CHECKOUT]: SCREENS.CART,
   [SCREENS.PHONE]: SCREENS.CHECKOUT,
-  [SCREENS.OTP]: SCREENS.PHONE,
+  [SCREENS.SMART_PAYMENT]: SCREENS.CHECKOUT,
+  [SCREENS.MANUAL_PAYMENT]: SCREENS.CHECKOUT,
+  [SCREENS.OTP]: SCREENS.SMART_PAYMENT,
 };
 
 const NavigationContext = createContext(null);

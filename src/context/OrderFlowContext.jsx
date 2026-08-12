@@ -13,7 +13,7 @@
 |   retryPay() POST /orders/{n}/payment/retry
 |              GET  /orders/{n}/payment        polled automatically
 |
-| The checkout FORM (name / address / phones) stays in OrderContext —
+| The customer/payment FORM (name / address / phones) stays in OrderContext —
 | this context deals only with what the server owns.
 |
 | Money note: totals always come from the server response. The local cart

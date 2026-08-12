@@ -26,4 +26,33 @@
 .field input:focus,
 .field textarea:focus {
   border-color: var(--saffron);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 24%, transparent);
+}
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: color-mix(in srgb, var(--tomato) 58%, var(--line));
+  background: color-mix(in srgb, var(--tomato) 4%, var(--card));
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: color-mix(in srgb, var(--ink-soft) 62%, var(--card));
+  font-weight: 650;
+}
+
+.hint,
+.error {
+  margin-top: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.hint {
+  color: var(--ink-soft);
+}
+
+.error {
+  color: var(--tomato);
 }

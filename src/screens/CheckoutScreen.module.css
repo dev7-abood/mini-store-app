@@ -1,145 +1,29 @@
 .pad {
-  padding: 0 16px 130px;
+  padding: 6px 16px 130px;
 }
 
-/* Payment method section. */
 .paymentBlock {
-  margin-top: 6px;
-}
-
-.paymentLabel {
-  display: block;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--ink);
-  margin-bottom: 10px;
-}
-
-.senderCard {
-  position: relative;
-  margin-top: 0;
-  padding: 14px;
-  border-radius: 16px;
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--saffron) 12%, var(--card)),
-      var(--card) 52%,
-      color-mix(in srgb, var(--bg) 56%, var(--card))
-    );
-  border: 1px solid color-mix(in srgb, var(--saffron) 30%, var(--line));
-  box-shadow: 0 8px 22px rgba(34, 24, 14, 0.055);
-}
-
-.senderCard::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 26px;
-  top: -13px;
-  width: 2px;
-  height: 13px;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--tomato) 46%, var(--saffron));
-}
-
-.senderHeader {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 11px;
-  align-items: start;
-  margin-bottom: 12px;
+  gap: 14px;
 }
 
-.senderBadge {
-  display: inline-grid;
-  place-items: center;
-  min-height: 30px;
-  border-radius: 999px;
-  padding: 6px 10px;
-  background: color-mix(in srgb, var(--tomato) 10%, var(--card));
-  border: 1px solid color-mix(in srgb, var(--tomato) 24%, var(--line));
-  color: var(--tomato);
-  font-size: 11px;
-  font-weight: 900;
-  white-space: nowrap;
+.sectionHeader {
+  display: grid;
+  gap: 4px;
+  padding-inline: 2px;
 }
 
-.senderHeader h2 {
+.sectionHeader h2 {
   color: var(--ink);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
   line-height: 1.25;
   letter-spacing: 0;
 }
 
-.senderHeader p {
+.sectionHeader p {
   color: var(--ink-soft);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.55;
-  margin-top: 4px;
-}
-
-.senderFields {
-  display: grid;
-  gap: 10px;
-}
-
-.senderField label {
-  display: block;
-  color: var(--ink);
   font-size: 12.5px;
-  font-weight: 900;
-  margin-bottom: 6px;
-}
-
-.senderField input {
-  width: 100%;
-  border-radius: 13px;
-  border: 1.5px solid color-mix(in srgb, var(--line) 88%, var(--card));
-  background: var(--card);
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 750;
-  outline: none;
-  padding: 12px 13px;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-}
-
-.senderField input:focus {
-  border-color: var(--saffron);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 30%, transparent);
-}
-
-.senderField input[aria-invalid="true"] {
-  border-color: color-mix(in srgb, var(--tomato) 55%, var(--line));
-  background: color-mix(in srgb, var(--tomato) 4%, var(--card));
-}
-
-.senderField input::placeholder {
-  color: color-mix(in srgb, var(--ink-soft) 62%, var(--card));
-  font-weight: 650;
-}
-
-.errorText {
-  color: var(--tomato);
-  font-size: 11.5px;
-  font-weight: 800;
-  line-height: 1.45;
-  margin-top: 5px;
-}
-
-@media (max-width: 360px) {
-  .senderCard {
-    padding: 12px;
-  }
-
-  .senderHeader {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .senderBadge {
-    justify-self: start;
-  }
+  font-weight: 700;
+  line-height: 1.5;
 }

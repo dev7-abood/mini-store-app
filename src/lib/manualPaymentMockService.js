@@ -32,6 +32,7 @@ const REMINDER_COOLDOWN_MS = 5 * 60 * 1000;
  *   id: string,
  *   orderNumber: string,
  *   reference: string,
+ *   deliveryAddress?: string,
  *   totalAmount: number,
  *   currency: string,
  *   paymentMethod: PaymentMethodSummary,
@@ -152,7 +153,8 @@ function cartEntriesToItems(entries) {
  *
  * @param {{entries: Array<{product: object, qty: number}>,
  *   total: number, paymentMethodId: string,
- *   manualPaymentSender?: {fullName: string, accountIdentifier: string}}} payload
+ *   manualPaymentSender?: {fullName: string, accountIdentifier: string},
+ *   address?: string}} payload
  * @returns {Order}
  */
 export function createMockManualPaymentOrder({
@@ -160,6 +162,7 @@ export function createMockManualPaymentOrder({
   total = 0,
   paymentMethodId,
   manualPaymentSender = null,
+  address = '',
 }) {
   const id = nextOrderId();
   return makeMockManualPaymentOrder({
@@ -168,6 +171,7 @@ export function createMockManualPaymentOrder({
     total,
     paymentMethodId,
     manualPaymentSender,
+    address,
     persist: true,
   });
 }
@@ -178,6 +182,7 @@ function makeMockManualPaymentOrder({
   total = 0,
   paymentMethodId = 'palpay',
   manualPaymentSender = null,
+  address = '',
   persist = false,
 }) {
   const items = cartEntriesToItems(entries);
@@ -185,10 +190,12 @@ function makeMockManualPaymentOrder({
     ? Number(total)
     : items.reduce((sum, item) => sum + item.total, 0);
   const now = new Date().toISOString();
+  const deliveryAddress = String(address || '').trim();
   const order = {
     id,
     orderNumber: `#${id}`,
     reference: `ORDER-${id}`,
+    deliveryAddress,
     totalAmount,
     currency: 'ILS',
     paymentMethod: methodSummary(paymentMethodId),

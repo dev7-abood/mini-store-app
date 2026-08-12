@@ -2,7 +2,7 @@
 |--------------------------------------------------------------------------
 | Order Context
 |--------------------------------------------------------------------------
-| Holds the checkout form data (name / address / note / phones) and the
+| Holds the payment detail form data (name / address / note / phones) and the
 | confirmed order number, shared across the checkout -> OTP -> status flow.
 |
 | Delivery phone behavior: mirrors the main phone while the user types,
