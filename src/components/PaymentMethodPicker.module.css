@@ -2,19 +2,19 @@
 |--------------------------------------------------------------------------
 | Payment Method Picker
 |--------------------------------------------------------------------------
-| Colors come from the branding tokens so each tenant themes the
-| selection state automatically.
+| Compact radio cards. Colors come from tenant branding tokens so the
+| selected state follows the current store theme.
 */
 .group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .category {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .categoryHeader {
@@ -26,7 +26,7 @@
 }
 
 .categoryHeader span {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 900;
   color: var(--ink-soft);
   text-transform: uppercase;
@@ -35,7 +35,7 @@
 
 .cards {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .selectedAddon {
@@ -46,21 +46,22 @@
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 20px;
+  grid-template-columns: 48px minmax(0, 1fr) 22px;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   width: 100%;
-  min-height: 88px;
-  padding: 14px;
+  min-height: 76px;
+  padding: 12px;
   background: var(--card);
-  border: 1.5px solid var(--line);
-  border-radius: 15px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--card));
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(34, 24, 14, 0.025);
   cursor: pointer;
   text-align: start;
   font-family: inherit;
   overflow: hidden;
   outline: none;
-  transition: border-color 0.18s, transform 0.12s, background 0.18s;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.12s;
 }
 
 .card > * {
@@ -69,47 +70,18 @@
 }
 
 .manual {
-  background: linear-gradient(
-    180deg,
-    var(--card),
-    color-mix(in srgb, var(--card) 92%, var(--bg))
-  );
+  background: var(--card);
 }
 
 .recommended {
-  border-color: color-mix(in srgb, var(--basil) 34%, var(--line));
+  border-color: color-mix(in srgb, var(--saffron) 42%, var(--line));
   background:
-    radial-gradient(
-      circle at 88% 0%,
-      color-mix(in srgb, var(--saffron) 22%, transparent),
-      transparent 32%
-    ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--basil) 8%, var(--card)) 0%,
-      var(--card) 52%,
-      color-mix(in srgb, var(--saffron) 15%, var(--card)) 100%
+      color-mix(in srgb, var(--saffron) 10%, var(--card)) 0%,
+      var(--card) 58%,
+      color-mix(in srgb, var(--basil) 5%, var(--card)) 100%
     );
-}
-
-.recommended::before {
-  content: "";
-  position: absolute;
-  top: -45%;
-  bottom: -45%;
-  left: -52%;
-  z-index: 0;
-  width: 34%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.42),
-    transparent
-  );
-  opacity: 0.52;
-  transform: translateX(-15%) skewX(-18deg);
-  animation: shine 5.8s ease-in-out infinite;
-  pointer-events: none;
 }
 
 .card:focus-visible {
@@ -119,39 +91,54 @@
 }
 
 .card:active {
-  transform: scale(0.99);
+  transform: scale(0.995);
 }
 
 .selected {
-  border-color: var(--basil);
+  border-color: color-mix(in srgb, var(--basil) 54%, var(--saffron));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--basil) 6%, var(--card)),
+      var(--card) 52%,
+      color-mix(in srgb, var(--saffron) 12%, var(--card))
+    );
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--basil) 7%, transparent),
+    0 8px 22px rgba(34, 24, 14, 0.055);
 }
 
 .selected.recommended {
-  border-color: var(--basil);
+  border-color: color-mix(in srgb, var(--basil) 58%, var(--saffron));
 }
 
-/* Logo plate: a raised neutral tint keeps provider marks legible on any
-   tenant surface without feeling like a flat square. */
+.selected::after {
+  content: "";
+  position: absolute;
+  inset-block: 12px;
+  inset-inline-start: 0;
+  z-index: 0;
+  width: 3px;
+  border-radius: 0 999px 999px 0;
+  background: color-mix(in srgb, var(--basil) 68%, var(--saffron));
+}
+
 .mark {
   position: relative;
   isolation: isolate;
-  width: 54px;
-  height: 42px;
-  border-radius: 13px;
-  background:
-    radial-gradient(
-      circle at 24% 18%,
-      color-mix(in srgb, var(--saffron) 30%, #fff),
-      transparent 38%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--card) 78%, var(--basil) 13%),
-      color-mix(in srgb, var(--card) 70%, var(--saffron) 22%)
-    );
-  border: 1px solid color-mix(in srgb, var(--basil) 24%, var(--line));
   display: grid;
   place-items: center;
+  width: 48px;
+  height: 38px;
+  border-radius: 11px;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--card) 84%, var(--basil) 8%),
+      color-mix(in srgb, var(--card) 82%, var(--saffron) 16%)
+    );
+  border: 1px solid color-mix(in srgb, var(--line) 82%, var(--card));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
   overflow: hidden;
   padding: 6px;
 }
@@ -161,7 +148,7 @@
   position: absolute;
   inset: 1px;
   z-index: 0;
-  border-radius: 11px;
+  border-radius: 9px;
   background:
     linear-gradient(
       180deg,
@@ -173,18 +160,12 @@
 
 .recommended .mark {
   background:
-    radial-gradient(
-      circle at 24% 18%,
-      color-mix(in srgb, var(--saffron) 28%, #fff),
-      transparent 36%
-    ),
     linear-gradient(
       135deg,
-      color-mix(in srgb, var(--basil) 76%, var(--card)),
-      color-mix(in srgb, var(--basil) 62%, var(--saffron)) 58%,
-      color-mix(in srgb, var(--saffron) 46%, var(--basil))
-    )
-  );
+      color-mix(in srgb, var(--basil) 68%, var(--card)),
+      color-mix(in srgb, var(--basil) 56%, var(--saffron)) 62%,
+      color-mix(in srgb, var(--saffron) 42%, var(--basil))
+    );
   border-color: color-mix(in srgb, var(--saffron) 58%, var(--basil));
 }
 
@@ -192,8 +173,8 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 40px;
-  height: 27px;
+  max-width: 36px;
+  height: 24px;
   object-fit: contain;
 }
 
@@ -206,7 +187,7 @@
 .text {
   min-width: 0;
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 
 .titleRow {
@@ -225,17 +206,8 @@
   color: var(--ink);
 }
 
-.metaRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 7px 8px;
+.hint {
   min-width: 0;
-}
-
-.metaRow small {
-  min-width: 0;
-  flex: 1 1 122px;
   display: -webkit-box;
   overflow: hidden;
   font-size: 12px;
@@ -246,57 +218,37 @@
   -webkit-line-clamp: 2;
 }
 
-.badge,
-.typePill {
+.badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   justify-self: start;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.badge {
   min-height: 22px;
   padding: 3px 8px;
+  border-radius: 999px;
   background: color-mix(in srgb, var(--saffron) 36%, var(--card));
   border: 1px solid color-mix(in srgb, var(--saffron) 54%, transparent);
   color: var(--ink);
   font-size: 10.8px;
   font-weight: 900;
-}
-
-.typePill {
-  flex: 0 0 auto;
-  width: fit-content;
-  min-height: 22px;
-  padding: 3px 9px;
-  background: color-mix(in srgb, var(--line) 44%, transparent);
-  border: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
-  color: var(--ink-soft);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.smart .typePill {
-  background: color-mix(in srgb, var(--saffron) 25%, var(--card));
-  border-color: color-mix(in srgb, var(--saffron) 46%, transparent);
-  color: var(--ink);
+  white-space: nowrap;
 }
 
 .radio {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--line);
   display: grid;
   place-items: center;
-  transition: border-color 0.18s, background 0.18s;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--line) 84%, var(--ink-soft));
+  background: color-mix(in srgb, var(--card) 82%, var(--line));
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
 }
 
 .selected .radio {
   background: var(--basil);
   border-color: var(--basil);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--basil) 10%, transparent);
 }
 
 .radio::after {
@@ -306,7 +258,7 @@
   border-left: 2px solid #fff;
   border-bottom: 2px solid #fff;
   opacity: 0;
-  transform: rotate(-45deg) scale(0.62);
+  transform: rotate(-45deg) scale(0.72);
   transition: opacity 0.16s, transform 0.16s;
 }
 
@@ -315,7 +267,6 @@
   transform: rotate(-45deg) scale(1);
 }
 
-/* Only one method offered: shown for clarity, not interactive. */
 .single {
   cursor: default;
 }
@@ -324,60 +275,33 @@
   transform: none;
 }
 
-@keyframes shine {
-  0%,
-  46% {
-    transform: translateX(-15%) skewX(-18deg);
-  }
-
-  64% {
-    transform: translateX(470%) skewX(-18deg);
-  }
-
-  100% {
-    transform: translateX(470%) skewX(-18deg);
-  }
-}
-
 @media (hover: hover) and (pointer: fine) {
   .card:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--basil) 36%, var(--line));
+    border-color: color-mix(in srgb, var(--basil) 28%, var(--line));
+    box-shadow: 0 6px 18px rgba(34, 24, 14, 0.052);
     transform: translateY(-1px);
   }
 
   .card:hover:not(:disabled):active {
-    transform: translateY(0) scale(0.99);
+    transform: translateY(0) scale(0.995);
   }
 }
 
 @media (max-width: 360px) {
   .card {
-    grid-template-columns: 50px minmax(0, 1fr) 20px;
+    grid-template-columns: 44px minmax(0, 1fr) 22px;
     gap: 10px;
-    min-height: 82px;
+    min-height: 72px;
     padding: 12px 11px;
   }
 
   .mark {
-    width: 50px;
-    height: 39px;
+    width: 44px;
+    height: 36px;
   }
 
   .logo {
-    max-width: 37px;
-    height: 25px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .recommended::before {
-    opacity: 0.5;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recommended::before {
-    animation: none;
-    opacity: 0;
+    max-width: 34px;
+    height: 23px;
   }
 }

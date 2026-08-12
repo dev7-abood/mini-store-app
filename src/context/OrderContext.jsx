@@ -11,15 +11,15 @@
 */
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useCustomer } from './CustomerContext';
-import { formatLocalPhone } from '../lib/phone';
+import { formatLocalPhone, toLocalDigits } from '../lib/phone';
 import { DEFAULT_PAYMENT_METHOD } from '../lib/paymentMethods';
 
 export const PHONE_PREFIX = '+970';
 
 const OrderContext = createContext(null);
 
-/** "+970" + digits only, e.g. +970598304517 */
-const toE164 = (value) => `${PHONE_PREFIX}${String(value).replace(/\D/g, '')}`;
+/** "+970" + normalized local digits, e.g. +970598304517 */
+const toE164 = (value) => `${PHONE_PREFIX}${toLocalDigits(value)}`;
 
 export function OrderProvider({ children }) {
   const { customer } = useCustomer();

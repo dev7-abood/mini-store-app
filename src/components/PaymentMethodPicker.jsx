@@ -7,8 +7,8 @@ import styles from './PaymentMethodPicker.module.css';
 |--------------------------------------------------------------------------
 | Payment Method Picker
 |--------------------------------------------------------------------------
-| Card-style radio group. The selected card is outlined in the tenant's
-| primary color, so it themes automatically with branding.
+| Compact card-style radio group. The selected state uses the tenant
+| brand tokens without relying on a heavy border.
 */
 
 const PAYMENT_TYPE_ORDER = ['smart', 'manual'];
@@ -86,10 +86,7 @@ export default function PaymentMethodPicker({ value, onChange, renderSelectedAdd
                           <span className={styles.badge}>{t(method.badgeKey)}</span>
                         )}
                       </span>
-                      <span className={styles.metaRow}>
-                        <small>{t(method.hintKey)}</small>
-                        <span className={styles.typePill}>{methodTypeLabel}</span>
-                      </span>
+                      <small className={styles.hint}>{t(method.hintKey)}</small>
                     </span>
 
                     <span className={styles.radio} aria-hidden="true" />

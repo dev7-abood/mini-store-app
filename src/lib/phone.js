@@ -8,9 +8,24 @@
 
 export const LOCAL_DIGITS = 9;
 
-/** Strip everything but digits and cap at the local length. */
+/** Strip everything but digits, normalize common prefixes, and cap locally. */
 export function toLocalDigits(value) {
-  return String(value).replace(/\D/g, '').slice(0, LOCAL_DIGITS);
+  let digits = String(value).replace(/\D/g, '');
+
+  if (digits.startsWith('00970')) {
+    digits = digits.slice(5);
+  } else if (digits.startsWith('970')) {
+    digits = digits.slice(3);
+  }
+
+  if (digits.startsWith('0')) digits = digits.slice(1);
+
+  return digits.slice(0, LOCAL_DIGITS);
+}
+
+/** Palestinian mobile wallet numbers are 9 local digits and start with 5. */
+export function isPalestinianMobileNumber(value) {
+  return /^5\d{8}$/.test(toLocalDigits(value));
 }
 
 /**
