@@ -156,9 +156,19 @@ export function normalizePaymentMethodId(value) {
   if (!normalized) return '';
 
   const compact = normalized.replace(/_/g, '');
-  if (compact === 'jawwalpay' || compact === 'jawwal') return 'jawwalpay';
-  if (compact === 'palpay' || compact === 'palpaywallet') return 'palpay';
-  if (compact === 'bankofpalestine' || compact === 'bankpalestine' || compact === 'bop') {
+  if (compact === 'jawwalpay' || compact === 'jawwal' || compact.endsWith('jawwalpay')) {
+    return 'jawwalpay';
+  }
+  if (compact === 'palpay' || compact === 'palpaywallet' || compact.endsWith('palpay')) {
+    return 'palpay';
+  }
+  if (
+    compact === 'bankofpalestine'
+    || compact === 'bankpalestine'
+    || compact === 'bop'
+    || compact.endsWith('bop')
+    || compact.endsWith('bankofpalestine')
+  ) {
     return 'bank_of_palestine';
   }
 
@@ -210,6 +220,7 @@ export function normalizeManualPaymentReceivingInfo(raw) {
       'account_holder_name',
       'holder_name',
       'holderName',
+      'account_holder',
       'beneficiary_name',
       'beneficiaryName',
       'account_name',
@@ -424,6 +435,7 @@ function explicitReceivingInfoFromMethod(raw) {
     accountHolderName: firstText(
       raw.accountHolderName,
       raw.account_holder_name,
+      raw.account_holder,
       raw.holder_name,
       raw.holderName,
       raw.beneficiary_name,
@@ -506,19 +518,23 @@ function normalizeMethodReceivingInfo(raw) {
     raw?.payment_details,
     raw?.paymentDetails,
     accountRowsReceivingInfo(account),
+    account,
     settings?.receiving_info,
     settings?.receivingInfo,
     settings?.manual_payment_info,
     settings?.manualPaymentInfo,
     accountRowsReceivingInfo(settings?.account),
+    settings?.account,
     settings,
     config?.receiving_info,
     config?.receivingInfo,
     accountRowsReceivingInfo(config?.account),
+    config?.account,
     config,
     details?.receiving_info,
     details?.receivingInfo,
     accountRowsReceivingInfo(details?.account),
+    details?.account,
     details,
     explicitReceivingInfoFromMethod(raw),
   );
@@ -582,6 +598,10 @@ function paymentMethodEnabled(raw, fallback = true) {
     ?? raw?.is_active
     ?? raw?.isActive
     ?? raw?.available
+    ?? raw?.account?.enabled
+    ?? raw?.settings?.account?.enabled
+    ?? raw?.config?.account?.enabled
+    ?? raw?.details?.account?.enabled
     ?? raw?.status,
     fallback,
   );
