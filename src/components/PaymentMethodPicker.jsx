@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AVAILABLE_PAYMENT_METHODS } from '../lib/paymentMethods';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
+import { paymentMethodHint, paymentMethodLabel } from '../lib/paymentMethods';
 import styles from './PaymentMethodPicker.module.css';
 
 /*
@@ -19,14 +20,15 @@ const PAYMENT_TYPE_ORDER = ['smart', 'manual'];
  */
 export default function PaymentMethodPicker({ value, onChange, renderSelectedAddon = null }) {
   const { t } = useTranslation();
+  const { methods } = usePaymentMethods();
 
   /* A single method is informational, not a decision: the card is shown
      (so the customer knows how they're paying) but not interactive. */
-  const single = AVAILABLE_PAYMENT_METHODS.length === 1;
+  const single = methods.length === 1;
   const groups = PAYMENT_TYPE_ORDER
     .map((type) => ({
       type,
-      methods: AVAILABLE_PAYMENT_METHODS.filter((method) => method.type === type),
+      methods: methods.filter((method) => method.type === type),
     }))
     .filter((group) => group.methods.length > 0);
 
@@ -41,12 +43,14 @@ export default function PaymentMethodPicker({ value, onChange, renderSelectedAdd
           <div className={styles.cards}>
             {group.methods.map((method) => {
               const selected = value === method.id;
+              const label = paymentMethodLabel(method, t);
+              const hint = paymentMethodHint(method, t);
               const methodTypeLabel = t(`payment.types.${method.type}`);
               const methodBadgeLabel = method.badgeKey ? t(method.badgeKey) : '';
               const ariaLabel = [
-                t(method.labelKey),
+                label,
                 methodBadgeLabel,
-                t(method.hintKey),
+                hint,
                 methodTypeLabel,
               ].filter(Boolean).join(' ');
               const cardClassName = [
@@ -81,12 +85,12 @@ export default function PaymentMethodPicker({ value, onChange, renderSelectedAdd
 
                     <span className={styles.text}>
                       <span className={styles.titleRow}>
-                        <b>{t(method.labelKey)}</b>
+                        <b>{label}</b>
                         {method.badgeKey && (
                           <span className={styles.badge}>{t(method.badgeKey)}</span>
                         )}
                       </span>
-                      <small className={styles.hint}>{t(method.hintKey)}</small>
+                      {hint && <small className={styles.hint}>{hint}</small>}
                     </span>
 
                     <span className={styles.radio} aria-hidden="true" />

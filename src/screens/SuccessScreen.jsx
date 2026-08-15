@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
 import { useOrderFlow } from '../context/OrderFlowContext';
-import { findPaymentMethod } from '../lib/paymentMethods';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { normalizeStatusValue } from '../lib/orderStatus';
 import Screen from '../components/ui/Screen';
 import CenterIllustration from '../components/ui/CenterIllustration';
@@ -15,6 +15,7 @@ export default function SuccessScreen() {
   const { t } = useTranslation();
   const { orderNumber, paymentMethod } = useOrder();
   const { order } = useOrderFlow();
+  const { findPaymentMethod } = usePaymentMethods();
   const navigate = useNavigate();
   const method = findPaymentMethod(order?.paymentMethod ?? paymentMethod);
   const proofSubmitted =

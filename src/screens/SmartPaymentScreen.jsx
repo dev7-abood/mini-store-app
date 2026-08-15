@@ -4,9 +4,10 @@ import { useOrder, PHONE_PREFIX } from '../context/OrderContext';
 import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useOrderFlow } from '../context/OrderFlowContext';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { formatLocalPhone, LOCAL_DIGITS } from '../lib/phone';
-import { findPaymentMethod } from '../lib/paymentMethods';
+import { paymentMethodLabel } from '../lib/paymentMethods';
 import { validateSmartPaymentDetails } from '../lib/paymentDetailsValidation';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
@@ -83,12 +84,13 @@ export default function SmartPaymentScreen() {
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
   const { place, isBusy } = useOrderFlow();
+  const { findPaymentMethod } = usePaymentMethods();
   const { canCheckout, refresh: refreshStoreStatus } = useStoreStatus();
   const [isCheckingStore, setIsCheckingStore] = useState(false);
   const [touched, setTouched] = useState({ fullName: false, phone: false, address: false });
 
   const method = findPaymentMethod(paymentMethod) ?? findPaymentMethod('jawwalpay');
-  const methodLabel = method?.labelKey ? t(method.labelKey) : t('payment.jawwalpay.label');
+  const methodLabel = paymentMethodLabel(method, t) || t('payment.jawwalpay.label');
   const paymentValidation = validateSmartPaymentDetails(
     { fullName: details.name, phone, address: details.address },
     t,

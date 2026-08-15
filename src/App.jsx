@@ -13,6 +13,7 @@ import { CatalogProvider, useCatalog } from './context/CatalogContext';
 import { BrandingProvider } from './context/BrandingContext';
 import { StoreStatusProvider } from './context/StoreStatusContext';
 import { CustomerProvider } from './context/CustomerContext';
+import { PaymentMethodsProvider } from './context/PaymentMethodsContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
 import { OrderFlowProvider } from './context/OrderFlowContext';
@@ -148,13 +149,15 @@ export default function App() {
         <TenantGate>
           <BrandingProvider>
             <StoreStatusProvider>
-              <CustomerProvider>
-                <OrderProvider>
-                  <OrderFlowProvider>
-                    <OrderFlowScreens />
-                  </OrderFlowProvider>
-                </OrderProvider>
-              </CustomerProvider>
+              <PaymentMethodsProvider>
+                <CustomerProvider>
+                  <OrderProvider>
+                    <OrderFlowProvider>
+                      <OrderFlowScreens />
+                    </OrderFlowProvider>
+                  </OrderProvider>
+                </CustomerProvider>
+              </PaymentMethodsProvider>
             </StoreStatusProvider>
           </BrandingProvider>
         </TenantGate>

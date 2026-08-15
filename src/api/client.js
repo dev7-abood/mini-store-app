@@ -410,6 +410,17 @@ export async function fetchStoreStatus() {
 
 /*
 |--------------------------------------------------------------------------
+| Payment Methods (GET /payment-methods)
+|--------------------------------------------------------------------------
+| Tenant payment settings decide which manual methods are active and which
+| receiving details belong to each manual method.
+*/
+
+export const fetchPaymentMethods = () =>
+  request('/payment-methods', { timeoutMs: 8000 });
+
+/*
+|--------------------------------------------------------------------------
 | Customer Sync (POST /telegram/customer)
 |--------------------------------------------------------------------------
 | Registers/refreshes the calling Telegram user as a tenant Customer.

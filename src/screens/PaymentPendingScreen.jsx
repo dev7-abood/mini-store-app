@@ -3,11 +3,16 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMoney } from '../hooks/useMoney';
 import { useTelegram } from '../hooks/useTelegram';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import {
   getMockManualPaymentOrder,
   secondsUntilReminder,
   sendMockPaymentReminder,
 } from '../lib/manualPaymentMockService';
+import {
+  manualReceivingInfoForPaymentMethod,
+  paymentMethodLabel,
+} from '../lib/paymentMethods';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import Button from '../components/ui/Button';
@@ -40,7 +45,7 @@ function formatCooldown(seconds) {
   return `${minutes}:${String(remainder).padStart(2, '0')}`;
 }
 
-function MethodMark({ method, label }) {
+function MethodMark({ method = {}, label }) {
   if (method.logo) {
     return (
       <span className={styles.methodMark}>
@@ -97,6 +102,7 @@ export default function PaymentPendingScreen() {
   const { t } = useTranslation();
   const money = useMoney();
   const { haptic, notify } = useTelegram();
+  const { findPaymentMethod } = usePaymentMethods();
   const [order, setOrder] = useState(() => getMockManualPaymentOrder(orderNumber));
   const [copiedKey, setCopiedKey] = useState(null);
   const [isSendingReminder, setIsSendingReminder] = useState(false);
@@ -114,9 +120,16 @@ export default function PaymentPendingScreen() {
     return () => window.clearInterval(timer);
   }, [order]);
 
-  const methodLabel = order.paymentMethod.nameKey
-    ? t(order.paymentMethod.nameKey)
-    : order.paymentMethod.name || t('paymentPending.manualPayment');
+  const orderPaymentMethod = order.paymentMethod ?? {};
+  const configuredMethod = findPaymentMethod(orderPaymentMethod.id);
+  const configuredReceiver = manualReceivingInfoForPaymentMethod(configuredMethod);
+  const paymentMethod = configuredMethod
+    ? { ...orderPaymentMethod, ...configuredMethod }
+    : orderPaymentMethod;
+  const methodLabel = paymentMethodLabel(configuredMethod, t)
+    || orderPaymentMethod.name
+    || (orderPaymentMethod.nameKey ? t(orderPaymentMethod.nameKey) : '')
+    || t('paymentPending.manualPayment');
   const statusLabel = t(`status.paymentValues.${order.verification.status}`);
   const amountText = money(order.totalAmount);
   const customerPayment = {
@@ -127,48 +140,61 @@ export default function PaymentPendingScreen() {
     transactionNumber: order.customerPayment.transactionNumber,
     paymentNote: order.customerPayment.paymentNote,
   };
+  const receiver = configuredMethod?.source === 'api'
+    ? configuredReceiver ?? {}
+    : configuredReceiver ?? order.receiver ?? {};
   const receiverRows = useMemo(
     () => [
       {
         key: 'receiverName',
         label: t('paymentPending.receiverName'),
-        value: order.receiver.receiverName,
+        value: receiver.receiverName,
       },
       {
         key: 'accountHolderName',
         label: t('paymentPending.accountHolderName'),
-        value: order.receiver.accountHolderName,
+        value: receiver.accountHolderName,
       },
       {
         key: 'walletPhoneNumber',
         label: t('paymentPending.walletPhoneNumber'),
-        value: order.receiver.walletPhoneNumber,
+        value: receiver.walletPhoneNumber,
         copyable: true,
         valueDir: 'ltr',
       },
       {
         key: 'accountNumber',
         label: t('paymentPending.accountNumber'),
-        value: order.receiver.accountNumber,
+        value: receiver.accountNumber,
         copyable: true,
         valueDir: 'ltr',
+      },
+      {
+        key: 'bankOrWalletName',
+        label: t('paymentInstructions.bankOrWalletName'),
+        value: receiver.bankOrWalletName || receiver.bankName,
       },
       {
         key: 'iban',
         label: t('paymentPending.iban'),
-        value: order.receiver.iban,
+        value: receiver.iban,
         copyable: true,
         valueDir: 'ltr',
       },
       {
-        key: 'bankName',
-        label: t('paymentPending.bankName'),
-        value: order.receiver.bankName,
-      },
-      {
         key: 'branchName',
         label: t('paymentPending.branchName'),
-        value: order.receiver.branchName,
+        value: receiver.branchName,
+      },
+      {
+        key: 'address',
+        label: t('checkout.addressLabel'),
+        value: receiver.address,
+      },
+      {
+        key: 'additionalInstructions',
+        label: t('paymentInstructions.title'),
+        value: receiver.additionalInstructions,
       },
       {
         key: 'amount',
@@ -183,7 +209,7 @@ export default function PaymentPendingScreen() {
         valueDir: 'ltr',
       },
     ],
-    [amountText, order.receiver, order.reference, t],
+    [amountText, order.reference, receiver, t],
   );
 
   const copyValue = async (key, value) => {
@@ -280,7 +306,7 @@ export default function PaymentPendingScreen() {
 
         <section className={styles.panel}>
           <div className={styles.receiverHeader}>
-            <MethodMark method={order.paymentMethod} label={methodLabel} />
+            <MethodMark method={paymentMethod} label={methodLabel} />
             <div>
               <span>{t('paymentPending.paymentTo')}</span>
               <strong>{methodLabel}</strong>

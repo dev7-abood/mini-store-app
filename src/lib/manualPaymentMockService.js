@@ -1,4 +1,8 @@
-import { findPaymentMethod, manualReceivingInfoForMethod } from './paymentMethods';
+import {
+  findPaymentMethod,
+  manualReceivingInfoForMethod,
+  manualReceivingInfoForPaymentMethod,
+} from './paymentMethods';
 
 const STORAGE_KEY = 'safra_mock_manual_payment_orders_v1';
 const COUNTER_KEY = 'safra_mock_manual_payment_counter_v1';
@@ -12,9 +16,12 @@ const REMINDER_COOLDOWN_MS = 5 * 60 * 1000;
  *   accountHolderName?: string,
  *   walletPhoneNumber?: string,
  *   accountNumber?: string,
- *   iban?: string,
+ *   bankOrWalletName?: string,
  *   bankName?: string,
+ *   iban?: string,
  *   branchName?: string,
+ *   address?: string,
+ *   additionalInstructions?: string,
  * }} PaymentReceiver
  * @typedef {{
  *   fullName: string,
@@ -42,29 +49,6 @@ const REMINDER_COOLDOWN_MS = 5 * 60 * 1000;
  *   items: OrderItem[],
  * }} Order
  */
-
-const MOCK_RECEIVERS = {
-  palpay: {
-    receiverName: 'Gaza Store',
-    accountHolderName: 'Gaza Store Trading',
-    walletPhoneNumber: '0599123456',
-    bankName: 'PalPay',
-  },
-  bank_of_palestine: {
-    receiverName: 'Gaza Store',
-    accountHolderName: 'Gaza Store Trading',
-    accountNumber: '123456789',
-    iban: 'PS00PALS000000000000000000000',
-    bankName: 'Bank of Palestine',
-    branchName: 'Gaza Branch',
-  },
-  jawwalpay: {
-    receiverName: 'Gaza Store',
-    accountHolderName: 'Gaza Store Trading',
-    walletPhoneNumber: '0599123456',
-    bankName: 'Jawwal Pay',
-  },
-};
 
 const MOCK_CUSTOMER_PAYMENT = {
   fullName: 'Ahmad Saleh',
@@ -106,30 +90,31 @@ function cleanObject(value) {
   );
 }
 
-function normalizeReceiver(methodId) {
-  const configured = manualReceivingInfoForMethod(methodId) ?? {};
-  const mock = MOCK_RECEIVERS[methodId] ?? {
-    receiverName: 'Gaza Store',
-    accountHolderName: 'Gaza Store Trading',
-    bankName: configured.bankOrWalletName,
-  };
-
+function normalizeReceiver(methodId, method = null) {
+  const configured =
+    manualReceivingInfoForPaymentMethod(method)
+    ?? manualReceivingInfoForMethod(methodId)
+    ?? {};
   return cleanObject({
-    receiverName: configured.receiverName || mock.receiverName,
-    accountHolderName: configured.accountHolderName || mock.accountHolderName,
-    walletPhoneNumber: configured.walletPhoneNumber || mock.walletPhoneNumber,
-    accountNumber: configured.accountNumber || mock.accountNumber,
-    iban: configured.iban || mock.iban,
-    bankName: configured.bankName || configured.bankOrWalletName || mock.bankName,
-    branchName: configured.branchName || mock.branchName,
+    receiverName: configured.receiverName,
+    accountHolderName: configured.accountHolderName,
+    walletPhoneNumber: configured.walletPhoneNumber,
+    accountNumber: configured.accountNumber,
+    bankOrWalletName: configured.bankOrWalletName,
+    bankName: configured.bankName,
+    iban: configured.iban,
+    branchName: configured.branchName,
+    address: configured.address,
+    additionalInstructions: configured.additionalInstructions,
   });
 }
 
-function methodSummary(methodId) {
-  const method = findPaymentMethod(methodId) ?? findPaymentMethod('palpay');
+function methodSummary(methodId, paymentMethod = null) {
+  const method = paymentMethod ?? findPaymentMethod(methodId);
   return {
-    id: method?.id ?? methodId,
+    id: method?.id ?? methodId ?? '',
     nameKey: method?.labelKey ?? '',
+    name: method?.label ?? '',
     type: method?.type ?? 'manual',
     logo: method?.logo,
     icon: method?.icon,
@@ -153,6 +138,7 @@ function cartEntriesToItems(entries) {
  *
  * @param {{entries: Array<{product: object, qty: number}>,
  *   total: number, paymentMethodId: string,
+ *   paymentMethod?: import('./paymentMethods').PaymentMethod,
  *   manualPaymentSender?: {fullName: string, accountIdentifier: string},
  *   address?: string}} payload
  * @returns {Order}
@@ -161,6 +147,7 @@ export function createMockManualPaymentOrder({
   entries = [],
   total = 0,
   paymentMethodId,
+  paymentMethod = null,
   manualPaymentSender = null,
   address = '',
 }) {
@@ -170,6 +157,7 @@ export function createMockManualPaymentOrder({
     entries,
     total,
     paymentMethodId,
+    paymentMethod,
     manualPaymentSender,
     address,
     persist: true,
@@ -181,6 +169,7 @@ function makeMockManualPaymentOrder({
   entries = [],
   total = 0,
   paymentMethodId = 'palpay',
+  paymentMethod = null,
   manualPaymentSender = null,
   address = '',
   persist = false,
@@ -198,8 +187,8 @@ function makeMockManualPaymentOrder({
     deliveryAddress,
     totalAmount,
     currency: 'ILS',
-    paymentMethod: methodSummary(paymentMethodId),
-    receiver: normalizeReceiver(paymentMethodId),
+    paymentMethod: methodSummary(paymentMethodId, paymentMethod),
+    receiver: normalizeReceiver(paymentMethodId, paymentMethod),
     customerPayment: {
       ...MOCK_CUSTOMER_PAYMENT,
       ...(manualPaymentSender

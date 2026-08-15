@@ -3,7 +3,7 @@ import { useOrder } from '../context/OrderContext';
 import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
-import { findPaymentMethod } from '../lib/paymentMethods';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import PaymentMethodPicker from '../components/PaymentMethodPicker';
@@ -19,6 +19,7 @@ export default function CheckoutScreen() {
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
+  const { findPaymentMethod } = usePaymentMethods();
   const selectedMethod = findPaymentMethod(paymentMethod);
 
   const submit = () => {
@@ -49,7 +50,7 @@ export default function CheckoutScreen() {
       </div>
       <StoreStatusNotice />
       <FixedCta>
-        <Button variant="green" full onClick={submit} disabled={!canCheckout}>
+        <Button variant="green" full onClick={submit} disabled={!canCheckout || !selectedMethod}>
           {canCheckout ? t('checkout.continue') : t('storeStatus.closedCheckout')}
         </Button>
       </FixedCta>

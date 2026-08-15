@@ -13,6 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { useCustomer } from './CustomerContext';
 import { formatLocalPhone, toLocalDigits } from '../lib/phone';
 import { DEFAULT_PAYMENT_METHOD } from '../lib/paymentMethods';
+import { usePaymentMethods } from './PaymentMethodsContext';
 
 export const PHONE_PREFIX = '+970';
 
@@ -23,6 +24,10 @@ const toE164 = (value) => `${PHONE_PREFIX}${toLocalDigits(value)}`;
 
 export function OrderProvider({ children }) {
   const { customer } = useCustomer();
+  const {
+    defaultPaymentMethod,
+    findPaymentMethod: findAvailablePaymentMethod,
+  } = usePaymentMethods();
   const [details, setDetails] = useState({ name: '', address: '', note: '' });
   const [phone, setPhoneState] = useState('');
   const [deliveryPhone, setDeliveryPhoneState] = useState('');
@@ -34,6 +39,13 @@ export function OrderProvider({ children }) {
     accountIdentifier: '',
   });
   const prefilled = useRef(false);
+
+  useEffect(() => {
+    setPaymentMethod((current) => {
+      if (findAvailablePaymentMethod(current)) return current;
+      return defaultPaymentMethod || DEFAULT_PAYMENT_METHOD;
+    });
+  }, [defaultPaymentMethod, findAvailablePaymentMethod]);
 
   /* Pre-fill for returning customers: when the launch sync delivers a
      profile, seed any still-empty fields once. Never overwrites what
@@ -108,7 +120,7 @@ export function OrderProvider({ children }) {
         setDeliveryPhoneState('');
         setDeliveryEdited(false);
         setOrderNumber(null);
-        setPaymentMethod(DEFAULT_PAYMENT_METHOD);
+        setPaymentMethod(defaultPaymentMethod || DEFAULT_PAYMENT_METHOD);
         setManualPaymentSender({ fullName: '', accountIdentifier: '' });
       },
     }),
@@ -120,6 +132,7 @@ export function OrderProvider({ children }) {
       orderNumber,
       paymentMethod,
       manualPaymentSender,
+      defaultPaymentMethod,
     ],
   );
 

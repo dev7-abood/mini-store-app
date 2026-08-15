@@ -4,9 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
 import { useCart } from '../context/CartContext';
 import { useStoreStatus } from '../context/StoreStatusContext';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { createMockManualPaymentOrder } from '../lib/manualPaymentMockService';
-import { findPaymentMethod, manualReceivingInfoForMethod } from '../lib/paymentMethods';
+import {
+  manualReceivingInfoForPaymentMethod,
+  paymentMethodLabel,
+} from '../lib/paymentMethods';
 import { validateManualPaymentDetails } from '../lib/paymentDetailsValidation';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
@@ -44,6 +48,7 @@ export default function ManualPaymentScreen() {
   } = useOrder();
   const { entries, total } = useCart();
   const { canCheckout } = useStoreStatus();
+  const { findPaymentMethod } = usePaymentMethods();
   const { notify } = useTelegram();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [touched, setTouched] = useState({
@@ -52,9 +57,9 @@ export default function ManualPaymentScreen() {
     address: false,
   });
 
-  const method = findPaymentMethod(paymentMethod) ?? findPaymentMethod('palpay');
-  const methodLabel = method?.labelKey ? t(method.labelKey) : t('payment.types.manual');
-  const receiver = manualReceivingInfoForMethod(paymentMethod);
+  const method = findPaymentMethod(paymentMethod);
+  const methodLabel = paymentMethodLabel(method, t) || t('payment.types.manual');
+  const receiver = manualReceivingInfoForPaymentMethod(method);
   const validation = validateManualPaymentDetails(
     { ...manualPaymentSender, address: details.address },
     t,
@@ -70,6 +75,8 @@ export default function ManualPaymentScreen() {
       notify(t('storeStatus.closedFallback'));
       return;
     }
+
+    if (!method || method.type !== 'manual') return;
 
     setTouched({ fullName: true, accountIdentifier: true, address: true });
 
@@ -89,7 +96,8 @@ export default function ManualPaymentScreen() {
     const order = createMockManualPaymentOrder({
       entries,
       total,
-      paymentMethodId: paymentMethod,
+      paymentMethodId: method.id,
+      paymentMethod: method,
       manualPaymentSender: validation.value,
       address: validation.value.address,
     });
@@ -116,6 +124,10 @@ export default function ManualPaymentScreen() {
             <div className={styles.receiverBox} aria-label={t('manualPayment.receiverDetails')}>
               <InfoRow label={t('paymentPending.receiverName')} value={receiver.receiverName} />
               <InfoRow
+                label={t('paymentPending.accountHolderName')}
+                value={receiver.accountHolderName}
+              />
+              <InfoRow
                 label={t('paymentPending.walletPhoneNumber')}
                 value={receiver.walletPhoneNumber}
               />
@@ -124,10 +136,16 @@ export default function ManualPaymentScreen() {
                 value={receiver.accountNumber}
               />
               <InfoRow
-                label={t('paymentPending.bankName')}
-                value={receiver.bankName || receiver.bankOrWalletName}
+                label={t('paymentInstructions.bankOrWalletName')}
+                value={receiver.bankOrWalletName || receiver.bankName}
               />
               <InfoRow label={t('paymentPending.iban')} value={receiver.iban} />
+              <InfoRow label={t('paymentPending.branchName')} value={receiver.branchName} />
+              <InfoRow label={t('checkout.addressLabel')} value={receiver.address} />
+              <InfoRow
+                label={t('paymentInstructions.title')}
+                value={receiver.additionalInstructions}
+              />
             </div>
           )}
 
@@ -179,7 +197,7 @@ export default function ManualPaymentScreen() {
       </div>
       <StoreStatusNotice />
       <FixedCta>
-        <Button variant="green" full onClick={submit} disabled={isSubmitting || !canCheckout}>
+        <Button variant="green" full onClick={submit} disabled={isSubmitting || !canCheckout || !method}>
           {isSubmitting
             ? t('manualPayment.sending')
             : canCheckout
