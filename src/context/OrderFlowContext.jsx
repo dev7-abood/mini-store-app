@@ -201,9 +201,13 @@ export function OrderFlowProvider({ children }) {
     jawwalPayConfirming.current = true;
     setError(null);
     setIsBusy(true);
-    const result = await confirmJawwalPayCheckout(requestDetails.url, requestDetails.payload);
-    setIsBusy(false);
-    jawwalPayConfirming.current = false;
+    let result;
+    try {
+      result = await confirmJawwalPayCheckout(requestDetails.url, requestDetails.payload);
+    } finally {
+      setIsBusy(false);
+      jawwalPayConfirming.current = false;
+    }
 
     const outcome = resolveJawwalPayConfirmationOutcome(result);
     if (!result.ok || outcome.action !== 'redirect') {
