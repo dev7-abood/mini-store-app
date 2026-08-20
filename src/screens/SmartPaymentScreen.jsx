@@ -7,6 +7,7 @@ import { useOrderFlow } from '../context/OrderFlowContext';
 import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { formatLocalPhone, LOCAL_DIGITS } from '../lib/phone';
+import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
 import { paymentMethodLabel } from '../lib/paymentMethods';
 import { validateSmartPaymentDetails } from '../lib/paymentDetailsValidation';
 import Screen from '../components/ui/Screen';
@@ -79,6 +80,7 @@ export default function SmartPaymentScreen() {
     updateDetails,
     fullPhone,
     fullDeliveryPhone,
+    deliveryEdited,
     paymentMethod,
   } = useOrder();
   const { navigate } = useNavigation();
@@ -130,13 +132,13 @@ export default function SmartPaymentScreen() {
       return;
     }
 
-    const result = await place({
-      name: paymentValidation.value.fullName,
+    const result = await place(buildJawwalPayCheckoutPayload({
       address: paymentValidation.value.address,
       phone: fullPhone,
-      delivery_phone: fullDeliveryPhone,
-      payment_method: paymentMethod,
-    });
+      deliveryPhone: deliveryEdited ? fullDeliveryPhone : null,
+      paymentMethod,
+      note: details.note,
+    }));
 
     if (!result.ok) {
       notify(

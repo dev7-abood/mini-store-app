@@ -38,9 +38,15 @@ import {
   fetchOrderPayment,
   retryOrderPayment,
   submitOrderPaymentProof,
+  confirmJawwalPayCheckout,
   normalizeOrder,
   hasBackend,
 } from '../api/client';
+import {
+  buildJawwalPayConfirmationRequest,
+  normalizeJawwalPayOtpSession,
+  resolveJawwalPayConfirmationOutcome,
+} from '../lib/jawwalPayCheckout';
 import { isManualPaymentMethod } from '../lib/paymentMethods';
 import { useStoreStatus } from './StoreStatusContext';
 
@@ -74,9 +80,11 @@ export function OrderFlowProvider({ children }) {
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState(null);
   const [payment, setPayment] = useState(null);
+  const [jawwalPayOtpSession, setJawwalPayOtpSession] = useState(null);
 
   const pollTimer = useRef(null);
   const pollStartedAt = useRef(0);
+  const jawwalPayConfirming = useRef(false);
 
   /** Stop any running payment poll. */
   const stopPolling = useCallback(() => {
@@ -144,6 +152,23 @@ export function OrderFlowProvider({ children }) {
       return { ok: false, order: null, message: result.message, code: result.code };
     }
 
+    const session = normalizeJawwalPayOtpSession(result.data, details);
+    if (session) {
+      stopPolling();
+      setJawwalPayOtpSession(session);
+      setPayment({ status: session.status, data: result.data });
+      setOrder(null);
+      return {
+        ok: true,
+        order: null,
+        message: result.message,
+        jawwalPayOtpRequired: true,
+        jawwalPayOtpSession: session,
+        shouldPoll: false,
+      };
+    }
+
+    setJawwalPayOtpSession(null);
     const placed = withManualPaymentStatus(
       normalizeOrder(result.data),
       details.payment_method,
@@ -151,7 +176,83 @@ export function OrderFlowProvider({ children }) {
     );
     setOrder(placed);
     return { ok: true, order: placed, message: null };
-  }, [markClosed]);
+  }, [markClosed, stopPolling]);
+
+  const clearJawwalPayOtpSession = useCallback(() => {
+    setJawwalPayOtpSession(null);
+  }, []);
+
+  const confirmJawwalPayOtp = useCallback(async (code) => {
+    if (!jawwalPayOtpSession) {
+      return { ok: false, message: null, missingSession: true };
+    }
+
+    if (jawwalPayConfirming.current) {
+      return { ok: false, duplicate: true };
+    }
+
+    let requestDetails;
+    try {
+      requestDetails = buildJawwalPayConfirmationRequest(jawwalPayOtpSession, code);
+    } catch (errorDetails) {
+      return { ok: false, message: errorDetails.message, invalidLength: true };
+    }
+
+    jawwalPayConfirming.current = true;
+    setError(null);
+    setIsBusy(true);
+    const result = await confirmJawwalPayCheckout(requestDetails.url, requestDetails.payload);
+    setIsBusy(false);
+    jawwalPayConfirming.current = false;
+
+    const outcome = resolveJawwalPayConfirmationOutcome(result);
+    if (!result.ok || outcome.action !== 'redirect') {
+      if (!outcome.keepSession) setJawwalPayOtpSession(null);
+      setError(outcome.message);
+      return {
+        ...result,
+        ok: false,
+        message: outcome.message ?? result.message,
+        outcome,
+      };
+    }
+
+    setJawwalPayOtpSession(null);
+    setPayment({
+      status: outcome.payment?.status ?? result.data?.payment?.status ?? null,
+      data: result.data,
+    });
+
+    const confirmed = normalizeOrder(outcome.order ?? result.data?.order ?? result.data);
+    if (confirmed) setOrder(confirmed);
+
+    return {
+      ok: true,
+      order: confirmed,
+      payment: outcome.payment,
+      redirectUrl: outcome.redirectUrl,
+      checkoutCompleted: true,
+      message: result.message,
+      outcome,
+    };
+  }, [jawwalPayOtpSession]);
+
+  const resendJawwalPayOtp = useCallback(async () => {
+    if (!jawwalPayOtpSession?.checkoutPayload) {
+      return { ok: false, message: null, missingSession: true };
+    }
+
+    const remainingSeconds = Math.max(
+      0,
+      Math.ceil((jawwalPayOtpSession.expiresAt - Date.now()) / 1000),
+    );
+
+    if (remainingSeconds > 0) {
+      return { ok: false, message: null, notExpired: true, remainingSeconds };
+    }
+
+    return place(jawwalPayOtpSession.checkoutPayload);
+  }, [jawwalPayOtpSession, place]);
 
   /*
   |--------------------------------------------------------------------------
@@ -421,6 +522,7 @@ export function OrderFlowProvider({ children }) {
     setOrder(null);
     setPricing(null);
     setPayment(null);
+    setJawwalPayOtpSession(null);
     setError(null);
   }, [stopPolling]);
 
@@ -430,12 +532,16 @@ export function OrderFlowProvider({ children }) {
       orderNumber: order?.orderNumber ?? null,
       pricing,
       payment,
+      jawwalPayOtpSession,
       isBusy,
       error,
       preview,
       place,
       verify,
       resend,
+      confirmJawwalPayOtp,
+      resendJawwalPayOtp,
+      clearJawwalPayOtpSession,
       loadOrder,
       refresh,
       cancel,
@@ -446,8 +552,9 @@ export function OrderFlowProvider({ children }) {
       reset,
     }),
     [
-      order, pricing, payment, isBusy, error,
+      order, pricing, payment, jawwalPayOtpSession, isBusy, error,
       preview, place, verify, resend, loadOrder, refresh, cancel,
+      confirmJawwalPayOtp, resendJawwalPayOtp, clearJawwalPayOtpSession,
       startPaymentPolling, stopPolling, retryPayment, submitManualProof, reset,
     ],
   );

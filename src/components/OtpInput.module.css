@@ -24,6 +24,12 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--saffron) 40%, transparent);
 }
 
+.box:disabled {
+  color: var(--ink-soft);
+  opacity: 0.72;
+  cursor: wait;
+}
+
 .err {
   border-color: var(--tomato);
   animation: shake 0.35s;

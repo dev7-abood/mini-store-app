@@ -83,6 +83,28 @@
       "addressShort": "Enter a more complete delivery address."
     }
   },
+  "otp": {
+    "title": "Enter code",
+    "heading": "Check your messages",
+    "body": "We sent the code to",
+    "jawwalHeading": "Jawwal Pay code",
+    "jawwalBody": "Enter the verification code sent to",
+    "resend": "Resend code",
+    "resendIn": "Resend in {{time}}",
+    "resent": "Code sent again",
+    "hint": "Enter the code you received to complete the order.",
+    "jawwalHint": "Stay on this screen until the payment is complete.",
+    "confirm": "Confirm payment",
+    "confirming": "Confirming payment...",
+    "invalid": "The verification code is incorrect. Try again.",
+    "incomplete": "Enter the 5-digit code.",
+    "networkError": "Could not connect. Check your network and try again without starting a new order.",
+    "sessionExpired": "This verification session expired. Request a new code.",
+    "paymentIncomplete": "Payment is not complete yet. Try again.",
+    "digitLabel": "Verification code digit {{index}}",
+    "throttled": "Too many attempts. Wait a minute and try again.",
+    "resendFailed": "Could not send the code. Try again shortly."
+  },
   "common": {
     "back": "Back",
     "currency": "₪{{amount}}"

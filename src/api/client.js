@@ -24,6 +24,7 @@
 | payload carries a branch.
 */
 import { normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
+import { apiPathFromConfirmationUrl } from '../lib/jawwalPayCheckout';
 import { normalizeManualPaymentReceivingInfo } from '../lib/paymentMethods';
 
 /** Path prefix appended to the tenant URL from the deep-link payload. */
@@ -76,7 +77,7 @@ function telegramInitData() {
  * @param {RequestInit & {timeoutMs?: number}} [options]
  * @returns {Promise<any>}
  */
-async function request(path, { timeoutMs = 10000, ...options } = {}) {
+async function jsonRequest(path, { timeoutMs = 10000, ...options } = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -92,29 +93,34 @@ async function request(path, { timeoutMs = 10000, ...options } = {}) {
         ...options.headers,
       },
     });
+    const text = await response.text();
+    let payload = null;
+
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      /* non-JSON response body */
+    }
 
     if (!response.ok) {
       /* Attach the status and the parsed body to the error so callers
          can distinguish 401 (bad initData) from 422 (validation) and
          429 (throttled), and surface the API's own message. */
-      const text = await response.text();
-      let payload = null;
-      try {
-        payload = JSON.parse(text);
-      } catch {
-        /* non-JSON error body (HTML error page, proxy timeout, ...) */
-      }
-
       const error = new Error(`API ${response.status}: ${text}`);
       error.status = response.status;
       error.payload = payload;
       throw error;
     }
 
-    return await response.json();
+    return { payload, status: response.status };
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function request(path, options = {}) {
+  const { payload } = await jsonRequest(path, options);
+  return payload;
 }
 
 /**
@@ -647,7 +653,7 @@ export async function removeCartItem(productId) {
  */
 async function orderRequest(path, options = {}) {
   try {
-    const payload = await request(path, {
+    const { payload, status } = await jsonRequest(path, {
       timeoutMs: 10000,
       ...options,
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
@@ -656,7 +662,7 @@ async function orderRequest(path, options = {}) {
       ok: payload?.success !== false,
       data: payload?.data ?? payload ?? null,
       message: payload?.message ?? null,
-      status: 200,
+      status,
     };
   } catch (error) {
     const status = Number(error?.status) || null;
@@ -666,9 +672,10 @@ async function orderRequest(path, options = {}) {
       ok: false,
       data: payload?.data ?? null,
       /* Surface the API's own message when it sent one. */
-      message: payload?.message ?? payload?.error?.message ?? error?.message ?? null,
+      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? error?.message ?? null,
       status,
       code: payload?.error?.code ?? payload?.code ?? null,
+      error: payload?.error ?? null,
     };
   }
 }
@@ -700,9 +707,10 @@ async function orderFormRequest(path, options = {}) {
     return {
       ok: false,
       data: payload?.data ?? null,
-      message: payload?.message ?? payload?.error?.message ?? error?.message ?? null,
+      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? error?.message ?? null,
       status,
       code: payload?.error?.code ?? payload?.code ?? null,
+      error: payload?.error ?? null,
     };
   }
 }
@@ -824,6 +832,13 @@ export const previewCheckout = () => orderRequest('/checkout');
  */
 export const placeOrder = (details) =>
   orderRequest('/checkout', { method: 'POST', body: details });
+
+export const confirmJawwalPayCheckout = (confirmationUrl, payload) =>
+  orderRequest(apiPathFromConfirmationUrl(confirmationUrl, API_PREFIX), {
+    method: 'POST',
+    body: payload,
+    timeoutMs: 15000,
+  });
 
 /**
  * @returns {Promise<{ok: boolean, data: any, message: string|null,

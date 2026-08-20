@@ -13,6 +13,12 @@
   font-size: var(--text-body);
 }
 
+.resend:disabled {
+  color: var(--ink-soft);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .hint {
   text-align: center;
   color: var(--ink-soft);
@@ -22,8 +28,18 @@
   line-height: var(--leading-normal);
 }
 
+.errorText {
+  width: min(100% - calc(var(--edge) * 2), 360px);
+  margin: var(--space-2) auto 0;
+  color: var(--tomato);
+  text-align: center;
+  font-size: var(--text-meta);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-normal);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .resend:hover {
+  .resend:not(:disabled):hover {
     text-decoration: underline;
   }
 }
