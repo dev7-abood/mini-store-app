@@ -188,7 +188,7 @@ The menu header greets the user by `first_name` (falling back to `@username`) fr
 
 1. Set `VITE_API_BASE_URL` in `.env` (and on Vercel).
 2. The catalog is already wired — implement `GET /catalog` per the contract above and it goes live automatically.
-3. In `PhoneScreen` / `OtpScreen`, swap the demo `000000` flow for `sendOtp()` / `verifyOtp()`.
+3. In `PhoneScreen` / `OtpScreen`, swap the demo `00000` flow for `sendOtp()` / `verifyOtp()`.
 4. Every request carries the raw `initData` in the `X-Telegram-Init-Data` header for your HMAC validation middleware.
 
 

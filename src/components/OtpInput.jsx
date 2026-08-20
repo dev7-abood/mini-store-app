@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './OtpInput.module.css';
 
-const LENGTH = 6;
+const LENGTH = 5;
 const EMPTY = Array(LENGTH).fill('');
 
 /**
- * Six-box OTP input with auto-advance, backspace navigation, paste
+ * Five-box OTP input with auto-advance, backspace navigation, paste
  * support, and a shake-on-error state.
  *
  * @param {{onComplete: (code: string) => void, error: boolean,
