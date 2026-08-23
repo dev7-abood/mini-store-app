@@ -4,9 +4,10 @@
 |--------------------------------------------------------------------------
 | Single access point for the Telegram WebApp SDK. Every method is wrapped
 | defensively so the app keeps working in a plain browser during
-| development (haptics no-op, alerts fall back to window.alert, etc).
+| development (haptics no-op, feedback goes through the shared toasts).
 */
 import { useCallback, useEffect, useMemo } from 'react';
+import { useToasts } from '../context/ToastContext';
 
 /** @returns {import('telegram-web-app').WebApp | null} */
 function getWebApp() {
@@ -16,6 +17,7 @@ function getWebApp() {
 
 export function useTelegram() {
   const tg = getWebApp();
+  const { toast } = useToasts();
 
   /* Initialise once on mount: expand only. The native chrome colors
      are set from tenant branding via setThemeColors() once branding
@@ -42,17 +44,12 @@ export function useTelegram() {
     [tg],
   );
 
-  /** Show a native Telegram alert, falling back to window.alert. */
+  /** Show app feedback through the shared toast system. */
   const notify = useCallback(
-    (message) => {
-      try {
-        if (tg?.showAlert) tg.showAlert(message);
-        else window.alert(message);
-      } catch {
-        window.alert(message);
-      }
+    (message, options = {}) => {
+      toast(message, options);
     },
-    [tg],
+    [toast],
   );
 
   /**

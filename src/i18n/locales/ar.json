@@ -33,6 +33,7 @@
     "subtotal": "المجموع الفرعي",
     "delivery": "التوصيل",
     "total": "الإجمالي",
+    "syncFailed": "تعذّر تحديث السلة. حاول مرة أخرى.",
     "checkout": "إتمام الطلب"
   },
   "checkout": {
@@ -245,6 +246,7 @@
     "orderAgain": "اطلب مرة أخرى",
     "cancel": "إلغاء الطلب",
     "cancelConfirm": "متأكد إنك بدك تلغي الطلب؟",
+    "keepOrder": "احتفظ بالطلب",
     "cancelled": "تم إلغاء الطلب",
     "cancelFailed": "تعذّر إلغاء الطلب.",
     "refresh": "تحديث الحالة",
@@ -256,7 +258,17 @@
   },
   "common": {
     "back": "رجوع",
-    "currency": "₪{{amount}}"
+    "currency": "₪{{amount}}",
+    "dismiss": "إغلاق",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "unexpectedError": "حدث خطأ غير متوقع. حاول مرة أخرى.",
+    "notificationTypes": {
+      "success": "تم بنجاح",
+      "error": "خطأ",
+      "warning": "تنبيه",
+      "info": "معلومة"
+    }
   },
   "botMessage": {
     "title": "طلب جديد {{number}}",

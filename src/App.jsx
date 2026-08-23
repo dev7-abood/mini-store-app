@@ -17,6 +17,7 @@ import { PaymentMethodsProvider } from './context/PaymentMethodsContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
 import { OrderFlowProvider } from './context/OrderFlowContext';
+import { ToastProvider } from './context/ToastContext';
 import SplashScreen from './screens/SplashScreen';
 import MenuScreen from './screens/MenuScreen';
 import CartScreen from './screens/CartScreen';
@@ -144,24 +145,26 @@ function CatalogGate({ children }) {
 
 export default function App() {
   return (
-    <NavigationProvider>
-      <TenantProvider>
-        <TenantGate>
-          <BrandingProvider>
-            <StoreStatusProvider>
-              <PaymentMethodsProvider>
-                <CustomerProvider>
-                  <OrderProvider>
-                    <OrderFlowProvider>
-                      <OrderFlowScreens />
-                    </OrderFlowProvider>
-                  </OrderProvider>
-                </CustomerProvider>
-              </PaymentMethodsProvider>
-            </StoreStatusProvider>
-          </BrandingProvider>
-        </TenantGate>
-      </TenantProvider>
-    </NavigationProvider>
+    <ToastProvider>
+      <NavigationProvider>
+        <TenantProvider>
+          <TenantGate>
+            <BrandingProvider>
+              <StoreStatusProvider>
+                <PaymentMethodsProvider>
+                  <CustomerProvider>
+                    <OrderProvider>
+                      <OrderFlowProvider>
+                        <OrderFlowScreens />
+                      </OrderFlowProvider>
+                    </OrderProvider>
+                  </CustomerProvider>
+                </PaymentMethodsProvider>
+              </StoreStatusProvider>
+            </BrandingProvider>
+          </TenantGate>
+        </TenantProvider>
+      </NavigationProvider>
+    </ToastProvider>
   );
 }

@@ -72,7 +72,7 @@ export default function ManualPaymentScreen() {
 
   const submit = () => {
     if (!canCheckout) {
-      notify(t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'), 'warning');
       return;
     }
 
@@ -81,7 +81,7 @@ export default function ManualPaymentScreen() {
     setTouched({ fullName: true, accountIdentifier: true, address: true });
 
     if (!validation.isValid) {
-      notify(t('manualPayment.invalid'));
+      notify(t('manualPayment.invalid'), 'warning');
       if (validation.errors.fullName) {
         nameRef.current?.focus();
       } else if (validation.errors.accountIdentifier) {

@@ -106,7 +106,6 @@ export default function PaymentPendingScreen() {
   const [order, setOrder] = useState(() => getMockManualPaymentOrder(orderNumber));
   const [copiedKey, setCopiedKey] = useState(null);
   const [isSendingReminder, setIsSendingReminder] = useState(false);
-  const [reminderMessage, setReminderMessage] = useState('');
   const [remainingSeconds, setRemainingSeconds] = useState(() => secondsUntilReminder(order));
 
   useEffect(() => {
@@ -218,20 +217,20 @@ export default function PaymentPendingScreen() {
       haptic();
       setCopiedKey(key);
       window.setTimeout(() => setCopiedKey(null), 1300);
+      notify(t('paymentInstructions.copied', { label }), 'success');
     } catch {
-      notify(t('paymentPending.copyFailed'));
+      notify(t('paymentPending.copyFailed'), 'error');
     }
   };
 
   const sendReminder = async () => {
     if (remainingSeconds > 0 || isSendingReminder) return;
 
-    setReminderMessage('');
     setIsSendingReminder(true);
     const updated = await sendMockPaymentReminder(order.id);
     setOrder(updated);
     setIsSendingReminder(false);
-    setReminderMessage(t('paymentPending.reminderSent'));
+    notify(t('paymentPending.reminderSent'), 'success');
     haptic('medium');
   };
 
@@ -369,7 +368,6 @@ export default function PaymentPendingScreen() {
               ? t('paymentPending.reminderSending')
               : t('paymentPending.reminderButton')}
           </Button>
-          {reminderMessage && <p className={styles.reminderSuccess}>{reminderMessage}</p>}
           {remainingSeconds > 0 && (
             <p className={styles.cooldown}>
               {t('paymentPending.cooldown', { time: formatCooldown(remainingSeconds) })}

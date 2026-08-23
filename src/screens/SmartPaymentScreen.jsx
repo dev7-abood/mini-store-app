@@ -105,14 +105,14 @@ export default function SmartPaymentScreen() {
 
   const sendCode = async () => {
     if (!canCheckout) {
-      notify(t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'), 'warning');
       return;
     }
 
     setTouched({ fullName: true, phone: true, address: true });
 
     if (!paymentValidation.isValid) {
-      notify(t('smartPayment.invalid'));
+      notify(t('smartPayment.invalid'), 'warning');
       if (paymentValidation.errors.fullName) {
         nameRef.current?.focus();
       } else if (paymentValidation.errors.phone) {
@@ -128,7 +128,7 @@ export default function SmartPaymentScreen() {
     setIsCheckingStore(false);
 
     if (latestStatus && latestStatus.canCheckout === false) {
-      notify(t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'), 'warning');
       return;
     }
 
@@ -141,10 +141,10 @@ export default function SmartPaymentScreen() {
     }));
 
     if (!result.ok) {
+      const isStoreClosed = result.code === 'STORE_CLOSED';
       notify(
-        result.code === 'STORE_CLOSED'
-          ? t('storeStatus.closedFallback')
-          : result.message || t('smartPayment.orderFailed'),
+        isStoreClosed ? t('storeStatus.closedFallback') : result.message || t('smartPayment.orderFailed'),
+        isStoreClosed ? 'warning' : 'error',
       );
       return;
     }

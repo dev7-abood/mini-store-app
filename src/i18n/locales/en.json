@@ -9,7 +9,8 @@
   "cart": {
     "subtotal": "Subtotal",
     "delivery": "Delivery",
-    "total": "Total"
+    "total": "Total",
+    "syncFailed": "Could not update your cart. Please try again."
   },
   "checkout": {
     "title": "Delivery Details",
@@ -107,7 +108,17 @@
   },
   "common": {
     "back": "Back",
-    "currency": "₪{{amount}}"
+    "currency": "₪{{amount}}",
+    "dismiss": "Dismiss",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "unexpectedError": "Something went wrong. Please try again.",
+    "notificationTypes": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Notice"
+    }
   },
   "payment": {
     "selectTitle": "Select Payment Method",
@@ -315,6 +326,7 @@
     "orderAgain": "Order again",
     "cancel": "Cancel order",
     "cancelConfirm": "Are you sure you want to cancel this order?",
+    "keepOrder": "Keep order",
     "cancelled": "Order cancelled",
     "cancelFailed": "Could not cancel the order.",
     "refresh": "Refresh status"

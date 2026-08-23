@@ -24,7 +24,7 @@ export default function CheckoutScreen() {
 
   const submit = () => {
     if (!canCheckout) {
-      notify(t('storeStatus.closedFallback'));
+      notify(t('storeStatus.closedFallback'), 'warning');
       return;
     }
 

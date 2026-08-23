@@ -508,16 +508,11 @@
   box-shadow: none;
 }
 
-.reminderSuccess,
 .cooldown {
   text-align: center;
   font-size: var(--text-sm);
   font-weight: var(--font-bold);
   line-height: 1.45;
-}
-
-.reminderSuccess {
-  color: var(--ok);
 }
 
 .cooldown {

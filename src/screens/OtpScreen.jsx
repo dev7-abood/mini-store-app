@@ -111,7 +111,7 @@ export default function OtpScreen() {
       if (!result.ok) {
         haptic('rigid');
         setError(true);
-        if (result.throttled) notify(t('otp.throttled'));
+        if (result.throttled) notify(t('otp.throttled'), 'warning');
         return;
       }
 
@@ -147,7 +147,7 @@ export default function OtpScreen() {
 
       if (outcome?.expiredSession || result.missingSession) {
         clearJawwalPayOtpSession();
-        notify(nextMessage || t('otp.sessionExpired'));
+        notify(nextMessage || t('otp.sessionExpired'), 'warning');
         navigate(SCREENS.SMART_PAYMENT);
         return;
       }
@@ -210,23 +210,23 @@ export default function OtpScreen() {
     const result = await resendJawwalPayOtp();
     if (result.ok && result.jawwalPayOtpRequired) {
       setOtpCode('');
-      notify(t('otp.resent'));
+      notify(t('otp.resent'), 'success');
       return;
     }
 
-    notify(result.message || t('otp.resendFailed'));
+    notify(result.message || t('otp.resendFailed'), 'error');
   }, [remainingSeconds, isBusy, haptic, resendJawwalPayOtp, notify, t]);
 
   const resendPhoneOtp = useCallback(async () => {
     haptic();
     const result = await resend();
-    notify(
-      result.throttled
-        ? t('otp.throttled')
-        : result.ok
-          ? t('otp.resent')
-          : t('otp.resendFailed'),
-    );
+    const type = result.throttled ? 'warning' : result.ok ? 'success' : 'error';
+    const message = result.throttled
+      ? t('otp.throttled')
+      : result.ok
+        ? t('otp.resent')
+        : t('otp.resendFailed');
+    notify(message, type);
   }, [haptic, resend, notify, t]);
 
   const formatCountdown = (seconds) => {

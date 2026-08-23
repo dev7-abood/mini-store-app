@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useOrderFlow } from '../context/OrderFlowContext';
+import { useToasts } from '../context/ToastContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useMoney } from '../hooks/useMoney';
 import {
@@ -179,6 +180,7 @@ export default function StatusScreen() {
   const { orderNumber: contextOrderNumber, resetOrder } = useOrder();
   const { navigate: flowNavigate } = useNavigation();
   const { notify, haptic } = useTelegram();
+  const { confirmToast } = useToasts();
   const {
     order,
     loadOrder,
@@ -257,11 +259,19 @@ export default function StatusScreen() {
   };
 
   const cancelCurrentOrder = async () => {
-    if (!window.confirm(t('status.cancelConfirm'))) return;
+    const shouldCancel = await confirmToast(t('status.cancelConfirm'), {
+      key: 'cancel-current-order',
+      type: 'warning',
+      title: t('status.cancel'),
+      confirmLabel: t('status.cancel'),
+      cancelLabel: t('status.keepOrder'),
+    });
+
+    if (!shouldCancel) return;
 
     haptic('rigid');
     const ok = await cancel();
-    notify(ok ? t('status.cancelled') : t('status.cancelFailed'));
+    notify(ok ? t('status.cancelled') : t('status.cancelFailed'), ok ? 'success' : 'error');
     if (ok && activeOrderNumber) refresh(activeOrderNumber);
   };
 

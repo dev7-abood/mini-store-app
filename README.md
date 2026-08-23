@@ -8,7 +8,7 @@ Food-ordering Telegram Mini App built with React (Vite). The order-message sende
 - **react-i18next** — Arabic-only today, structured so adding a second language is a JSON file away
 - **CSS Modules** + design tokens in `src/styles/global.css`
 - **Context + useReducer** for the cart, dedicated contexts for order details and the screen flow
-- **Telegram WebApp SDK** wrapped in `useTelegram` (haptics, alerts, `sendData`, native BackButton, user info)
+- **Telegram WebApp SDK** wrapped in `useTelegram` (haptics, shared toasts, `sendData`, native BackButton, user info)
 - **`api/telegram-order.js`** — Vercel Node function: validates initData HMAC, sends the order message via the Bot API
 
 ## Structure
@@ -19,7 +19,7 @@ index.html                 # lang/dir, Tajawal font, Telegram SDK script
 src/
 ├── api/                   # client.js (Laravel), telegramBot.js (calls /api/telegram-order)
 ├── components/            # feature components (+ ui/ primitives)
-├── context/               # CartContext, OrderContext, NavigationContext
+├── context/               # CartContext, OrderContext, NavigationContext, ToastContext
 ├── hooks/                 # useTelegram, useMoney
 ├── i18n/                  # i18next bootstrap + locales/ar.json
 ├── lib/                   # orderMessage.js, phone.js

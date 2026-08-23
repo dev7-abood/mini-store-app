@@ -31,8 +31,10 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCatalog } from './CatalogContext';
 import { useCustomer } from './CustomerContext';
+import { useToasts } from './ToastContext';
 import {
   hasBackend,
   fetchCart,
@@ -94,6 +96,8 @@ function mergeCarts(a, b) {
 }
 
 export function CartProvider({ children }) {
+  const { t } = useTranslation();
+  const { toast } = useToasts();
   const { productById, deliveryFee } = useCatalog();
   const { synced: customerSynced } = useCustomer();
   const [items, dispatch] = useReducer(cartReducer, {});
@@ -177,13 +181,14 @@ export function CartProvider({ children }) {
         /* Request failed — restore the last confirmed server state so
            the UI never shows a line the backend doesn't have. */
         dispatch({ type: 'replace', items: confirmedRef.current });
+        toast(t('cart.syncFailed'), 'error');
         return;
       }
 
       confirmedRef.current = result;
       dispatch({ type: 'replace', items: result });
     },
-    [remoteEnabled],
+    [remoteEnabled, t, toast],
   );
 
   const addItem = useCallback(
@@ -239,9 +244,12 @@ export function CartProvider({ children }) {
       const ok = await clearCartRemote();
       setIsSyncing(false);
       if (ok) confirmedRef.current = {};
-      else dispatch({ type: 'replace', items: confirmedRef.current });
+      else {
+        dispatch({ type: 'replace', items: confirmedRef.current });
+        toast(t('cart.syncFailed'), 'error');
+      }
     })();
-  }, [remoteEnabled]);
+  }, [remoteEnabled, t, toast]);
 
   /*
   |--------------------------------------------------------------------------

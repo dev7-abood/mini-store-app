@@ -671,8 +671,8 @@ async function orderRequest(path, options = {}) {
     return {
       ok: false,
       data: payload?.data ?? null,
-      /* Surface the API's own message when it sent one. */
-      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? error?.message ?? null,
+      /* Surface only the API's own structured user-facing message. */
+      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? null,
       status,
       code: payload?.error?.code ?? payload?.code ?? null,
       error: payload?.error ?? null,
@@ -707,7 +707,7 @@ async function orderFormRequest(path, options = {}) {
     return {
       ok: false,
       data: payload?.data ?? null,
-      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? error?.message ?? null,
+      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? null,
       status,
       code: payload?.error?.code ?? payload?.code ?? null,
       error: payload?.error ?? null,
