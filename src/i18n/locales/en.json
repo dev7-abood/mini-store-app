@@ -125,8 +125,11 @@
     "soldOutTitle": "Currently out of stock",
     "soldOutBody": "This item isn't available to order right now. It'll be back soon! 🙏",
     "from": "From {{price}}",
-    "selectOption": "Choose a size",
-    "variantSoon": "Ordering with size selection is coming soon."
+    "optionsTitle": "Type / Size",
+    "optionsRequired": "Required",
+    "optionsHint": "You can select more than one",
+    "optionsSummary": "{{options}} options selected, {{pieces}} pieces total = {{total}}",
+    "selectAtLeastOne": "Select at least one option"
   },
   "payment": {
     "selectTitle": "Select Payment Method",

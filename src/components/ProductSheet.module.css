@@ -76,41 +76,85 @@
   line-height: var(--leading-normal);
 }
 
-/* Size/variant selector shown when the product has price options. */
-.optionRow {
+/* Multi-select type/size list shown when the product has price options.
+   Each option carries its own +/- stepper (0 = unselected); several can
+   be selected at once and all land in the cart together. */
+.optionsSection {
+  margin-bottom: var(--space-4);
+}
+
+.optionsHeading {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-3);
+  font-weight: var(--font-bold);
+  font-size: var(--text-body);
 }
 
-.optionPill {
-  padding: var(--space-1-5) var(--space-3-5);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-pill);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--ink);
-  background: var(--card);
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-}
-
-.optionPillActive {
-  border-color: var(--basil);
-  background: color-mix(in srgb, var(--basil) 12%, var(--card));
+.requiredBadge {
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
   color: var(--basil);
+  background: color-mix(in srgb, var(--basil) 14%, var(--card));
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-pill);
 }
 
-/* Placeholder shown instead of the qty/add row for variant products —
-   the cart API can't carry a selected price option yet. */
-.variantNotice {
-  background: color-mix(in srgb, var(--line) 45%, var(--card));
-  border: 1.5px dashed var(--line);
-  border-radius: var(--radius-xl);
-  padding: var(--space-3-5) var(--space-4);
+.optionsHint {
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
   color: var(--ink-soft);
+  margin-top: var(--space-0-5);
+}
+
+.optionsList {
+  margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2-5);
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2-5);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+}
+
+.optionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  min-width: 0;
+}
+
+.optionName {
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+}
+
+.optionPrice {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1-5);
+  color: var(--basil);
+  font-weight: var(--font-bold);
+  font-size: var(--text-meta);
+}
+
+.optionPrice s {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--ink-soft);
+}
+
+.optionsSummary {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--basil);
   text-align: center;
 }
 

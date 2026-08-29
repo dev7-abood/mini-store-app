@@ -20,7 +20,8 @@ function escapeHtml(text) {
  *
  * @param {{
  *   orderNumber: string,
- *   entries: Array<{product: import('../data/menu').Product, qty: number}>,
+ *   entries: Array<{product: import('../data/menu').Product,
+ *                    priceOption: {name: string}|null, qty: number}>,
  *   subtotal: number,
  *   deliveryFee: number,
  *   total: number,
@@ -36,9 +37,11 @@ export function buildOrderMessage(order) {
   const t = i18n.t.bind(i18n);
   const money = (amount) => t('common.currency', { amount });
 
-  const lines = order.entries.map(
-    ({ product, qty }) => `• ${escapeHtml(product.name)} ×${qty} — ${money(product.price * qty)}`,
-  );
+  const lines = order.entries.map(({ product, priceOption, qty }) => {
+    const unitPrice = priceOption ? priceOption.finalPrice : product.price;
+    const label = priceOption ? `${product.name} (${priceOption.name})` : product.name;
+    return `• ${escapeHtml(label)} ×${qty} — ${money(unitPrice * qty)}`;
+  });
 
   const parts = [
     `🍽️ <b>${t('botMessage.title', { number: order.orderNumber })}</b>`,

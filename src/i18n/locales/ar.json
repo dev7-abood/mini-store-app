@@ -307,8 +307,11 @@
     "soldOutTitle": "نفد من المخزون حالياً",
     "soldOutBody": "هذا الصنف مش متاح للطلب حالياً. رح يرجع قريباً إن شاء الله! 🙏",
     "from": "ابتداءً من {{price}}",
-    "selectOption": "اختر الحجم",
-    "variantSoon": "الطلب مع اختيار الحجم متاح قريباً."
+    "optionsTitle": "النوع / الحجم",
+    "optionsRequired": "مطلوب",
+    "optionsHint": "يمكنك اختيار أكثر من نوع",
+    "optionsSummary": "تم اختيار {{options}} نوع، {{pieces}} قطعة بالإجمالي = {{total}}",
+    "selectAtLeastOne": "اختر نوعاً واحداً على الأقل"
   },
   "payment": {
     "selectTitle": "اختيار طريقة الدفع",

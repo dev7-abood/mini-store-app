@@ -11,7 +11,10 @@ import Button from './ui/Button';
 import styles from './ProductSheet.module.css';
 
 /**
- * Bottom sheet with product details + quantity picker.
+ * Bottom sheet with product details + quantity picker. Products with
+ * price options replace the single quantity stepper with a multi-select
+ * list — each option gets its own stepper (0 = unselected), and every
+ * selected option is added as its own cart line in one atomic call.
  *
  * @param {{product: import('../data/menu').Product | null, onClose: () => void}} props
  */
@@ -19,22 +22,20 @@ export default function ProductSheet({ product, onClose }) {
   const { t } = useTranslation();
   const money = useMoney();
   const { categoryById } = useCatalog();
-  const { addItem } = useCart();
+  const { addItem, addItemWithOptions } = useCart();
   const { haptic } = useTelegram();
   const { placeholders } = useBusinessTypeConfig();
   const [qty, setQty] = useState(1);
-  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  /* price_option_id -> selected quantity; absent/0 means unselected. */
+  const [optionQty, setOptionQty] = useState({});
 
-  /* Reset quantity, and default to the cheapest variant, every time a
-     new product opens. */
+  /* Reset quantity and clear every option's selection each time a new
+     product opens. */
   useEffect(() => {
-    if (!product) return;
-    setQty(1);
-    setSelectedOptionId(
-      product.priceOptions?.length > 0
-        ? product.priceOptions.reduce((min, o) => (o.finalPrice < min.finalPrice ? o : min), product.priceOptions[0]).id
-        : null,
-    );
+    if (product) {
+      setQty(1);
+      setOptionQty({});
+    }
   }, [product]);
 
   /* Escape closes the sheet (desktop convenience). */
@@ -50,17 +51,35 @@ export default function ProductSheet({ product, onClose }) {
   const open = Boolean(product);
   const tint = product ? categoryById.get(product.category)?.tint : undefined;
   const hasOptions = product?.priceOptions?.length > 0;
-  const selectedOption = hasOptions
-    ? product.priceOptions.find((o) => o.id === selectedOptionId) ?? product.priceOptions[0]
-    : null;
 
   const changeQty = (delta) => {
     setQty((q) => Math.max(1, q + delta));
     haptic();
   };
 
+  const changeOptionQty = (optionId, delta) => {
+    setOptionQty((prev) => ({ ...prev, [optionId]: Math.max(0, (prev[optionId] ?? 0) + delta) }));
+    haptic();
+  };
+
   const addToCart = () => {
     addItem(product.id, qty);
+    haptic('medium');
+    onClose();
+  };
+
+  const selectedOptions = hasOptions
+    ? product.priceOptions.filter((o) => (optionQty[o.id] ?? 0) > 0)
+    : [];
+  const selectedPieces = selectedOptions.reduce((sum, o) => sum + optionQty[o.id], 0);
+  const selectedTotal = selectedOptions.reduce((sum, o) => sum + o.finalPrice * optionQty[o.id], 0);
+
+  const addOptionsToCart = () => {
+    if (selectedOptions.length === 0) return;
+    addItemWithOptions(
+      product.id,
+      selectedOptions.map((o) => ({ priceOptionId: o.id, quantity: optionQty[o.id] })),
+    );
     haptic('medium');
     onClose();
   };
@@ -85,38 +104,49 @@ export default function ProductSheet({ product, onClose }) {
               fallbackSize="80px"
             />
             <h2 className={styles.name}>{product.name}</h2>
-            <p className={styles.priceRow}>
-              {hasOptions ? (
-                selectedOption && (
-                  <>
-                    <b>{money(selectedOption.finalPrice)}</b>
-                    {selectedOption.onSale && <s>{money(selectedOption.price)}</s>}
-                  </>
-                )
-              ) : (
-                <>
-                  <b>{money(product.price)}</b>
-                  {product.onSale && <s>{money(product.originalPrice)}</s>}
-                </>
-              )}
-            </p>
-            {hasOptions && (
-              <div className={styles.optionRow} role="group" aria-label={t('product.selectOption')}>
-                {product.priceOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    className={`${styles.optionPill} ${
-                      option.id === selectedOptionId ? styles.optionPillActive : ''
-                    }`}
-                    onClick={() => setSelectedOptionId(option.id)}
-                  >
-                    {option.name}
-                  </button>
-                ))}
-              </div>
+            {!hasOptions && (
+              <p className={styles.priceRow}>
+                <b>{money(product.price)}</b>
+                {product.onSale && <s>{money(product.originalPrice)}</s>}
+              </p>
             )}
             <p className={styles.desc}>{product.desc}</p>
+            {hasOptions && (
+              <div className={styles.optionsSection}>
+                <div className={styles.optionsHeading}>
+                  <span>{t('product.optionsTitle')}</span>
+                  <span className={styles.requiredBadge}>{t('product.optionsRequired')}</span>
+                </div>
+                <p className={styles.optionsHint}>{t('product.optionsHint')}</p>
+                <div className={styles.optionsList}>
+                  {product.priceOptions.map((option) => (
+                    <div key={option.id} className={styles.optionRow}>
+                      <div className={styles.optionInfo}>
+                        <span className={styles.optionName}>{option.name}</span>
+                        <span className={styles.optionPrice}>
+                          {money(option.finalPrice)}
+                          {option.onSale && <s>{money(option.price)}</s>}
+                        </span>
+                      </div>
+                      <Stepper
+                        mini
+                        value={optionQty[option.id] ?? 0}
+                        onChange={(delta) => changeOptionQty(option.id, delta)}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {selectedOptions.length > 0 && (
+                  <p className={styles.optionsSummary}>
+                    {t('product.optionsSummary', {
+                      options: selectedOptions.length,
+                      pieces: selectedPieces,
+                      total: money(selectedTotal),
+                    })}
+                  </p>
+                )}
+              </div>
+            )}
             {product.available === false ? (
               /* Out of stock: keep the item fully browsable, explain
                  warmly why it can't be ordered, and offer no add path. */
@@ -128,11 +158,11 @@ export default function ProductSheet({ product, onClose }) {
                 </div>
               </div>
             ) : hasOptions ? (
-              /* Cart/checkout can't yet carry a selected price option
-                 through to the order, so ordering is stubbed until that's
-                 wired up backend-side. The selector and price above still
-                 work fully. */
-              <div className={styles.variantNotice}>{t('product.variantSoon')}</div>
+              <Button grow disabled={selectedOptions.length === 0} onClick={addOptionsToCart}>
+                {selectedOptions.length > 0
+                  ? t('sheet.add', { price: money(selectedTotal) })
+                  : t('product.selectAtLeastOne')}
+              </Button>
             ) : (
               <div className={styles.qtyRow}>
                 <Stepper value={qty} onChange={changeQty} />

@@ -78,7 +78,11 @@ export default function OtpScreen() {
     (orderNumber) => {
       /* 1) Raw payload for the Nutgram bot (web_app_data). */
       sendData({
-        order: entries.map(({ product, qty }) => ({ id: product.id, qty })),
+        order: entries.map(({ product, priceOption, qty }) => ({
+          id: product.id,
+          qty,
+          ...(priceOption ? { price_option_id: priceOption.id, price_option_name: priceOption.name } : {}),
+        })),
         name: details.name.trim(),
         address: details.address.trim(),
         note: details.note.trim(),

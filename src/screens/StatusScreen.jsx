@@ -55,6 +55,9 @@ function orderItems(order) {
       ?? item?.productName
       ?? item?.product?.name
       ?? `#${item?.product_id ?? item?.id ?? index + 1}`;
+    /* null for a plain product line — the option name it was ordered
+       under, kept even if the option is later renamed or deleted. */
+    const optionName = item?.price_option_name ?? item?.priceOptionName ?? null;
     const quantity = Number(item?.quantity ?? item?.qty ?? 1);
     const total = Number(
       item?.total
@@ -67,7 +70,7 @@ function orderItems(order) {
 
     return {
       key: item?.id ?? item?.product_id ?? `${name}-${index}`,
-      name: String(name),
+      name: optionName ? `${name} (${optionName})` : String(name),
       quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
       total: Number.isFinite(total) ? total : 0,
     };

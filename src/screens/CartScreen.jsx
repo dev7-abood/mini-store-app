@@ -8,6 +8,7 @@ import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import CartItem from '../components/CartItem';
+import CartProductGroup from '../components/CartProductGroup';
 import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
@@ -17,7 +18,7 @@ import styles from './CartScreen.module.css';
 export default function CartScreen() {
   const { t } = useTranslation();
   const money = useMoney();
-  const { entries, count, subtotal, deliveryFee, total } = useCart();
+  const { groupedEntries, count, subtotal, deliveryFee, total } = useCart();
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
   const { icons } = useBusinessTypeConfig();
@@ -32,9 +33,15 @@ export default function CartScreen() {
           <CenterIllustration icon={icons.cart}>{t('cart.empty')}</CenterIllustration>
         ) : (
           <>
-            {entries.map(({ product, qty }) => (
-              <CartItem key={product.id} product={product} qty={qty} />
-            ))}
+            {groupedEntries.map((group) =>
+              /* A plain product always has exactly one line with no
+                 price option — keep its existing single-row rendering. */
+              group.lines.length === 1 && !group.lines[0].priceOption ? (
+                <CartItem key={group.product.id} product={group.product} qty={group.lines[0].qty} />
+              ) : (
+                <CartProductGroup key={group.product.id} product={group.product} lines={group.lines} />
+              ),
+            )}
             <div className={styles.totals}>
               <div className={styles.row}>
                 <span>{t('cart.subtotal')}</span>

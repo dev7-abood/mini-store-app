@@ -1,0 +1,54 @@
+.group {
+  background: var(--card);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2-5);
+}
+
+.thumb {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  border-radius: var(--radius-lg);
+  flex: 0 0 auto;
+  font-size: var(--text-display);
+}
+
+.name {
+  font-weight: var(--font-bold);
+  font-size: var(--text-body);
+  line-height: var(--leading-snug);
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.optionName {
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+}
+
+.price {
+  color: var(--basil);
+  font-weight: var(--font-bold);
+  font-size: var(--text-meta);
+  margin-top: var(--space-0-5);
+}

@@ -495,52 +495,66 @@ export async function syncCustomer({ botId = null, phone, address } = {}) {
 | Behind `telegram.initdata` + `telegram.customer`, so the customer must
 | already be synced before these are called.
 |
-|   GET    /cart                    -> current cart
-|   PUT    /cart                    -> replace the whole cart
-|   DELETE /cart                    -> empty it
-|   POST   /cart/items              -> add one product
-|   PATCH  /cart/items/{product}    -> set a product's quantity
-|   DELETE /cart/items/{product}    -> remove a product
+|   GET    /cart                                     -> current cart
+|   PUT    /cart                                     -> replace the whole cart
+|   DELETE /cart                                      -> empty it
+|   POST   /cart/items                                -> add a product
+|            { product_id, quantity, notes? }              plain / no options
+|            { product_id, quantity, price_option_id }      single option
+|            { product_id, notes?, options: [{price_option_id, quantity}] } multi-select, atomic
+|   PATCH  /cart/items/{product}                      -> set a plain line's quantity
+|   PATCH  /cart/items/{product}/{price_option}        -> set one option line's quantity
+|   DELETE /cart/items/{product}                       -> remove a plain line
+|   DELETE /cart/items/{product}/{price_option}         -> remove one option line
 |
-| Every function resolves to a { [productId]: quantity } map (or null on
-| failure) so the caller never deals with transport shapes.
+| A cart line is `product_id` + an optional `price_option_id` (null for a
+| plain product) — two lines can share a product_id when they differ by
+| price_option_id, so lines are never collapsed by product alone. Every
+| function resolves to an array of {productId, priceOptionId, quantity}
+| lines (or null on failure) so the caller never deals with transport shapes.
 */
 
 /**
- * Reduce a cart response to { productId: quantity }.
+ * Reduce a cart response to a flat list of lines.
  *
- * Tolerates the common shapes: items under `data.items` or `data`, and
- * a product referenced as `product_id` / `productId` / nested `product.id`,
- * with the amount as `quantity` / `qty`.
+ * Tolerates the common shapes: items under `data.items` or `data`, a
+ * product referenced as `product_id` / `productId` / nested `product.id`,
+ * an option referenced as `price_option_id` / nested `price_option.id`,
+ * and the amount as `quantity` / `qty`.
  *
  * @param {any} payload
- * @returns {Record<number, number>}
+ * @returns {Array<{productId: number, priceOptionId: number|null, quantity: number}>}
  */
-export function normalizeCartItems(payload) {
+export function normalizeCartLines(payload) {
   const raw = payload?.data?.items ?? payload?.items ?? payload?.data ?? [];
-  if (!Array.isArray(raw)) return {};
+  if (!Array.isArray(raw)) return [];
 
-  const map = {};
+  const lines = [];
   for (const line of raw) {
-    const id = Number(
+    const productId = Number(
       line?.product_id ?? line?.productId ?? line?.product?.id ?? line?.id,
     );
-    const qty = Number(line?.quantity ?? line?.qty ?? 0);
-    if (Number.isFinite(id) && id > 0 && qty > 0) {
-      map[id] = (map[id] ?? 0) + qty;
+    const rawOptionId = line?.price_option?.id ?? line?.price_option_id ?? line?.priceOptionId ?? null;
+    const priceOptionId = rawOptionId != null && Number.isFinite(Number(rawOptionId))
+      ? Number(rawOptionId)
+      : null;
+    const quantity = Number(line?.quantity ?? line?.qty ?? 0);
+
+    if (Number.isFinite(productId) && productId > 0 && quantity > 0) {
+      lines.push({ productId, priceOptionId, quantity });
     }
   }
-  return map;
+  return lines;
 }
 
 /**
  * Fetch the persisted cart.
  *
- * @returns {Promise<Record<number, number> | null>} null on failure
+ * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>} null on failure
  */
 export async function fetchCart() {
   try {
-    return normalizeCartItems(await request('/cart', { timeoutMs: 8000 }));
+    return normalizeCartLines(await request('/cart', { timeoutMs: 8000 }));
   } catch (error) {
     console.warn('Cart fetch failed:', error);
     return null;
@@ -550,18 +564,19 @@ export async function fetchCart() {
 /**
  * Replace the entire server cart (used to reconcile a local cart).
  *
- * @param {Record<number, number>} items
- * @returns {Promise<Record<number, number> | null>}
+ * @param {Array<{productId: number, priceOptionId: number|null, quantity: number}>} lines
+ * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
  */
-export async function syncCart(items) {
+export async function syncCart(lines) {
   try {
     const payload = {
-      items: Object.entries(items).map(([productId, quantity]) => ({
-        product_id: Number(productId),
-        quantity: Number(quantity),
+      items: lines.map((line) => ({
+        product_id: line.productId,
+        quantity: line.quantity,
+        ...(line.priceOptionId != null ? { price_option_id: line.priceOptionId } : {}),
       })),
     };
-    return normalizeCartItems(
+    return normalizeCartLines(
       await request('/cart', { method: 'PUT', body: JSON.stringify(payload), timeoutMs: 8000 }),
     );
   } catch (error) {
@@ -586,15 +601,15 @@ export async function clearCartRemote() {
 }
 
 /**
- * Add a product to the cart.
+ * Add a plain product (no price options) to the cart.
  *
  * @param {number} productId
  * @param {number} quantity
- * @returns {Promise<Record<number, number> | null>}
+ * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
  */
 export async function addCartItem(productId, quantity = 1) {
   try {
-    return normalizeCartItems(
+    return normalizeCartLines(
       await request('/cart/items', {
         method: 'POST',
         body: JSON.stringify({ product_id: Number(productId), quantity: Number(quantity) }),
@@ -608,16 +623,50 @@ export async function addCartItem(productId, quantity = 1) {
 }
 
 /**
- * Set a product's quantity.
+ * Add every selected price option of one product in a single atomic call
+ * (shape B) — each option lands as its own cart line.
+ *
+ * @param {number} productId
+ * @param {Array<{priceOptionId: number, quantity: number}>} options
+ * @param {string} [notes]
+ * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
+ */
+export async function addCartItemOptions(productId, options, notes) {
+  try {
+    const body = {
+      product_id: Number(productId),
+      options: options.map((option) => ({
+        price_option_id: Number(option.priceOptionId),
+        quantity: Number(option.quantity),
+      })),
+    };
+    if (notes) body.notes = notes;
+
+    return normalizeCartLines(
+      await request('/cart/items', { method: 'POST', body: JSON.stringify(body), timeoutMs: 8000 }),
+    );
+  } catch (error) {
+    console.warn('Cart add (options) failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Set one line's quantity — the plain product line, or one specific
+ * price option's line when `priceOptionId` is given.
  *
  * @param {number} productId
  * @param {number} quantity
- * @returns {Promise<Record<number, number> | null>}
+ * @param {number|null} [priceOptionId]
+ * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
  */
-export async function updateCartItem(productId, quantity) {
+export async function updateCartItem(productId, quantity, priceOptionId = null) {
   try {
-    return normalizeCartItems(
-      await request(`/cart/items/${Number(productId)}`, {
+    const path = priceOptionId != null
+      ? `/cart/items/${Number(productId)}/${Number(priceOptionId)}`
+      : `/cart/items/${Number(productId)}`;
+    return normalizeCartLines(
+      await request(path, {
         method: 'PATCH',
         body: JSON.stringify({ quantity: Number(quantity) }),
         timeoutMs: 8000,
@@ -630,16 +679,19 @@ export async function updateCartItem(productId, quantity) {
 }
 
 /**
- * Remove a product from the cart.
+ * Remove one line — the plain product line, or one specific price
+ * option's line when `priceOptionId` is given.
  *
  * @param {number} productId
- * @returns {Promise<Record<number, number> | null>}
+ * @param {number|null} [priceOptionId]
+ * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
  */
-export async function removeCartItem(productId) {
+export async function removeCartItem(productId, priceOptionId = null) {
   try {
-    return normalizeCartItems(
-      await request(`/cart/items/${Number(productId)}`, { method: 'DELETE', timeoutMs: 8000 }),
-    );
+    const path = priceOptionId != null
+      ? `/cart/items/${Number(productId)}/${Number(priceOptionId)}`
+      : `/cart/items/${Number(productId)}`;
+    return normalizeCartLines(await request(path, { method: 'DELETE', timeoutMs: 8000 }));
   } catch (error) {
     console.warn('Cart remove failed:', error);
     return null;
