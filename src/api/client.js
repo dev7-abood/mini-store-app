@@ -231,12 +231,35 @@ function normalizeFrontData(data, page) {
         ? apiFinal
         : Math.max(original - (original * discount) / 100, 0);
 
+      /* When a product has size/variant pricing, its own price/discount/
+         final_price are leftover defaults (typically 0) and must never be
+         rendered — every display sources from priceOptions instead. */
+      const priceOptions = Array.isArray(p.price_options)
+        ? p.price_options.map((o) => {
+            const optPrice = Number(o.price ?? 0);
+            const optDiscount = Math.min(Math.max(Number(o.discount ?? 0), 0), 100);
+            const optApiFinal = Number(o.final_price);
+            const optCharged = Number.isFinite(optApiFinal)
+              ? optApiFinal
+              : Math.max(optPrice - (optPrice * optDiscount) / 100, 0);
+
+            return {
+              id: Number(o.id),
+              name: String(o.name ?? ''),
+              price: optPrice,
+              finalPrice: optCharged,
+              onSale: optDiscount > 0 && optPrice > optCharged,
+            };
+          })
+        : [];
+
       return {
         id: Number(p.id),
         category: String(p.catalog_id ?? catalog.id),
         name: String(p.name ?? ''),
         desc: String(p.description ?? ''),
-        /* Money everywhere in the app = the price actually charged. */
+        /* Money everywhere in the app = the price actually charged.
+           Meaningless when priceOptions is non-empty — see above. */
         price: charged,
         originalPrice: original,
         /* Only true when there is a real saving to show — guards against
@@ -247,6 +270,7 @@ function normalizeFrontData(data, page) {
            are withheld by the API entirely. */
         available: p.available !== false,
         discount,
+        priceOptions,
         fallback: pickPlaceholderIcon(runtimeBusinessType, 'product', productIconIndex++),
         image: p.image ?? '',
       };

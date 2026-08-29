@@ -16,6 +16,10 @@ export default function ProductCard({ product, tint, onOpen, onQuickAdd }) {
   const { t } = useTranslation();
   const { placeholders } = useBusinessTypeConfig();
   const soldOut = product.available === false;
+  const hasOptions = product.priceOptions?.length > 0;
+  const fromPrice = hasOptions
+    ? Math.min(...product.priceOptions.map((o) => o.finalPrice))
+    : null;
 
   return (
     <div
@@ -39,9 +43,15 @@ export default function ProductCard({ product, tint, onOpen, onQuickAdd }) {
       <div className={styles.desc}>{product.desc}</div>
       <div className={styles.foot}>
         <span className={styles.price}>
-          {money(product.price)}
-          {product.onSale && (
-            <s className={styles.oldPrice}>{money(product.originalPrice)}</s>
+          {hasOptions ? (
+            t('product.from', { price: money(fromPrice) })
+          ) : (
+            <>
+              {money(product.price)}
+              {product.onSale && (
+                <s className={styles.oldPrice}>{money(product.originalPrice)}</s>
+              )}
+            </>
           )}
         </span>
         <button
@@ -50,7 +60,14 @@ export default function ProductCard({ product, tint, onOpen, onQuickAdd }) {
           disabled={soldOut}
           onClick={(e) => {
             e.stopPropagation();
-            if (!soldOut) onQuickAdd();
+            if (soldOut) return;
+            /* Variant products need a size picked before they can be
+               added — open the sheet instead of quick-adding blind. */
+            if (hasOptions) {
+              onOpen();
+              return;
+            }
+            onQuickAdd();
           }}
           aria-label={soldOut ? t('product.soldOut') : '+'}
         >

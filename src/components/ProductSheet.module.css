@@ -76,6 +76,44 @@
   line-height: var(--leading-normal);
 }
 
+/* Size/variant selector shown when the product has price options. */
+.optionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.optionPill {
+  padding: var(--space-1-5) var(--space-3-5);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--ink);
+  background: var(--card);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.optionPillActive {
+  border-color: var(--basil);
+  background: color-mix(in srgb, var(--basil) 12%, var(--card));
+  color: var(--basil);
+}
+
+/* Placeholder shown instead of the qty/add row for variant products —
+   the cart API can't carry a selected price option yet. */
+.variantNotice {
+  background: color-mix(in srgb, var(--line) 45%, var(--card));
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3-5) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
 .qtyRow {
   display: flex;
   align-items: center;

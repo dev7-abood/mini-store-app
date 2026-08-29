@@ -120,6 +120,14 @@
       "info": "Notice"
     }
   },
+  "product": {
+    "soldOut": "Sold out",
+    "soldOutTitle": "Currently out of stock",
+    "soldOutBody": "This item isn't available to order right now. It'll be back soon! 🙏",
+    "from": "From {{price}}",
+    "selectOption": "Choose a size",
+    "variantSoon": "Ordering with size selection is coming soon."
+  },
   "payment": {
     "selectTitle": "Select Payment Method",
     "selectBody": "Choose how you want to pay for this order. Details are entered on the next step.",
