@@ -120,7 +120,12 @@ export default function ProductSheet({ product, onClose }) {
                 <p className={styles.optionsHint}>{t('product.optionsHint')}</p>
                 <div className={styles.optionsList}>
                   {product.priceOptions.map((option) => (
-                    <div key={option.id} className={styles.optionRow}>
+                    <div
+                      key={option.id}
+                      className={`${styles.optionRow} ${
+                        (optionQty[option.id] ?? 0) > 0 ? styles.optionRowActive : ''
+                      }`}
+                    >
                       <div className={styles.optionInfo}>
                         <span className={styles.optionName}>{option.name}</span>
                         <span className={styles.optionPrice}>
