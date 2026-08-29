@@ -77,17 +77,15 @@
 }
 
 /* Multi-select type/size list shown when the product has price options.
-   The whole attribute group sits in one soft panel, and every option is
-   its own card inside it, so groups and their choices stay visually
-   separated on small screens. Each option carries its own +/- stepper
+   The group sits on its own soft panel so the attributes stand apart
+   from the rest of the sheet. Each option carries its own +/- stepper
    (0 = unselected); several can be selected at once and all land in the
    cart together. */
 .optionsSection {
   margin-bottom: var(--space-4);
   background: color-mix(in srgb, var(--line) 26%, var(--card));
-  border: 1px solid color-mix(in srgb, var(--line) 65%, var(--card));
-  border-radius: var(--radius-2xl);
-  padding: var(--space-3-5);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3);
 }
 
 .optionsHeading {
@@ -118,7 +116,7 @@
   margin-top: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-2-5);
 }
 
 .optionRow {
@@ -126,18 +124,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  background: var(--card);
-  border: 1px solid color-mix(in srgb, var(--line) 60%, var(--card));
-  border-radius: var(--radius-lg);
-  padding: var(--space-2-5) var(--space-3);
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.18s, background 0.18s;
-}
-
-/* Picked options read as chosen at a glance while scanning the list. */
-.optionRowActive {
-  border-color: color-mix(in srgb, var(--basil) 45%, var(--line));
-  background: color-mix(in srgb, var(--basil) 5%, var(--card));
+  padding-bottom: var(--space-2-5);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
 }
 
 .optionInfo {
@@ -169,8 +157,6 @@
 
 .optionsSummary {
   margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: 1px solid color-mix(in srgb, var(--line) 65%, var(--card));
   font-size: var(--text-sm);
   font-weight: var(--font-bold);
   color: var(--basil);
