@@ -132,7 +132,9 @@
       "paid": "Paid",
       "declined": "Declined",
       "expired": "Expired",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "pending_verification": "Awaiting store verification",
+      "rejected": "Payment not confirmed"
     },
     "source": {
       "manual": "Confirmed by the store",
@@ -148,7 +150,7 @@
       "branch_name": "Branch"
     },
     "awaiting": {
-      "body": "The store has been notified and is checking your payment. This order updates as soon as they confirm it."
+      "body": "We have told the store you paid. They will check it and confirm shortly — your order is not confirmed as paid until they do."
     },
     "confirmedBy": "Confirmed by {{name}}",
     "confirmedByAt": "Confirmed by {{name}} · {{at}}",
@@ -169,6 +171,21 @@
       "copyFailed": "Could not copy this value.",
       "viewDetails": "Transfer details",
       "viewReceipt": "Payment details"
+    },
+    "rejected": {
+      "title": "The store could not find your payment",
+      "by": "Reviewed by {{name}}",
+      "byAt": "Reviewed by {{name}} · {{at}}",
+      "help": "Contact the store with your transfer details so they can look again. Your order has not been cancelled — you can still cancel it yourself if you prefer."
+    },
+    "reminder": {
+      "action": "Remind the store to check",
+      "sending": "Sending reminder...",
+      "sent": "We have reminded the store to check your payment.",
+      "failed": "Could not send the reminder right now.",
+      "cooldown": "You can remind them again in {{time}}",
+      "sentCount_one": "Reminded once",
+      "sentCount_other": "Reminded {{count}} times"
     }
   },
   "status": {
@@ -288,21 +305,30 @@
       "addressShort": "Enter a more complete delivery address."
     }
   },
-  "transfer": {
+  "manualPayment": {
     "title": "Complete your payment",
-    "heading": "Transfer the amount to the store",
-    "body": "Send the exact amount to the account below and write the order number as the reference. The store confirms your payment once it arrives.",
-    "stepsTitle": "How to pay",
-    "steps": {
-      "open": "Open your bank or wallet app.",
-      "amount": "Transfer the exact amount shown above.",
-      "account": "Send it to the account shown above.",
-      "reference": "Write the order number as the transfer reference.",
-      "wait": "Come back here — the order updates once the store confirms your payment."
-    },
-    "acknowledge": "I've sent the payment",
+    "body": "Transfer the amount below to the store, then confirm. Your order is created once you confirm, and the store checks the payment afterwards.",
+    "referencePending": "Your order number becomes the payment reference. It appears as soon as you confirm — send the transfer now and note it against your order.",
+    "confirmTitle": "Have you completed the payment?",
+    "confirmBody": "Only confirm once the transfer has actually left your account. The store checks every payment before the order is marked paid.",
+    "claimPaid": "I have paid — continue",
+    "claiming": "Sending to the store...",
+    "notYet": "Not yet — go back",
+    "loadFailed": "Could not load the payment details. Try again."
+  },
+  "orderPayment": {
+    "title": "Payment",
+    "awaitingHeading": "The store is checking your payment",
+    "awaitingBody": "Your order has been placed and the store has been notified. It will be marked paid once they confirm your transfer.",
+    "rejectedHeading": "Your payment was not confirmed",
+    "rejectedBody": "The store could not match your transfer. Your order is still open — contact the store, or cancel it below.",
+    "paidHeading": "Payment confirmed",
+    "paidBody": "The store confirmed your payment. Your order is on its way through the kitchen.",
+    "detailsTitle": "What you were asked to pay",
+    "receiptTitle": "Payment details",
+    "trackOrder": "Track my order",
     "openOrder": "Open the order",
-    "unavailableTitle": "No transfer details",
-    "unavailableBody": "This order has no transfer instructions to show. Open the order to see its payment status."
+    "unavailableTitle": "No payment details",
+    "unavailableBody": "We could not load the payment for this order. Open the order to see its status."
   }
 }

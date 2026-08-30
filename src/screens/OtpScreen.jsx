@@ -29,12 +29,11 @@ import styles from './OtpScreen.module.css';
 | screen) and the API has dispatched the code. Here we:
 |   1. POST /orders/{n}/verify with the entered code,
 |   2. on success mirror the order to the Telegram chat,
-|   3. hand off to whatever the pushed payment needs next.
+|   3. start watching the payment, and show the success screen.
 |
-| Verifying is also the moment the payment request goes out — and, for a
-| payment made outside the app, the moment the STORE is notified. The
-| response's payment block decides where the customer lands: transfer
-| instructions when it carries them, the success screen otherwise.
+| SMART METHODS ONLY. A manual method sends no OTP and never routes here:
+| it pays outside the app and its order is created by the customer's
+| claim (see ManualPaymentScreen).
 |
 | A wrong code is an expected outcome, not an error state: the input
 | shakes and the customer types again. Resend is throttled server-side
@@ -129,24 +128,14 @@ export default function OtpScreen() {
       confirmOrder(orderNumber);
       submitOrder(orderNumber);
 
-      /* Verifying pushed the payment request. Watch it only if the
-         server says to: a smart payment is approved in the wallet app
-         and polls, a manual one is confirmed by a cashier and must not. */
+      /* Watch the payment only if the server says to. Smart payments
+         poll; nothing else reaches this screen. */
       watchPayment(result.payment, orderNumber);
-
-      /* A payment made outside the app comes back with the transfer
-         instructions attached — amount, reference and the account to pay.
-         Show them straight away instead of a generic success screen. */
-      if (result.payment?.instructions) {
-        routeNavigate(`/orders/${encodeURIComponent(orderNumber)}/payment`);
-        return;
-      }
-
       navigate(SCREENS.SUCCESS);
     },
     [
       verifyCode, haptic, notify, t, confirmOrder, orderNumber, submitOrder,
-      watchPayment, routeNavigate, navigate,
+      watchPayment, navigate,
     ],
   );
 

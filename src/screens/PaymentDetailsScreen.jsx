@@ -2,19 +2,23 @@
 |--------------------------------------------------------------------------
 | Payment Details
 |--------------------------------------------------------------------------
-| The last step before the order exists: who is ordering, the phone the
-| OTP goes to, and where it is delivered. Then POST /checkout.
+| Who is ordering, the phone the store reaches them on, and where it is
+| delivered.
 |
-| One screen for every method. A smart payment and a manual one need the
-| SAME three fields — the phone is the order's verification channel
-| either way — so the only difference is the sentence that sets the
-| customer's expectation, and that comes from `isAutomatic`, not from the
-| method's name.
+| One screen for every method: a smart payment and a manual one need the
+| SAME three fields, so the only difference in the FORM is the sentence
+| that sets the customer's expectation, and that comes from `isAutomatic`
+| rather than from the method's name.
+|
+| What happens on "continue" DOES depend on the settlement, and that is
+| the one place it may:
+|
+|   smart  -> POST /checkout now, then the OTP screen (unchanged)
+|   manual -> the pay-from screen; no order is created until the customer
+|             claims they paid, and no OTP is ever sent
 |
 | Nothing about the sender of a manual transfer is asked for here. The
-| store matches a transfer by the order number the customer writes on it,
-| and the transfer details themselves only exist AFTER the order does —
-| they arrive with the verify response (see TransferInstructionsScreen).
+| store matches a transfer by the order number the customer writes on it.
 */
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -120,7 +124,7 @@ export default function PaymentDetailsScreen() {
     address: touched.address ? validation.errors.address : '',
   };
 
-  const sendCode = async () => {
+  const continueToPayment = async () => {
     if (!canCheckout) {
       notify(t('storeStatus.closedFallback'), 'warning');
       return;
@@ -149,6 +153,14 @@ export default function PaymentDetailsScreen() {
       return;
     }
 
+    /* A manual method pays FIRST and creates the order afterwards, so
+       nothing is submitted here — the next screen shows the account to
+       pay into and owns the claim that creates the order. */
+    if (isManual) {
+      navigate(SCREENS.MANUAL_PAYMENT);
+      return;
+    }
+
     const result = await place(buildJawwalPayCheckoutPayload({
       address: validation.value.address,
       phone: fullPhone,
@@ -166,10 +178,8 @@ export default function PaymentDetailsScreen() {
       return;
     }
 
-    /* The order exists but its phone is unverified, so no payment
-       request has been pushed yet — for a manual method that means the
-       store has NOT been notified and no cashier can confirm anything.
-       The OTP screen comes next, exactly as it always has. */
+    /* Smart only: the order exists unverified and the API has sent the
+       code. The OTP screen comes next, exactly as it always has. */
     navigate(SCREENS.OTP);
   };
 
@@ -236,7 +246,7 @@ export default function PaymentDetailsScreen() {
         <Button
           variant="green"
           full
-          onClick={sendCode}
+          onClick={continueToPayment}
           disabled={isBusy || isCheckingStore || !canCheckout || !method}
         >
           {isBusy || isCheckingStore

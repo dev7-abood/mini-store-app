@@ -16,8 +16,11 @@ export const SCREENS = Object.freeze({
   CHECKOUT: 'checkout',
   PHONE: 'phone',
   /* One details screen for every method: a smart payment and a manual
-     one need the same fields, so the flow doesn't fork on settlement. */
+     one need the same fields, so the form doesn't fork on settlement. */
   PAYMENT_DETAILS: 'paymentDetails',
+  /* Manual only, and only AFTER the details: the customer pays here and
+     the order is created by their claim. No OTP on this path. */
+  MANUAL_PAYMENT: 'manualPayment',
   OTP: 'otp',
   SUCCESS: 'success',
   STATUS: 'status',
@@ -29,6 +32,7 @@ const BACK_MAP = {
   [SCREENS.CHECKOUT]: SCREENS.CART,
   [SCREENS.PHONE]: SCREENS.CHECKOUT,
   [SCREENS.PAYMENT_DETAILS]: SCREENS.CHECKOUT,
+  [SCREENS.MANUAL_PAYMENT]: SCREENS.PAYMENT_DETAILS,
   [SCREENS.OTP]: SCREENS.PAYMENT_DETAILS,
 };
 

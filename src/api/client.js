@@ -729,8 +729,10 @@ export async function removeCartItem(productId, priceOptionId = null) {
 |   POST   /orders/{n}/cancel            -> cancel
 |   POST   /orders/{n}/verify   {code}   -> confirm the phone OTP
 |   POST   /orders/{n}/resend            -> re-send the OTP
+|   GET    /manual-payment/{method}      -> pay-from details for the cart
 |   GET    /orders/{n}/payment           -> payment state (smart: polled)
-|   POST   /orders/{n}/payment/retry     -> new payment attempt
+|   POST   /orders/{n}/payment/retry     -> new payment attempt (smart)
+|   POST   /orders/{n}/payment/remind    -> nudge the store to verify
 |
 | Each helper returns { ok, data, message, status, code } so screens can
 | react to validation errors, throttling (429), and STORE_CLOSED without
@@ -852,7 +854,15 @@ export function normalizeOrder(raw) {
 export const previewCheckout = () => orderRequest('/checkout');
 
 /**
- * Convert the cart into an unverified order; the API dispatches the OTP.
+ * Convert the cart into an order.
+ *
+ * Smart method: the order is unverified and the API dispatches an OTP.
+ *
+ * Manual method: this call IS the customer's "I have paid" claim. No OTP
+ * is sent, the order is created and placed immediately, and the payment
+ * is recorded as a CLAIM at `pending_verification`. A 201 here means
+ * "order created", NOT "payment successful" — `is_paid` is false until a
+ * cashier says otherwise.
  *
  * @param {{name: string, address: string, phone: string,
  *          delivery_phone?: string, note?: string}} details
@@ -908,6 +918,34 @@ export const resendOrderOtp = (orderNumber) =>
   orderRequest(`/orders/${encodeURIComponent(orderNumber)}/resend`, { method: 'POST' });
 
 /**
+ * Payment details for the CURRENT CART on a manual method, before any
+ * order exists — the screen the customer actually pays from.
+ *
+ * Returns the account rows, the amount from the same preview the
+ * checkout screen quotes, and a NULL reference: there is no order number
+ * to reference until the claim creates the order.
+ *
+ * 422 when the method is not manual, not enabled, or not fully
+ * configured for the branch.
+ *
+ * @param {string} method the `payment_method` value from the chooser
+ */
+export const fetchManualPaymentDetails = (method) =>
+  orderRequest(`/manual-payment/${encodeURIComponent(method)}`, { timeoutMs: 8000 });
+
+/**
+ * Nudge the store to check a payment it has not verified yet.
+ *
+ * Notifies and nothing else — it cannot move the payment. Refusals come
+ * back 422 (too soon, or nothing awaiting confirmation), which the UI
+ * should have prevented by honouring `reminder.available`.
+ *
+ * @param {string} orderNumber
+ */
+export const remindOrderPayment = (orderNumber) =>
+  orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment/remind`, { method: 'POST' });
+
+/**
  * Payment state — the lighter of the two lookups that carry the payment
  * block, for refreshing just the payment without re-reading the order.
  *
@@ -921,9 +959,11 @@ export const fetchOrderPayment = (orderNumber) =>
   orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment`, { timeoutMs: 8000 });
 
 /**
- * Start a fresh payment attempt after a decline or an expiry. The ORDER
- * is untouched — only the previous payment attempt failed — and a manual
- * method goes back to `awaiting_transfer` with fresh instructions.
+ * Start a fresh payment attempt after a smart decline or expiry. The
+ * ORDER is untouched — only the previous attempt failed.
+ *
+ * A REJECTED manual claim is not retryable and the API will refuse:
+ * only the store can change its mind about a payment.
  *
  * @param {string} orderNumber
  */

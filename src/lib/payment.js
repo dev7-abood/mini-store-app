@@ -8,18 +8,30 @@
 |   GET /orders/{n}            -> data.payment
 |   GET /orders/{n}/payment    -> data.payment
 |
-| The rule this module exists to enforce: NOTHING in the app branches on
-| the payment method's name. How the money moves, and whether a human is
-| in the loop, are answered by three booleans the API always sends:
+| Two rules this module exists to enforce.
+|
+| FIRST: nothing in the app branches on the payment method's name. How
+| the money moves, and whether a human is in the loop, are answered by
+| booleans the API always sends:
 |
 |   settlement            'smart' | 'peer'   how the money moves
-|   requiresConfirmation  a person confirms this order's payment, ever
-|   awaitingConfirmation  that confirmation is outstanding RIGHT NOW
+|   requiresConfirmation  a person verifies this order's payment, ever
+|   awaitingConfirmation  that verification is outstanding RIGHT NOW
+|   isPaid                the ONLY flag that means paid
 |
-| `requiresConfirmation` is fixed for the life of the order;
-| `awaitingConfirmation` is the only thing the "waiting for the store"
-| banner may key off — it stays false until the phone OTP is verified,
-| because the order isn't on the store's board before that.
+| SECOND: a customer's claim is not a payment. On a manual method the
+| customer presses "I have paid" and that records `claim.claimed` — a
+| statement, nothing more. Only the store can turn it into `isPaid`, and
+| only the store can reject it. Never render a claim as paid, confirmed,
+| successful or done.
+|
+|   claim.claimed      the customer said they paid
+|   claim.isVerified   the store agreed  (=== isPaid)
+|   claim.isRejected   the store disagreed
+|
+| `claim`, `rejection` and `reminder` are present on EVERY method — all
+| false/null for a smart payment. Read the booleans inside them rather
+| than testing whether the key exists.
 |
 | Language note: the API has no locale negotiation, so `status_label`,
 | `settlement_label`, `source_label` and `description` arrive in ENGLISH
@@ -180,6 +192,100 @@ function normalizeConfirmation(raw) {
 }
 
 /**
+ * The customer's own statement that they paid. `claimed` is set the
+ * moment they press the button; everything else is the store's answer to
+ * it. A claim on its own is never paid — that is `isVerified`/`isPaid`.
+ *
+ * All false for a smart payment, where nobody claims anything: the
+ * gateway settles it and `isVerified` comes back true on its own.
+ *
+ * @param {any} raw
+ */
+function normalizeClaim(raw) {
+  return {
+    claimed: bool(raw?.claimed),
+    claimedAt: text(raw?.claimed_at),
+    isVerified: bool(raw?.is_verified),
+    isRejected: bool(raw?.is_rejected),
+  };
+}
+
+/**
+ * The store's refusal: it could not find the money. A rejection is a
+ * statement about the PAYMENT, not a decision to bin the order — the
+ * order stays `pending` and stays cancellable.
+ *
+ * Not retryable, deliberately: a mistaken rejection is fixed by the
+ * cashier approving, never by the customer re-claiming.
+ *
+ * @param {any} raw
+ */
+function normalizeRejection(raw) {
+  return {
+    rejected: bool(raw?.rejected),
+    rejectedAt: text(raw?.rejected_at),
+    rejectedBy: text(raw?.rejected_by),
+    /* Shown to the customer as-is. */
+    reason: text(raw?.reason),
+  };
+}
+
+/**
+ * The only lever the customer has while they wait: nudge the store. It
+ * notifies and nothing else — it cannot move the payment.
+ *
+ * The cooldown is the server's (15 min by default, configurable per
+ * store), so it is read from every response and never hardcoded.
+ *
+ * @param {any} raw
+ */
+function normalizeReminder(raw) {
+  return {
+    available: bool(raw?.available),
+    cooldownSeconds: num(raw?.cooldown_seconds) ?? 0,
+    sentCount: num(raw?.sent_count) ?? 0,
+    lastSentAt: text(raw?.last_sent_at),
+  };
+}
+
+/**
+ * The payment details for the CURRENT CART, before any order exists:
+ * GET /manual-payment/{method}. This is the screen the customer pays
+ * from, and the only place `instructions.reference` is legitimately null
+ * — there is no order number to reference yet.
+ *
+ * @param {any} payload
+ * @returns {{instructions: object|null, flow: object, totals: object}|null}
+ */
+export function normalizeManualPaymentPreview(payload) {
+  const data = payload?.data ?? payload;
+  const instructions = normalizePaymentInstructions(data?.instructions);
+  if (!instructions) return null;
+
+  const flow = data?.flow ?? {};
+  const totals = data?.totals ?? {};
+
+  return {
+    instructions,
+    flow: {
+      requiresManualPayment: bool(flow.requires_manual_payment),
+      confirmationRequired: bool(flow.confirmation_required),
+      /* The order is created by the confirm call, not before it. */
+      createsOrderOnConfirm: bool(flow.creates_order_on_confirm),
+      paymentStatusAfterConfirm: text(flow.payment_status_after_confirm),
+    },
+    /* Server-rounded; formatted, never recomputed. */
+    totals: {
+      subtotal: num(totals.subtotal),
+      discountTotal: num(totals.discount_total),
+      deliveryFee: num(totals.delivery_fee),
+      total: num(totals.total),
+      currency: text(totals.currency) ?? instructions.currency,
+    },
+  };
+}
+
+/**
  * Normalize the payment block. Identical output for both endpoints that
  * carry it, so two screens can never disagree about the same order.
  *
@@ -221,9 +327,14 @@ export function normalizePayment(raw) {
     settlementLabel: text(p.settlement_label),
     requiresConfirmation: bool(p.requires_confirmation),
     awaitingConfirmation: bool(p.awaiting_confirmation),
+    /* The customer's statement, the store's answer, and the nudge — all
+       three present on every method, all false/null for a smart one. */
+    claim: normalizeClaim(p.claim),
     confirmation: normalizeConfirmation(p.confirmation),
-    /* Present even on a PAID manual order, for the receipt view — so it
-       can never be read as "still unpaid". */
+    rejection: normalizeRejection(p.rejection),
+    reminder: normalizeReminder(p.reminder),
+    /* Present even on a PAID or REJECTED order, for the receipt view —
+       so it can never be read as "still unpaid". */
     instructions,
   };
 }

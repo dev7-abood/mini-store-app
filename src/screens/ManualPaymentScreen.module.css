@@ -1,0 +1,105 @@
+.pad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--edge) var(--space-8);
+}
+
+.panel,
+.confirmCard,
+.errorCard {
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+}
+
+.body {
+  margin: var(--space-3) 0 0;
+  color: var(--ink-soft);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+.referencePending {
+  margin: 0;
+  border-radius: var(--radius-md);
+  padding: var(--space-2-5) var(--space-3);
+  background: color-mix(in srgb, var(--saffron) 12%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--saffron) 32%, var(--line));
+  color: var(--ink);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+/* The claim prompt: a question, deliberately not a payment button. */
+.confirmCard {
+  display: grid;
+  gap: var(--space-1-5);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--basil) 6%, var(--card)), var(--card) 60%),
+    var(--card);
+}
+
+.confirmCard h3 {
+  margin: 0;
+  color: var(--basil);
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-snug);
+}
+
+.confirmCard p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+.errorCard {
+  display: grid;
+  gap: var(--space-3);
+  background: color-mix(in srgb, var(--tomato) 7%, var(--card));
+  border-color: color-mix(in srgb, var(--tomato) 26%, var(--line));
+}
+
+.errorCard p {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.backButton {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, var(--card));
+  color: var(--ink-soft);
+}
+
+.skeleton {
+  height: 180px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--line) 40%, var(--card)),
+    color-mix(in srgb, var(--line) 70%, var(--card)),
+    color-mix(in srgb, var(--line) 40%, var(--card))
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}

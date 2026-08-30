@@ -11,7 +11,13 @@
 |   refresh()  GET  /orders/{n}                latest status
 |   cancel()   POST /orders/{n}/cancel
 |   retryPay() POST /orders/{n}/payment/retry
+|   remind()   POST /orders/{n}/payment/remind
+|              GET  /manual-payment/{method}   pay-from details, no order
 |              GET  /orders/{n}/payment        smart payments only
+|
+| On a manual method `place()` is the customer's "I have paid" CLAIM: it
+| creates the order, sends no OTP, and leaves the payment unpaid until a
+| cashier verifies it.
 |
 | The customer/payment FORM (name / address / phones) stays in OrderContext —
 | this context deals only with what the server owns.
@@ -38,6 +44,8 @@ import {
   fetchOrder,
   cancelOrder,
   fetchOrderPayment,
+  fetchManualPaymentDetails,
+  remindOrderPayment,
   retryOrderPayment,
   confirmJawwalPayCheckout,
   normalizeOrder,
@@ -48,7 +56,11 @@ import {
   normalizeJawwalPayOtpSession,
   resolveJawwalPayConfirmationOutcome,
 } from '../lib/jawwalPayCheckout';
-import { normalizePayment, pollDelayMs } from '../lib/payment';
+import {
+  normalizeManualPaymentPreview,
+  normalizePayment,
+  pollDelayMs,
+} from '../lib/payment';
 import { pickMoney } from '../lib/money';
 import { useStoreStatus } from './StoreStatusContext';
 
@@ -69,6 +81,20 @@ export function OrderFlowProvider({ children }) {
   const pollTimer = useRef(null);
   const pollStartedAt = useRef(0);
   const jawwalPayConfirming = useRef(false);
+
+  /* The active order number, held in a ref so the callbacks below keep a
+     STABLE identity across refreshes.
+     Depending on the order object instead would rebuild every callback
+     each time the order is re-read — and any screen whose effect calls
+     one of them would then re-run, re-fetch, and loop forever. */
+  const activeOrderNumber = useRef(null);
+  activeOrderNumber.current = order?.orderNumber ?? null;
+
+  /** The order number a call should act on: the argument, else the active one. */
+  const targetOrderNumber = useCallback(
+    (orderNumber) => orderNumber ?? activeOrderNumber.current,
+    [],
+  );
 
   /** Stop any running payment poll. */
   const stopPolling = useCallback(() => {
@@ -170,11 +196,16 @@ export function OrderFlowProvider({ children }) {
     setJawwalPayOtpSession(null);
     const placed = normalizeOrder(result.data);
     setOrder(placed);
-    /* The payment request has NOT been pushed yet — the phone is still
-       unverified, so even a manual order is not on the store's board and
-       `awaiting_confirmation` is false. The OTP screen comes next. */
+    /*
+     | Smart: the order exists unverified and the API has sent an OTP.
+     |
+     | Manual: this call WAS the customer's "I have paid" claim. The
+     | order is placed and the store notified, but the payment is only a
+     | claim — `is_paid` is false and `awaiting_confirmation` is true
+     | until a cashier decides. A 201 here is never a success screen.
+     */
     setPayment(placed?.payment ?? null);
-    return { ok: true, order: placed, message: null };
+    return { ok: true, order: placed, message: result.message };
   }, [markClosed, stopPolling]);
 
   const clearJawwalPayOtpSession = useCallback(() => {
@@ -271,13 +302,14 @@ export function OrderFlowProvider({ children }) {
    */
   const verify = useCallback(
     async (code) => {
-      if (!order?.orderNumber) {
+      const number = activeOrderNumber.current;
+      if (!number) {
         return { ok: false, message: null, throttled: false };
       }
 
       setError(null);
       setIsBusy(true);
-      const result = await verifyOrder(order.orderNumber, code);
+      const result = await verifyOrder(number, code);
       setIsBusy(false);
 
       if (!result.ok) {
@@ -289,8 +321,8 @@ export function OrderFlowProvider({ children }) {
         };
       }
 
-      const verified = normalizeOrder(result.data) ?? { ...order, isVerified: true };
-      setOrder(verified);
+      const verified = normalizeOrder(result.data);
+      setOrder((current) => verified ?? (current ? { ...current, isVerified: true } : current));
 
       /* Verifying releases the order AND pushes the payment request —
          the moment the store is notified. The response's own `payment`
@@ -302,7 +334,7 @@ export function OrderFlowProvider({ children }) {
 
       return { ok: true, message: null, throttled: false, payment: pushed };
     },
-    [order],
+    [],
   );
 
   /**
@@ -311,10 +343,11 @@ export function OrderFlowProvider({ children }) {
    * @returns {Promise<{ok: boolean, message: string|null, throttled: boolean}>}
    */
   const resend = useCallback(async () => {
-    if (!order?.orderNumber) return { ok: false, message: null, throttled: false };
+    const number = activeOrderNumber.current;
+    if (!number) return { ok: false, message: null, throttled: false };
 
     setIsBusy(true);
-    const result = await resendOrderOtp(order.orderNumber);
+    const result = await resendOrderOtp(number);
     setIsBusy(false);
 
     return {
@@ -322,7 +355,7 @@ export function OrderFlowProvider({ children }) {
       message: result.message,
       throttled: result.status === 429,
     };
-  }, [order]);
+  }, []);
 
   /*
   |--------------------------------------------------------------------------
@@ -375,13 +408,13 @@ export function OrderFlowProvider({ children }) {
    */
   const refresh = useCallback(
     async (orderNumber) => {
-      const number = orderNumber ?? order?.orderNumber;
+      const number = targetOrderNumber(orderNumber);
       if (!number) return null;
 
       const result = await loadOrder(number, { silent: true });
       return result.order;
     },
-    [order, loadOrder],
+    [targetOrderNumber, loadOrder],
   );
 
   /**
@@ -390,10 +423,11 @@ export function OrderFlowProvider({ children }) {
    * @returns {Promise<boolean>}
    */
   const cancel = useCallback(async () => {
-    if (!order?.orderNumber) return false;
+    const number = activeOrderNumber.current;
+    if (!number) return false;
 
     setIsBusy(true);
-    const result = await cancelOrder(order.orderNumber);
+    const result = await cancelOrder(number);
     setIsBusy(false);
 
     if (!result.ok) {
@@ -402,15 +436,90 @@ export function OrderFlowProvider({ children }) {
     }
 
     stopPolling();
-    setOrder(normalizeOrder(result.data) ?? { ...order, status: 'cancelled' });
+    const cancelled = normalizeOrder(result.data);
+    setOrder((current) => cancelled ?? (current ? { ...current, status: 'cancelled' } : current));
     return true;
-  }, [order, stopPolling]);
+  }, [stopPolling]);
 
   /*
   |--------------------------------------------------------------------------
   | Payment
   |--------------------------------------------------------------------------
   */
+
+  /**
+   * Payment details for the current cart on a manual method — the screen
+   * the customer pays from, before any order exists.
+   *
+   * @param {string} method
+   * @returns {Promise<{ok: boolean, details: object|null, message: string|null}>}
+   */
+  const loadManualPaymentDetails = useCallback(async (method) => {
+    if (!method || !hasBackend()) {
+      return { ok: false, details: null, message: null };
+    }
+
+    setError(null);
+    setIsBusy(true);
+    const result = await fetchManualPaymentDetails(method);
+    setIsBusy(false);
+
+    if (!result.ok) {
+      setError(result.message);
+      return { ok: false, details: null, message: result.message };
+    }
+
+    const details = normalizeManualPaymentPreview(result.data);
+    if (!details) {
+      return { ok: false, details: null, message: result.message };
+    }
+
+    return { ok: true, details, message: null };
+  }, []);
+
+  /**
+   * Nudge the store to check a payment it has not verified yet. Notifies
+   * and nothing else — it can never move the payment, so the caller must
+   * stay where it is and only refresh the reminder cooldown.
+   *
+   * @param {string} [orderNumber]
+   * @returns {Promise<{ok: boolean, reminder: object|null, message: string|null}>}
+   */
+  const remindStore = useCallback(
+    async (orderNumber) => {
+      const number = targetOrderNumber(orderNumber);
+      if (!number || !hasBackend()) {
+        return { ok: false, reminder: null, message: null };
+      }
+
+      const result = await remindOrderPayment(number);
+
+      if (!result.ok) {
+        /* A refusal (too soon, or nothing awaiting) is an expected
+           outcome the disabled button should have prevented — surfaced
+           as a message, never as a failed screen. */
+        return { ok: false, reminder: null, message: result.message };
+      }
+
+      const reminder = normalizePayment({ reminder: result.data?.reminder })?.reminder ?? null;
+
+      /* Only the cooldown changed — the payment itself is untouched, and
+         a reminder can never move it. Both copies of the block are
+         updated so a screen reading the order's copy and one reading the
+         payment endpoint's copy show the same cooldown. */
+      if (reminder) {
+        setPayment((current) => (current ? { ...current, reminder } : current));
+        setOrder((current) => (
+          current?.payment
+            ? { ...current, payment: { ...current.payment, reminder } }
+            : current
+        ));
+      }
+
+      return { ok: true, reminder, message: result.message };
+    },
+    [targetOrderNumber],
+  );
 
   /**
    * Read the payment once. The light endpoint — it carries exactly the
@@ -422,7 +531,7 @@ export function OrderFlowProvider({ children }) {
    */
   const refreshPayment = useCallback(
     async (orderNumber) => {
-      const number = orderNumber ?? order?.orderNumber;
+      const number = targetOrderNumber(orderNumber);
       if (!number || !hasBackend()) return null;
 
       const result = await fetchOrderPayment(number);
@@ -432,7 +541,7 @@ export function OrderFlowProvider({ children }) {
       if (next) setPayment(next);
       return next;
     },
-    [order],
+    [targetOrderNumber],
   );
 
   /**
@@ -454,7 +563,7 @@ export function OrderFlowProvider({ children }) {
    */
   const startPaymentPolling = useCallback(
     (orderNumber) => {
-      const number = orderNumber ?? order?.orderNumber;
+      const number = targetOrderNumber(orderNumber);
       if (!number || !hasBackend()) return;
 
       stopPolling();
@@ -488,7 +597,7 @@ export function OrderFlowProvider({ children }) {
 
       tick();
     },
-    [order, refresh, stopPolling],
+    [targetOrderNumber, refresh, stopPolling],
   );
 
   /**
@@ -507,17 +616,20 @@ export function OrderFlowProvider({ children }) {
   );
 
   /**
-   * Start a new payment attempt after a decline or an expiry. The order
-   * itself is not cancelled — only the previous attempt failed — so a
-   * manual method returns to `awaiting_transfer` with fresh instructions.
+   * Start a new payment attempt after a smart decline or expiry.
+   *
+   * Never reachable for a rejected claim: `is_retryable` is false there
+   * by design. A mistaken rejection is fixed by the cashier approving,
+   * never by the customer claiming again.
    *
    * @returns {Promise<{ok: boolean, payment: object|null, message: string|null}>}
    */
   const retryPayment = useCallback(async () => {
-    if (!order?.orderNumber) return { ok: false, payment: null, message: null };
+    const number = activeOrderNumber.current;
+    if (!number) return { ok: false, payment: null, message: null };
 
     setIsBusy(true);
-    const result = await retryOrderPayment(order.orderNumber);
+    const result = await retryOrderPayment(number);
     setIsBusy(false);
 
     if (!result.ok) {
@@ -527,10 +639,10 @@ export function OrderFlowProvider({ children }) {
 
     const next = normalizePayment(result.data);
     if (next) setPayment(next);
-    watchPayment(next, order.orderNumber);
-    refresh(order.orderNumber);
+    watchPayment(next, number);
+    refresh(number);
     return { ok: true, payment: next, message: result.message };
-  }, [order, watchPayment, refresh]);
+  }, [watchPayment, refresh]);
 
   /** Clear everything (after a completed or abandoned order). */
   const reset = useCallback(() => {
@@ -564,6 +676,8 @@ export function OrderFlowProvider({ children }) {
       startPaymentPolling,
       watchPayment,
       refreshPayment,
+      loadManualPaymentDetails,
+      remindStore,
       stopPolling,
       retryPayment,
       reset,
@@ -572,8 +686,8 @@ export function OrderFlowProvider({ children }) {
       order, pricing, payment, jawwalPayOtpSession, isBusy, error,
       preview, place, verify, resend, loadOrder, refresh, cancel,
       confirmJawwalPayOtp, resendJawwalPayOtp, clearJawwalPayOtpSession,
-      startPaymentPolling, watchPayment, refreshPayment, stopPolling,
-      retryPayment, reset,
+      startPaymentPolling, watchPayment, refreshPayment,
+      loadManualPaymentDetails, remindStore, stopPolling, retryPayment, reset,
     ],
   );
 

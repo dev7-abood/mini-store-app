@@ -9,11 +9,13 @@ import Button from '../components/ui/Button';
 import styles from './SuccessScreen.module.css';
 
 /*
-| Order confirmed. A payment made outside the app normally routes to its
-| instructions instead of here, so this screen only mentions the pending
-| store confirmation for the case where the customer arrives anyway —
-| and it keys that off `awaitingConfirmation`, the one field that means
-| "a person still has to confirm this", never off the method.
+| Order confirmed — the SMART path only.
+|
+| A manual order never lands here: its claim is not a payment, so it goes
+| to the order-payment screen in its awaiting-verification state instead.
+| The guard below is belt-and-braces for anything that arrives anyway,
+| and it keys off `awaitingConfirmation` / `isPaid` — never off the
+| method, and never off the presence of instructions alone.
 */
 export default function SuccessScreen() {
   const { t } = useTranslation();

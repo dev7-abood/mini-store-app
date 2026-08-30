@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
@@ -193,6 +193,7 @@ export default function StatusScreen() {
     refresh,
     cancel,
     retryPayment,
+    remindStore,
     reset: resetOrderFlow,
     isBusy,
   } = useOrderFlow();
@@ -256,6 +257,10 @@ export default function StatusScreen() {
      on the usual cadence would be a poll in all but name, so it drops to
      the slowest acceptable interval and leans on app-resume instead. */
   const refreshMs = order?.payment?.awaitingConfirmation ? MANUAL_REFRESH_MIN_MS : REFRESH_MS;
+  const remindFromStatus = useCallback(
+    () => remindStore(activeOrderNumber),
+    [remindStore, activeOrderNumber],
+  );
 
   useEffect(() => {
     if (!isLive) return undefined;
@@ -480,6 +485,7 @@ export default function StatusScreen() {
           formatDate={formatTimestamp}
           onRetry={retryOrderPaymentAttempt}
           isRetrying={isRetryingPayment}
+          onRemind={remindFromStatus}
         />
 
         <section className={styles.panel}>
