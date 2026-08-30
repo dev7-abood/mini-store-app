@@ -16,6 +16,11 @@ import styles from './ProductSheet.module.css';
  * list — each option gets its own stepper (0 = unselected), and every
  * selected option is added as its own cart line in one atomic call.
  *
+ * Money here is only ever a price the server sent for one product or one
+ * option. Nothing on this screen is multiplied by a quantity: the basket
+ * is priced by the backend, so the add button carries a plain label and
+ * the real amounts appear in the cart once the server has answered.
+ *
  * @param {{product: import('../data/menu').Product | null, onClose: () => void}} props
  */
 export default function ProductSheet({ product, onClose }) {
@@ -71,8 +76,8 @@ export default function ProductSheet({ product, onClose }) {
   const selectedOptions = hasOptions
     ? product.priceOptions.filter((o) => (optionQty[o.id] ?? 0) > 0)
     : [];
+  /* Pieces, not money — a count is safe to sum locally. */
   const selectedPieces = selectedOptions.reduce((sum, o) => sum + optionQty[o.id], 0);
-  const selectedTotal = selectedOptions.reduce((sum, o) => sum + o.finalPrice * optionQty[o.id], 0);
 
   const addOptionsToCart = () => {
     if (selectedOptions.length === 0) return;
@@ -141,7 +146,6 @@ export default function ProductSheet({ product, onClose }) {
                     {t('product.optionsSummary', {
                       options: selectedOptions.length,
                       pieces: selectedPieces,
-                      total: money(selectedTotal),
                     })}
                   </p>
                 )}
@@ -160,14 +164,14 @@ export default function ProductSheet({ product, onClose }) {
             ) : hasOptions ? (
               <Button grow disabled={selectedOptions.length === 0} onClick={addOptionsToCart}>
                 {selectedOptions.length > 0
-                  ? t('sheet.add', { price: money(selectedTotal) })
+                  ? t('sheet.addToCart')
                   : t('product.selectAtLeastOne')}
               </Button>
             ) : (
               <div className={styles.qtyRow}>
                 <Stepper value={qty} onChange={changeQty} />
                 <Button grow onClick={addToCart}>
-                  {t('sheet.add', { price: money(product.price * qty) })}
+                  {t('sheet.addToCart')}
                 </Button>
               </div>
             )}

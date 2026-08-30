@@ -22,7 +22,19 @@
 | `telegram.customer`, so calling them earlier would 4xx.
 |
 | With no backend configured the cart still works fully — it just stays
-| in memory for the session.
+| in memory for the session (prices then stay blank; see below).
+|
+| MONEY — SERVER ONLY:
+|   The backend is the single pricing authority. Every currency figure in
+|   the cart (each line's total, the subtotal, the discount, the delivery
+|   fee and the grand total) is stored exactly as the server sent it,
+|   already rounded to 2 decimals. This file does NO currency arithmetic.
+|   • A quantity tap updates the quantity instantly, but the amounts keep
+|     showing the last server-confirmed figures until the response lands —
+|     never a locally multiplied one.
+|   • A brand-new line has no total yet, so it renders none.
+|   • A mutation response without a `summary` triggers a cart re-fetch,
+|     because asking the server is the only legal way to re-price.
 */
 import {
   createContext,
@@ -51,7 +63,12 @@ import {
 
 const CartContext = createContext(null);
 
-/** @typedef {{productId: number, priceOptionId: number|null, quantity: number}} CartLine */
+/** @typedef {{productId: number, priceOptionId: number|null, quantity: number,
+ *              lineTotal: number|null}} CartLine — `lineTotal` is the server's
+ *   own `line_total` for the line, or null until it has priced it. */
+
+/** @typedef {{subtotal: number|null, discountTotal: number|null,
+ *             deliveryFee: number|null, total: number|null}} CartSummary */
 
 /** Stable identity for one cart line — a product line, optionally scoped to one option. */
 function lineKey(productId, priceOptionId) {
@@ -73,10 +90,19 @@ function cartReducer(state, action) {
       if (idx === -1) {
         return [
           ...state,
-          { productId: action.productId, priceOptionId: action.priceOptionId ?? null, quantity: action.qty ?? 1 },
+          {
+            productId: action.productId,
+            priceOptionId: action.priceOptionId ?? null,
+            quantity: action.qty ?? 1,
+            /* Unpriced until the server answers — the row shows no
+               amount rather than a locally computed one. */
+            lineTotal: null,
+          },
         ];
       }
       const next = [...state];
+      /* Quantity moves now, money doesn't: keep the last confirmed
+         lineTotal until the server sends the new one. */
       next[idx] = { ...next[idx], quantity: next[idx].quantity + (action.qty ?? 1) };
       return next;
     }
@@ -111,7 +137,12 @@ function cartReducer(state, action) {
       if (idx === -1) {
         return [
           ...state,
-          { productId: action.productId, priceOptionId: action.priceOptionId ?? null, quantity: action.qty },
+          {
+            productId: action.productId,
+            priceOptionId: action.priceOptionId ?? null,
+            quantity: action.qty,
+            lineTotal: null,
+          },
         ];
       }
       const next = [...state];
@@ -142,13 +173,21 @@ function mergeCarts(a, b) {
 export function CartProvider({ children }) {
   const { t } = useTranslation();
   const { toast } = useToasts();
-  const { productById, deliveryFee } = useCatalog();
+  const { productById, deliveryFee: catalogDeliveryFee } = useCatalog();
   const { synced: customerSynced } = useCustomer();
   const [items, dispatch] = useReducer(cartReducer, []);
   const [isSyncing, setIsSyncing] = useState(false);
+  /* The server's pricing for the current cart. null = not priced yet;
+     the UI then shows no amount rather than computing one.
+     @type {[CartSummary|null, Function]} */
+  const [summary, setSummary] = useState(null);
 
   /* Last state the server confirmed — the rollback target. */
   const confirmedRef = useRef([]);
+  const confirmedSummaryRef = useRef(null);
+  /* Bumped by every mutation so a slow response (or the re-price fetch
+     behind it) can tell it has been overtaken and must not write. */
+  const pushSeqRef = useRef(0);
   /* Latest local state, readable inside async callbacks without
      re-creating them on every keystroke. */
   const itemsRef = useRef(items);
@@ -162,6 +201,30 @@ export function CartProvider({ children }) {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Take a server snapshot as the new truth: its lines AND its pricing.
+   * A snapshot without a summary leaves the last one in place (the
+   * caller re-fetches to refresh it); an empty cart has no pricing at
+   * all, so the stale figures are dropped.
+   *
+   * @param {{lines: CartLine[], summary: CartSummary|null}} snapshot
+   */
+  const adopt = useCallback((snapshot) => {
+    const lines = snapshot?.lines ?? [];
+    confirmedRef.current = lines;
+    dispatch({ type: 'replace', items: lines });
+
+    if (lines.length === 0) {
+      confirmedSummaryRef.current = null;
+      setSummary(null);
+      return;
+    }
+    if (snapshot?.summary) {
+      confirmedSummaryRef.current = snapshot.summary;
+      setSummary(snapshot.summary);
+    }
+  }, []);
+
   useEffect(() => {
     if (!remoteEnabled || !customerSynced) return;
 
@@ -169,8 +232,8 @@ export function CartProvider({ children }) {
 
     (async () => {
       setIsSyncing(true);
-      const serverItems = await fetchCart();
-      if (cancelled || serverItems === null) {
+      const server = await fetchCart();
+      if (cancelled || server === null) {
         setIsSyncing(false);
         return;
       }
@@ -179,27 +242,24 @@ export function CartProvider({ children }) {
       const hasLocal = localItems.length > 0;
 
       if (!hasLocal) {
-        confirmedRef.current = serverItems;
-        dispatch({ type: 'replace', items: serverItems });
+        adopt(server);
         setIsSyncing(false);
         return;
       }
 
       /* Items were added before hydration finished — merge and push. */
-      const merged = mergeCarts(serverItems, localItems);
+      const merged = mergeCarts(server.lines, localItems);
       const saved = await syncCart(merged);
       if (cancelled) return;
 
-      const authoritative = saved ?? merged;
-      confirmedRef.current = authoritative;
-      dispatch({ type: 'replace', items: authoritative });
+      adopt(saved ?? { lines: merged, summary: null });
       setIsSyncing(false);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [remoteEnabled, customerSynced]);
+  }, [adopt, remoteEnabled, customerSynced]);
 
   /*
   |--------------------------------------------------------------------------
@@ -210,29 +270,49 @@ export function CartProvider({ children }) {
   /**
    * Run a server call behind an optimistic local change.
    *
-   * @param {() => Promise<CartLine[] | null>} call
+   * @param {() => Promise<{lines: CartLine[], summary: CartSummary|null} | null>} call
    * @returns {Promise<void>}
    */
   const push = useCallback(
     async (call) => {
       if (!remoteEnabled) return;
 
+      const seq = ++pushSeqRef.current;
+      /* A response that lost the race must not write: the tap after it
+         already owns the cart. */
+      const isLatest = () => pushSeqRef.current === seq;
+
       setIsSyncing(true);
       const result = await call();
-      setIsSyncing(false);
 
       if (result === null) {
-        /* Request failed — restore the last confirmed server state so
-           the UI never shows a line the backend doesn't have. */
-        dispatch({ type: 'replace', items: confirmedRef.current });
+        /* Request failed — restore the last confirmed server state, and
+           with it the last confirmed prices, so the UI never shows a
+           line (or an amount) the backend doesn't have. */
+        if (isLatest()) {
+          dispatch({ type: 'replace', items: confirmedRef.current });
+          setSummary(confirmedSummaryRef.current);
+          setIsSyncing(false);
+        }
         toast(t('cart.syncFailed'), 'error');
         return;
       }
 
-      confirmedRef.current = result;
-      dispatch({ type: 'replace', items: result });
+      if (!isLatest()) return;
+      adopt(result);
+
+      /* The mutation answered with items but no pricing: re-read the
+         cart so the totals catch up. Re-pricing locally is never an
+         option — the backend owns every currency figure. */
+      if (!result.summary && result.lines.length > 0) {
+        const repriced = await fetchCart();
+        if (!isLatest()) return;
+        if (repriced) adopt(repriced);
+      }
+
+      setIsSyncing(false);
     },
-    [remoteEnabled, t, toast],
+    [adopt, remoteEnabled, t, toast],
   );
 
   /** Add a plain product (no price options) — unchanged today's behavior. */
@@ -315,15 +395,23 @@ export function CartProvider({ children }) {
 
   const clearCart = useCallback(() => {
     dispatch({ type: 'clear' });
+    /* An empty cart has no pricing — drop it rather than leave stale
+       totals on screen, and invalidate any request still in flight so
+       it can't resurrect the lines (or their amounts). */
+    setSummary(null);
+    pushSeqRef.current += 1;
     if (!remoteEnabled) return;
 
     (async () => {
       setIsSyncing(true);
       const ok = await clearCartRemote();
       setIsSyncing(false);
-      if (ok) confirmedRef.current = [];
-      else {
+      if (ok) {
+        confirmedRef.current = [];
+        confirmedSummaryRef.current = null;
+      } else {
         dispatch({ type: 'replace', items: confirmedRef.current });
+        setSummary(confirmedSummaryRef.current);
         toast(t('cart.syncFailed'), 'error');
       }
     })();
@@ -351,6 +439,10 @@ export function CartProvider({ children }) {
           product,
           priceOption,
           qty: line.quantity,
+          /* The server's `line_total` for this line — null while it is
+             still unpriced (a fresh line, or a quantity change the
+             backend hasn't answered yet). Never computed here. */
+          lineTotal: line.lineTotal ?? null,
         };
       })
       .filter(Boolean);
@@ -365,18 +457,22 @@ export function CartProvider({ children }) {
     }
     const groupedEntries = Array.from(groupsById.values());
 
-    const unitPrice = (entry) => (entry.priceOption ? entry.priceOption.finalPrice : entry.product.price);
+    /* Quantities are the only thing summed here — never money. */
     const count = entries.reduce((sum, e) => sum + e.qty, 0);
-    const subtotal = entries.reduce((sum, e) => sum + unitPrice(e) * e.qty, 0);
 
     return {
       items,
       entries,
       groupedEntries,
       count,
-      subtotal,
-      deliveryFee,
-      total: subtotal + (count > 0 ? deliveryFee : 0),
+      /* Every figure below is the server's, verbatim; null means "not
+         priced yet" and the screens omit it instead of showing 0. */
+      subtotal: summary?.subtotal ?? null,
+      discountTotal: summary?.discountTotal ?? null,
+      /* The cart's own delivery fee wins; the catalog's `meta.delivery_fee`
+         is the fallback — also a server figure, never a computed one. */
+      deliveryFee: summary?.deliveryFee ?? catalogDeliveryFee ?? null,
+      total: summary?.total ?? null,
       isSyncing,
       addItem,
       addItemWithOptions,
@@ -388,7 +484,8 @@ export function CartProvider({ children }) {
   }, [
     items,
     productById,
-    deliveryFee,
+    summary,
+    catalogDeliveryFee,
     isSyncing,
     addItem,
     addItemWithOptions,

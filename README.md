@@ -86,7 +86,8 @@ Real payload shape (matches the current tenant response exactly):
 How the app handles it:
 
 - **Infinite scroll**: page 1 renders immediately on menu mount; an `IntersectionObserver` sentinel 300px above the viewport bottom fires `loadMore()` as the user scrolls, fetching the next page and merging (with id dedupe) as it arrives. Skeleton cards show at the bottom of the grid while a page is in flight. Stops on `has_more: false`.
-- **Prices**: all money math uses `final_price`; when `discount > 0` the original `price` shows struck-through on the card and the product sheet.
+- **Prices**: catalog prices are display-only — `final_price` is what the customer pays, and when `discount > 0` the original `price` shows struck-through on the card and the product sheet.
+- **Money is server-owned**: the client never computes a currency amount. The cart, checkout and order endpoints must return the figures themselves — `line_total` per line, `summary.subtotal`, `summary.discount_total`, `summary.total`, and `totals.delivery_fee` — each pre-rounded to 2 decimals. `src/lib/money.js` is the only formatter (always exactly 2 decimals, e.g. `₪7.80`); anything the API omits is rendered as nothing rather than a locally derived number. A cart mutation that answers without a `summary` triggers a `GET /cart` so the totals re-price server-side.
 - **Visuals**: the backend has no emoji/tint — cards rotate through the brand tint palette and use a 🍽️ fallback while S3 images load.
 - **Base URL**: resolved from `tenants.json` by matching the launching bot's id against the signed initData (`src/lib/botIdentity.js`) — no per-bot parameters needed. The matched URL gets `/api/v1` appended (override via `VITE_API_PREFIX`).
 - **delivery_fee**: not in the response yet — the app falls back to 10 and will automatically pick up `meta.delivery_fee` if you add it.

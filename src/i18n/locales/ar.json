@@ -25,12 +25,13 @@
     "checkAgain": "تحقق مرة أخرى"
   },
   "sheet": {
-    "add": "أضف · {{price}}"
+    "addToCart": "أضف إلى السلة"
   },
   "cart": {
     "title": "سلتك",
     "empty": "سلتك فاضية — روح اختار شي زاكي!",
     "subtotal": "المجموع الفرعي",
+    "discount": "الخصم",
     "delivery": "التوصيل",
     "total": "الإجمالي",
     "syncFailed": "تعذّر تحديث السلة. حاول مرة أخرى.",
@@ -310,7 +311,7 @@
     "optionsTitle": "النوع / الحجم",
     "optionsRequired": "مطلوب",
     "optionsHint": "يمكنك اختيار أكثر من نوع",
-    "optionsSummary": "تم اختيار {{options}} نوع، {{pieces}} قطعة بالإجمالي = {{total}}",
+    "optionsSummary": "تم اختيار {{options}} نوع، {{pieces}} قطعة بالإجمالي",
     "selectAtLeastOne": "اختر نوعاً واحداً على الأقل"
   },
   "payment": {

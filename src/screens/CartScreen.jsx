@@ -18,7 +18,9 @@ import styles from './CartScreen.module.css';
 export default function CartScreen() {
   const { t } = useTranslation();
   const money = useMoney();
-  const { groupedEntries, count, subtotal, deliveryFee, total } = useCart();
+  /* All server-computed and already rounded; null means the backend
+     hasn't priced the cart yet, and the row is skipped. */
+  const { groupedEntries, count, subtotal, discountTotal, deliveryFee, total } = useCart();
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
   const { icons } = useBusinessTypeConfig();
@@ -37,24 +39,41 @@ export default function CartScreen() {
               /* A plain product always has exactly one line with no
                  price option — keep its existing single-row rendering. */
               group.lines.length === 1 && !group.lines[0].priceOption ? (
-                <CartItem key={group.product.id} product={group.product} qty={group.lines[0].qty} />
+                <CartItem
+                  key={group.product.id}
+                  product={group.product}
+                  qty={group.lines[0].qty}
+                  lineTotal={group.lines[0].lineTotal}
+                />
               ) : (
                 <CartProductGroup key={group.product.id} product={group.product} lines={group.lines} />
               ),
             )}
             <div className={styles.totals}>
-              <div className={styles.row}>
-                <span>{t('cart.subtotal')}</span>
-                <span>{money(subtotal)}</span>
-              </div>
-              <div className={styles.row}>
-                <span>{t('cart.delivery')}</span>
-                <span>{money(deliveryFee)}</span>
-              </div>
-              <div className={`${styles.row} ${styles.grand}`}>
-                <span>{t('cart.total')}</span>
-                <span>{money(total)}</span>
-              </div>
+              {subtotal !== null && (
+                <div className={styles.row}>
+                  <span>{t('cart.subtotal')}</span>
+                  <span>{money(subtotal)}</span>
+                </div>
+              )}
+              {discountTotal > 0 && (
+                <div className={styles.row}>
+                  <span>{t('cart.discount')}</span>
+                  <span>{money(discountTotal)}</span>
+                </div>
+              )}
+              {deliveryFee !== null && (
+                <div className={styles.row}>
+                  <span>{t('cart.delivery')}</span>
+                  <span>{money(deliveryFee)}</span>
+                </div>
+              )}
+              {total !== null && (
+                <div className={`${styles.row} ${styles.grand}`}>
+                  <span>{t('cart.total')}</span>
+                  <span>{money(total)}</span>
+                </div>
+              )}
             </div>
           </>
         )}

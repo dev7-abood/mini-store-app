@@ -16,8 +16,10 @@
 | The customer/payment FORM (name / address / phones) stays in OrderContext —
 | this context deals only with what the server owns.
 |
-| Money note: totals always come from the server response. The local cart
-| total is a preview only; the API is authoritative once an order exists.
+| Money note: EVERY currency figure comes from the server response,
+| already rounded to 2 decimals — the client never computes, sums or
+| rounds an amount. A field the API didn't send stays null so the screen
+| can omit it instead of showing a fabricated 0.
 */
 import {
   createContext,
@@ -48,6 +50,7 @@ import {
   resolveJawwalPayConfirmationOutcome,
 } from '../lib/jawwalPayCheckout';
 import { isManualPaymentMethod } from '../lib/paymentMethods';
+import { pickMoney } from '../lib/money';
 import { useStoreStatus } from './StoreStatusContext';
 
 const OrderFlowContext = createContext(null);
@@ -119,11 +122,26 @@ export function OrderFlowProvider({ children }) {
       return null;
     }
 
+    /* Straight from the server's own pricing block — `summary` when it
+       sends one, `totals` for the delivery fee, and the bare payload as
+       the last fallback. Pre-rounded to 2 decimals; nothing is summed
+       or multiplied here. null = the API didn't price that field. */
+    const data = result.data ?? {};
+    const summary = data.summary ?? null;
+    const totals = data.totals ?? null;
     const priced = {
-      subtotal: Number(result.data?.subtotal ?? 0),
-      deliveryFee: Number(result.data?.delivery_fee ?? result.data?.deliveryFee ?? 0),
-      total: Number(result.data?.total ?? 0),
-      items: Array.isArray(result.data?.items) ? result.data.items : [],
+      subtotal: pickMoney(summary?.subtotal, totals?.subtotal, data.subtotal),
+      discountTotal: pickMoney(
+        summary?.discount_total, summary?.discountTotal,
+        totals?.discount_total, totals?.discountTotal, data.discount_total,
+      ),
+      deliveryFee: pickMoney(
+        totals?.delivery_fee, totals?.deliveryFee,
+        summary?.delivery_fee, summary?.deliveryFee,
+        data.delivery_fee, data.deliveryFee,
+      ),
+      total: pickMoney(summary?.total, totals?.total, data.total),
+      items: Array.isArray(data.items) ? data.items : [],
     };
     setPricing(priced);
     return priced;

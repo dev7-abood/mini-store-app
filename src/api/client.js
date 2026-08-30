@@ -26,6 +26,7 @@
 import { normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
 import { apiPathFromConfirmationUrl } from '../lib/jawwalPayCheckout';
 import { normalizeManualPaymentReceivingInfo } from '../lib/paymentMethods';
+import { pickMoney } from '../lib/money';
 
 /** Path prefix appended to the tenant URL from the deep-link payload. */
 const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? '/api/v1';
@@ -510,12 +511,19 @@ export async function syncCustomer({ botId = null, phone, address } = {}) {
 | A cart line is `product_id` + an optional `price_option_id` (null for a
 | plain product) — two lines can share a product_id when they differ by
 | price_option_id, so lines are never collapsed by product alone. Every
-| function resolves to an array of {productId, priceOptionId, quantity}
-| lines (or null on failure) so the caller never deals with transport shapes.
+| function resolves to {lines, summary} (or null on failure) so the caller
+| never deals with transport shapes.
+|
+| MONEY: the backend is the single pricing authority. Each line carries
+| its own `line_total` and the response carries a `summary` (subtotal,
+| discount_total, total) plus `totals.delivery_fee` — all pre-rounded to
+| 2 decimals. The client stores those verbatim and NEVER multiplies a
+| unit price by a quantity to make its own figure.
 */
 
 /**
- * Reduce a cart response to a flat list of lines.
+ * Reduce a cart response to a flat list of lines, each keeping the
+ * server's own `line_total`.
  *
  * Tolerates the common shapes: items under `data.items` or `data`, a
  * product referenced as `product_id` / `productId` / nested `product.id`,
@@ -523,7 +531,8 @@ export async function syncCustomer({ botId = null, phone, address } = {}) {
  * and the amount as `quantity` / `qty`.
  *
  * @param {any} payload
- * @returns {Array<{productId: number, priceOptionId: number|null, quantity: number}>}
+ * @returns {Array<{productId: number, priceOptionId: number|null,
+ *   quantity: number, lineTotal: number|null}>}
  */
 export function normalizeCartLines(payload) {
   const raw = payload?.data?.items ?? payload?.items ?? payload?.data ?? [];
@@ -541,20 +550,72 @@ export function normalizeCartLines(payload) {
     const quantity = Number(line?.quantity ?? line?.qty ?? 0);
 
     if (Number.isFinite(productId) && productId > 0 && quantity > 0) {
-      lines.push({ productId, priceOptionId, quantity });
+      lines.push({
+        productId,
+        priceOptionId,
+        quantity,
+        /* What this line costs, straight from the server. null when the
+           payload omits it — the UI then shows the last known figure
+           rather than computing one. */
+        lineTotal: pickMoney(line?.line_total, line?.lineTotal, line?.total, line?.subtotal),
+      });
     }
   }
   return lines;
 }
 
 /**
- * Fetch the persisted cart.
+ * The server's pricing block for the whole cart, or null when this
+ * response carries none (a mutation endpoint that answers with items
+ * only) — the caller then keeps the last summary it was given.
  *
- * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>} null on failure
+ * @param {any} payload
+ * @returns {{subtotal: number|null, discountTotal: number|null,
+ *   deliveryFee: number|null, total: number|null} | null}
+ */
+export function normalizeCartSummary(payload) {
+  const data = payload?.data ?? payload ?? null;
+  const summary = data?.summary ?? payload?.summary ?? null;
+  const totals = data?.totals ?? payload?.totals ?? null;
+  if (!summary && !totals) return null;
+
+  const priced = {
+    subtotal: pickMoney(summary?.subtotal, totals?.subtotal),
+    discountTotal: pickMoney(
+      summary?.discount_total, summary?.discountTotal,
+      totals?.discount_total, totals?.discountTotal,
+    ),
+    deliveryFee: pickMoney(
+      totals?.delivery_fee, totals?.deliveryFee,
+      summary?.delivery_fee, summary?.deliveryFee,
+    ),
+    total: pickMoney(summary?.total, totals?.total),
+  };
+  /* A block with no usable number in it is no summary at all. */
+  return Object.values(priced).some((value) => value !== null) ? priced : null;
+}
+
+/**
+ * Full cart snapshot: the lines plus the server's pricing.
+ *
+ * @param {any} payload
+ * @returns {{lines: Array<{productId: number, priceOptionId: number|null,
+ *   quantity: number, lineTotal: number|null}>,
+ *   summary: {subtotal: number|null, discountTotal: number|null,
+ *     deliveryFee: number|null, total: number|null} | null}}
+ */
+export function normalizeCartPayload(payload) {
+  return { lines: normalizeCartLines(payload), summary: normalizeCartSummary(payload) };
+}
+
+/**
+ * Fetch the persisted cart, with the server's own pricing.
+ *
+ * @returns {Promise<{lines: Array<object>, summary: object|null} | null>} null on failure
  */
 export async function fetchCart() {
   try {
-    return normalizeCartLines(await request('/cart', { timeoutMs: 8000 }));
+    return normalizeCartPayload(await request('/cart', { timeoutMs: 8000 }));
   } catch (error) {
     console.warn('Cart fetch failed:', error);
     return null;
@@ -565,7 +626,7 @@ export async function fetchCart() {
  * Replace the entire server cart (used to reconcile a local cart).
  *
  * @param {Array<{productId: number, priceOptionId: number|null, quantity: number}>} lines
- * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
+ * @returns {Promise<{lines: Array<object>, summary: object|null} | null>}
  */
 export async function syncCart(lines) {
   try {
@@ -576,7 +637,7 @@ export async function syncCart(lines) {
         ...(line.priceOptionId != null ? { price_option_id: line.priceOptionId } : {}),
       })),
     };
-    return normalizeCartLines(
+    return normalizeCartPayload(
       await request('/cart', { method: 'PUT', body: JSON.stringify(payload), timeoutMs: 8000 }),
     );
   } catch (error) {
@@ -605,11 +666,11 @@ export async function clearCartRemote() {
  *
  * @param {number} productId
  * @param {number} quantity
- * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
+ * @returns {Promise<{lines: Array<object>, summary: object|null} | null>}
  */
 export async function addCartItem(productId, quantity = 1) {
   try {
-    return normalizeCartLines(
+    return normalizeCartPayload(
       await request('/cart/items', {
         method: 'POST',
         body: JSON.stringify({ product_id: Number(productId), quantity: Number(quantity) }),
@@ -629,7 +690,7 @@ export async function addCartItem(productId, quantity = 1) {
  * @param {number} productId
  * @param {Array<{priceOptionId: number, quantity: number}>} options
  * @param {string} [notes]
- * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
+ * @returns {Promise<{lines: Array<object>, summary: object|null} | null>}
  */
 export async function addCartItemOptions(productId, options, notes) {
   try {
@@ -642,7 +703,7 @@ export async function addCartItemOptions(productId, options, notes) {
     };
     if (notes) body.notes = notes;
 
-    return normalizeCartLines(
+    return normalizeCartPayload(
       await request('/cart/items', { method: 'POST', body: JSON.stringify(body), timeoutMs: 8000 }),
     );
   } catch (error) {
@@ -658,14 +719,14 @@ export async function addCartItemOptions(productId, options, notes) {
  * @param {number} productId
  * @param {number} quantity
  * @param {number|null} [priceOptionId]
- * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
+ * @returns {Promise<{lines: Array<object>, summary: object|null} | null>}
  */
 export async function updateCartItem(productId, quantity, priceOptionId = null) {
   try {
     const path = priceOptionId != null
       ? `/cart/items/${Number(productId)}/${Number(priceOptionId)}`
       : `/cart/items/${Number(productId)}`;
-    return normalizeCartLines(
+    return normalizeCartPayload(
       await request(path, {
         method: 'PATCH',
         body: JSON.stringify({ quantity: Number(quantity) }),
@@ -684,14 +745,14 @@ export async function updateCartItem(productId, quantity, priceOptionId = null) 
  *
  * @param {number} productId
  * @param {number|null} [priceOptionId]
- * @returns {Promise<Array<{productId: number, priceOptionId: number|null, quantity: number}> | null>}
+ * @returns {Promise<{lines: Array<object>, summary: object|null} | null>}
  */
 export async function removeCartItem(productId, priceOptionId = null) {
   try {
     const path = priceOptionId != null
       ? `/cart/items/${Number(productId)}/${Number(priceOptionId)}`
       : `/cart/items/${Number(productId)}`;
-    return normalizeCartLines(await request(path, { method: 'DELETE', timeoutMs: 8000 }));
+    return normalizeCartPayload(await request(path, { method: 'DELETE', timeoutMs: 8000 }));
   } catch (error) {
     console.warn('Cart remove failed:', error);
     return null;
@@ -804,6 +865,7 @@ export function normalizeOrder(raw) {
   const status = o.status && typeof o.status === 'object' ? o.status : null;
   const payment = o.payment && typeof o.payment === 'object' ? o.payment : null;
   const totals = o.totals && typeof o.totals === 'object' ? o.totals : null;
+  const summary = o.summary && typeof o.summary === 'object' ? o.summary : null;
   const verification = o.verification && typeof o.verification === 'object' ? o.verification : null;
   const proof = payment?.proof && typeof payment.proof === 'object'
     ? payment.proof
@@ -844,11 +906,19 @@ export function normalizeOrder(raw) {
       verifiedAt: verification?.verified_at ?? verification?.verifiedAt ?? null,
       expiresIn: verification?.expires_in ?? verification?.expiresIn ?? null,
     },
-    /* Server-side money is authoritative — never recompute locally. */
-    subtotal: Number(totals?.subtotal ?? o.subtotal ?? 0),
-    discountTotal: Number(totals?.discount_total ?? totals?.discountTotal ?? o.discount_total ?? 0),
-    deliveryFee: Number(totals?.delivery_fee ?? totals?.deliveryFee ?? o.delivery_fee ?? o.deliveryFee ?? 0),
-    total: Number(totals?.total ?? o.total ?? o.total_price ?? 0),
+    /* Server-side money is authoritative — never recomputed locally, and
+       already rounded to 2 decimals. null means "the server didn't send
+       it", so the screen omits the row instead of showing a fake 0. */
+    subtotal: pickMoney(summary?.subtotal, totals?.subtotal, o.subtotal),
+    discountTotal: pickMoney(
+      summary?.discount_total, summary?.discountTotal,
+      totals?.discount_total, totals?.discountTotal, o.discount_total,
+    ),
+    deliveryFee: pickMoney(
+      totals?.delivery_fee, totals?.deliveryFee,
+      summary?.delivery_fee, summary?.deliveryFee, o.delivery_fee, o.deliveryFee,
+    ),
+    total: pickMoney(summary?.total, totals?.total, o.total, o.total_price),
     currency: totals?.currency ?? o.currency ?? null,
     isVerified: Boolean(o.is_verified ?? o.verified ?? false),
     paymentMethod: payment?.method ?? o.payment_method ?? null,

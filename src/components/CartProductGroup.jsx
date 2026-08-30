@@ -11,8 +11,13 @@ import styles from './CartProductGroup.module.css';
  * product shown once, then every selected option as its own row with an
  * independent quantity stepper (wired to that option's cart line).
  *
+ * Each row shows the server's `line_total` for that line — never a
+ * local price × quantity — and shows nothing while the line is still
+ * unpriced (just added, or a quantity change still in flight).
+ *
  * @param {{product: import('../data/menu').Product,
- *          lines: Array<{key: string, priceOption: object|null, qty: number}>}} props
+ *          lines: Array<{key: string, priceOption: object|null, qty: number,
+ *                        lineTotal: number|null}>}} props
  */
 export default function CartProductGroup({ product, lines }) {
   const money = useMoney();
@@ -37,13 +42,12 @@ export default function CartProductGroup({ product, lines }) {
         /* priceOption is only ever null for a leftover plain line (e.g.
            added before this product had price options) sharing the
            group with real option lines — fall back to the product's
-           own name/price rather than breaking the whole cart over it. */
-        const unitPrice = line.priceOption ? line.priceOption.finalPrice : product.price;
+           own name rather than breaking the whole cart over it. */
         return (
           <div key={line.key} className={styles.optionRow}>
             <div className={styles.info}>
               <div className={styles.optionName}>{line.priceOption?.name ?? product.name}</div>
-              <div className={styles.price}>{money(unitPrice * line.qty)}</div>
+              <div className={styles.price}>{money(line.lineTotal)}</div>
             </div>
             <Stepper
               mini

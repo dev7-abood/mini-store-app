@@ -296,10 +296,12 @@ export default function PaymentPendingScreen() {
                 <strong>{money(item.total)}</strong>
               </div>
             ))}
-            <div className={styles.totalRow}>
-              <span>{t('cart.total')}</span>
-              <b>{amountText}</b>
-            </div>
+            {amountText && (
+              <div className={styles.totalRow}>
+                <span>{t('cart.total')}</span>
+                <b>{amountText}</b>
+              </div>
+            )}
           </div>
         </section>
 

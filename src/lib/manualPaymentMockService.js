@@ -121,12 +121,14 @@ function methodSummary(methodId, paymentMethod = null) {
   };
 }
 
+/* Line amounts are the server's `line_total`, carried through as-is —
+   this mock never multiplies a price by a quantity. */
 function cartEntriesToItems(entries) {
-  const items = entries.map(({ product, qty }) => ({
+  const items = entries.map(({ product, priceOption, qty, lineTotal }) => ({
     id: product.id,
-    name: product.name,
+    name: priceOption ? `${product.name} (${priceOption.name})` : product.name,
     quantity: qty,
-    total: Number(product.price || 0) * qty,
+    total: lineTotal ?? null,
   }));
 
   return items.length > 0 ? items : [fallbackItem];
@@ -175,9 +177,10 @@ function makeMockManualPaymentOrder({
   persist = false,
 }) {
   const items = cartEntriesToItems(entries);
-  const totalAmount = Number(total) > 0
-    ? Number(total)
-    : items.reduce((sum, item) => sum + item.total, 0);
+  /* The cart's server-computed total; null when the backend hasn't
+     priced it — the screen then shows no amount instead of a sum this
+     client made up. */
+  const totalAmount = Number.isFinite(Number(total)) && Number(total) > 0 ? Number(total) : null;
   const now = new Date().toISOString();
   const deliveryAddress = String(address || '').trim();
   const order = {

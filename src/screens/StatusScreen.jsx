@@ -7,6 +7,7 @@ import { useOrderFlow } from '../context/OrderFlowContext';
 import { useToasts } from '../context/ToastContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useMoney } from '../hooks/useMoney';
+import { pickMoney } from '../lib/money';
 import {
   isNegativeFinalStatus,
   isOrderFinal,
@@ -59,20 +60,22 @@ function orderItems(order) {
        under, kept even if the option is later renamed or deleted. */
     const optionName = item?.price_option_name ?? item?.priceOptionName ?? null;
     const quantity = Number(item?.quantity ?? item?.qty ?? 1);
-    const total = Number(
-      item?.total
-      ?? item?.total_price
-      ?? item?.line_total
-      ?? item?.subtotal
-      ?? item?.price
-      ?? 0,
+    /* `line_total` is the server's authoritative figure for the line,
+       already rounded — preferred over any other key, and never
+       reconstructed from unit_price × quantity. null when absent. */
+    const total = pickMoney(
+      item?.line_total,
+      item?.lineTotal,
+      item?.total,
+      item?.total_price,
+      item?.subtotal,
     );
 
     return {
       key: item?.id ?? item?.product_id ?? `${name}-${index}`,
       name: optionName ? `${name} (${optionName})` : String(name),
       quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
-      total: Number.isFinite(total) ? total : 0,
+      total,
     };
   });
 }
@@ -416,7 +419,7 @@ export default function StatusScreen() {
                     <b>{item.name}</b>
                     <span>{t('status.itemQuantity', { count: item.quantity })}</span>
                   </div>
-                  {item.total > 0 && <strong>{money(item.total)}</strong>}
+                  {item.total !== null && <strong>{money(item.total)}</strong>}
                 </div>
               ))}
             </div>

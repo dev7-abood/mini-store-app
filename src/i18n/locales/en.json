@@ -6,8 +6,12 @@
     "manualBody": "We received your transfer details. Your order is awaiting payment verification.",
     "track": "Track my order"
   },
+  "sheet": {
+    "addToCart": "Add to cart"
+  },
   "cart": {
     "subtotal": "Subtotal",
+    "discount": "Discount",
     "delivery": "Delivery",
     "total": "Total",
     "syncFailed": "Could not update your cart. Please try again."
@@ -128,7 +132,7 @@
     "optionsTitle": "Type / Size",
     "optionsRequired": "Required",
     "optionsHint": "You can select more than one",
-    "optionsSummary": "{{options}} options selected, {{pieces}} pieces total = {{total}}",
+    "optionsSummary": "{{options}} options selected, {{pieces}} pieces total",
     "selectAtLeastOne": "Select at least one option"
   },
   "payment": {

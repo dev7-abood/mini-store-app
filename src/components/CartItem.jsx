@@ -10,9 +10,14 @@ import styles from './CartItem.module.css';
 /**
  * Single line in the cart list.
  *
- * @param {{product: import('../data/menu').Product, qty: number}} props
+ * `lineTotal` is the server's `line_total` for this line — displayed as
+ * given, never recomputed from price × quantity. It is null while the
+ * backend hasn't priced the line yet, and the amount is simply omitted.
+ *
+ * @param {{product: import('../data/menu').Product, qty: number,
+ *          lineTotal: number|null}} props
  */
-export default function CartItem({ product, qty }) {
+export default function CartItem({ product, qty, lineTotal }) {
   const { t } = useTranslation();
   const money = useMoney();
   const { categoryById } = useCatalog();
@@ -31,7 +36,7 @@ export default function CartItem({ product, qty }) {
       />
       <div className={styles.info}>
         <div className={styles.name}>{product.name}</div>
-        <div className={styles.price}>{money(product.price * qty)}</div>
+        <div className={styles.price}>{money(lineTotal)}</div>
       </div>
       <Stepper mini value={qty} onChange={(delta) => changeQty(product.id, delta)} />
     </div>
