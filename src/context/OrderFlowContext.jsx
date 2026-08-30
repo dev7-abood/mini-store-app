@@ -11,7 +11,7 @@
 |   refresh()  GET  /orders/{n}                latest status
 |   cancel()   POST /orders/{n}/cancel
 |   retryPay() POST /orders/{n}/payment/retry
-|              GET  /orders/{n}/payment        polled automatically
+|              GET  /orders/{n}/payment        smart payments only
 |
 | The customer/payment FORM (name / address / phones) stays in OrderContext —
 | this context deals only with what the server owns.
@@ -39,7 +39,6 @@ import {
   cancelOrder,
   fetchOrderPayment,
   retryOrderPayment,
-  submitOrderPaymentProof,
   confirmJawwalPayCheckout,
   normalizeOrder,
   hasBackend,
@@ -49,32 +48,14 @@ import {
   normalizeJawwalPayOtpSession,
   resolveJawwalPayConfirmationOutcome,
 } from '../lib/jawwalPayCheckout';
-import { isManualPaymentMethod } from '../lib/paymentMethods';
+import { normalizePayment, pollDelayMs } from '../lib/payment';
 import { pickMoney } from '../lib/money';
 import { useStoreStatus } from './StoreStatusContext';
 
 const OrderFlowContext = createContext(null);
 
-/** Payment states that mean "stop polling". */
-const PAYMENT_SETTLED = new Set(['approved', 'paid', 'completed', 'declined', 'failed', 'cancelled']);
-
-/** How often to poll payment while the customer is in their wallet app. */
-const PAYMENT_POLL_MS = 3000;
 /** Give up polling after this long so we never loop forever. */
 const PAYMENT_POLL_TIMEOUT_MS = 5 * 60 * 1000;
-const MANUAL_AWAITING_PAYMENT = 'awaiting_payment';
-const MANUAL_AWAITING_VERIFICATION = 'awaiting_verification';
-
-function withManualPaymentStatus(order, methodId, status) {
-  if (!order || !isManualPaymentMethod(methodId ?? order.paymentMethod)) return order;
-
-  return {
-    ...order,
-    status,
-    paymentMethod: order.paymentMethod ?? methodId,
-    paymentStatus: status,
-  };
-}
 
 export function OrderFlowProvider({ children }) {
   const { markClosed } = useStoreStatus();
@@ -174,7 +155,7 @@ export function OrderFlowProvider({ children }) {
     if (session) {
       stopPolling();
       setJawwalPayOtpSession(session);
-      setPayment({ status: session.status, data: result.data });
+      setPayment(normalizePayment(result.data?.payment));
       setOrder(null);
       return {
         ok: true,
@@ -187,12 +168,12 @@ export function OrderFlowProvider({ children }) {
     }
 
     setJawwalPayOtpSession(null);
-    const placed = withManualPaymentStatus(
-      normalizeOrder(result.data),
-      details.payment_method,
-      MANUAL_AWAITING_PAYMENT,
-    );
+    const placed = normalizeOrder(result.data);
     setOrder(placed);
+    /* The payment request has NOT been pushed yet — the phone is still
+       unverified, so even a manual order is not on the store's board and
+       `awaiting_confirmation` is false. The OTP screen comes next. */
+    setPayment(placed?.payment ?? null);
     return { ok: true, order: placed, message: null };
   }, [markClosed, stopPolling]);
 
@@ -240,12 +221,11 @@ export function OrderFlowProvider({ children }) {
     }
 
     setJawwalPayOtpSession(null);
-    setPayment({
-      status: outcome.payment?.status ?? result.data?.payment?.status ?? null,
-      data: result.data,
-    });
-
     const confirmed = normalizeOrder(outcome.order ?? result.data?.order ?? result.data);
+    setPayment(
+      normalizePayment(outcome.payment ?? result.data?.payment) ?? confirmed?.payment ?? null,
+    );
+
     if (confirmed) setOrder(confirmed);
 
     return {
@@ -311,7 +291,16 @@ export function OrderFlowProvider({ children }) {
 
       const verified = normalizeOrder(result.data) ?? { ...order, isVerified: true };
       setOrder(verified);
-      return { ok: true, message: null, throttled: false };
+
+      /* Verifying releases the order AND pushes the payment request —
+         the moment the store is notified. The response's own `payment`
+         block is the freshest state there is: for a manual method it
+         carries the transfer instructions, so the caller can go straight
+         to the instructions screen without a second round trip. */
+      const pushed = normalizePayment(result.data?.payment) ?? verified?.payment ?? null;
+      setPayment(pushed);
+
+      return { ok: true, message: null, throttled: false, payment: pushed };
     },
     [order],
   );
@@ -424,8 +413,41 @@ export function OrderFlowProvider({ children }) {
   */
 
   /**
-   * Poll the payment endpoint until it settles (or times out). The
-   * server allows 120 req/min here precisely because it is polled.
+   * Read the payment once. The light endpoint — it carries exactly the
+   * same confirmation fields as the order, so a screen refreshing only
+   * the payment can never drift from one refreshing the whole order.
+   *
+   * @param {string} [orderNumber]
+   * @returns {Promise<object|null>}
+   */
+  const refreshPayment = useCallback(
+    async (orderNumber) => {
+      const number = orderNumber ?? order?.orderNumber;
+      if (!number || !hasBackend()) return null;
+
+      const result = await fetchOrderPayment(number);
+      if (!result.ok) return null;
+
+      const next = normalizePayment(result.data);
+      if (next) setPayment(next);
+      return next;
+    },
+    [order],
+  );
+
+  /**
+   * Poll the payment endpoint while the gateway is still deciding.
+   *
+   * ONLY for payments whose `should_poll` is true. A manual payment is
+   * resolved by a cashier — sometimes hours later — and its `should_poll`
+   * is false forever: a timer there would spin all day, burn the
+   * customer's battery and data, never see a change, and walk straight
+   * into the 120/min throttle this endpoint sizes for smart polling.
+   * Manual payments refresh on app resume, on pull-to-refresh, and on a
+   * single slow foreground interval instead (see the order screen).
+   *
+   * The cadence comes from the payment's own `poll_after`, which is only
+   * meaningful while `should_poll` is true.
    *
    * @param {string} [orderNumber]
    * @returns {void}
@@ -440,12 +462,14 @@ export function OrderFlowProvider({ children }) {
 
       const tick = async () => {
         const result = await fetchOrderPayment(number);
+        const next = result.ok ? normalizePayment(result.data) : null;
 
-        if (result.ok) {
-          const state = result.data?.status ?? result.data?.payment?.status ?? null;
-          setPayment({ status: state, data: result.data });
+        if (next) {
+          setPayment(next);
 
-          if (state && PAYMENT_SETTLED.has(String(state).toLowerCase())) {
+          /* The server decides when watching stops — not a status list
+             of ours that a new state could fall outside of. */
+          if (!next.shouldPoll) {
             stopPolling();
             /* Pull the order once more so status/total reflect payment. */
             refresh(number);
@@ -455,11 +479,11 @@ export function OrderFlowProvider({ children }) {
 
         if (Date.now() - pollStartedAt.current > PAYMENT_POLL_TIMEOUT_MS) {
           stopPolling();
-          setPayment((p) => ({ ...(p ?? {}), status: 'timeout' }));
+          refresh(number);
           return;
         }
 
-        pollTimer.current = setTimeout(tick, PAYMENT_POLL_MS);
+        pollTimer.current = setTimeout(tick, pollDelayMs(next));
       };
 
       tick();
@@ -468,12 +492,29 @@ export function OrderFlowProvider({ children }) {
   );
 
   /**
-   * Start a new payment attempt after a decline.
+   * Watch the payment only if the server says to. Called wherever a
+   * payment has just been pushed: smart payments start polling, manual
+   * ones deliberately do nothing.
    *
-   * @returns {Promise<boolean>}
+   * @param {object|null} paymentState
+   * @param {string} [orderNumber]
+   */
+  const watchPayment = useCallback(
+    (paymentState, orderNumber) => {
+      if (paymentState?.shouldPoll) startPaymentPolling(orderNumber);
+    },
+    [startPaymentPolling],
+  );
+
+  /**
+   * Start a new payment attempt after a decline or an expiry. The order
+   * itself is not cancelled — only the previous attempt failed — so a
+   * manual method returns to `awaiting_transfer` with fresh instructions.
+   *
+   * @returns {Promise<{ok: boolean, payment: object|null, message: string|null}>}
    */
   const retryPayment = useCallback(async () => {
-    if (!order?.orderNumber) return false;
+    if (!order?.orderNumber) return { ok: false, payment: null, message: null };
 
     setIsBusy(true);
     const result = await retryOrderPayment(order.orderNumber);
@@ -481,62 +522,15 @@ export function OrderFlowProvider({ children }) {
 
     if (!result.ok) {
       setError(result.message);
-      return false;
+      return { ok: false, payment: null, message: result.message };
     }
 
-    setPayment({ status: 'pending', data: result.data });
-    startPaymentPolling(order.orderNumber);
-    return true;
-  }, [order, startPaymentPolling]);
-
-  /**
-   * Submit the transaction number and receipt for a manual transfer.
-   *
-   * @param {{transactionReference: string, receiptFile: File}} proof
-   * @returns {Promise<{ok: boolean, order: object|null, message: string|null}>}
-   */
-  const submitManualProof = useCallback(async (proof) => {
-    if (!order?.orderNumber) {
-      return { ok: false, order: null, message: null };
-    }
-
-    if (!hasBackend()) {
-      const next = withManualPaymentStatus(
-        {
-          ...order,
-          paymentProofTransactionReference: proof.transactionReference,
-        },
-        order.paymentMethod,
-        MANUAL_AWAITING_VERIFICATION,
-      );
-      setOrder(next);
-      setPayment({ status: MANUAL_AWAITING_VERIFICATION, data: next });
-      return { ok: true, order: next, message: null };
-    }
-
-    setError(null);
-    setIsBusy(true);
-    const result = await submitOrderPaymentProof(order.orderNumber, proof);
-    setIsBusy(false);
-
-    if (!result.ok) {
-      setError(result.message);
-      return { ok: false, order: null, message: result.message };
-    }
-
-    const submitted = normalizeOrder(result.data) ?? {
-      ...order,
-      paymentProofTransactionReference: proof.transactionReference,
-    };
-    const next = withManualPaymentStatus(
-      submitted,
-      submitted.paymentMethod ?? order.paymentMethod,
-      MANUAL_AWAITING_VERIFICATION,
-    );
-    setOrder(next);
-    setPayment({ status: MANUAL_AWAITING_VERIFICATION, data: result.data });
-    return { ok: true, order: next, message: result.message };
-  }, [order]);
+    const next = normalizePayment(result.data);
+    if (next) setPayment(next);
+    watchPayment(next, order.orderNumber);
+    refresh(order.orderNumber);
+    return { ok: true, payment: next, message: result.message };
+  }, [order, watchPayment, refresh]);
 
   /** Clear everything (after a completed or abandoned order). */
   const reset = useCallback(() => {
@@ -568,16 +562,18 @@ export function OrderFlowProvider({ children }) {
       refresh,
       cancel,
       startPaymentPolling,
+      watchPayment,
+      refreshPayment,
       stopPolling,
       retryPayment,
-      submitManualProof,
       reset,
     }),
     [
       order, pricing, payment, jawwalPayOtpSession, isBusy, error,
       preview, place, verify, resend, loadOrder, refresh, cancel,
       confirmJawwalPayOtp, resendJawwalPayOtp, clearJawwalPayOtpSession,
-      startPaymentPolling, stopPolling, retryPayment, submitManualProof, reset,
+      startPaymentPolling, watchPayment, refreshPayment, stopPolling,
+      retryPayment, reset,
     ],
   );
 

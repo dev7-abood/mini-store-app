@@ -27,3 +27,15 @@
   font-weight: var(--font-semibold);
   line-height: var(--leading-normal);
 }
+
+/* The store has no payment method configured — a state, not an empty list. */
+.noMethods {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--tomato) 7%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--tomato) 26%, var(--line));
+  color: var(--ink);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}

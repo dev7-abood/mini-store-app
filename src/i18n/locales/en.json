@@ -2,9 +2,10 @@
   "success": {
     "heading": "Order placed!",
     "body": "Your order was confirmed and the kitchen will start preparing it.",
-    "manualHeading": "Payment proof submitted",
-    "manualBody": "We received your transfer details. Your order is awaiting payment verification.",
-    "track": "Track my order"
+    "track": "Track my order",
+    "awaitingHeading": "Order placed!",
+    "awaitingBody": "The store has been notified and will confirm your payment.",
+    "viewInstructions": "View transfer details"
   },
   "sheet": {
     "addToCart": "Add to cart"
@@ -43,51 +44,6 @@
       }
     }
   },
-  "smartPayment": {
-    "title": "Smart Payment",
-    "kicker": "Payment sender",
-    "body": "Enter the full name, Palestinian mobile number, and delivery address for the person who will approve and send this Jawwal Pay payment.",
-    "fullName": "Full Name *",
-    "fullNamePlaceholder": "Example: Abdulrahman Hassan",
-    "phoneNumber": "Phone Number *",
-    "phoneHint": "Use the Palestinian mobile number connected to the Jawwal Pay wallet, without the leading 0.",
-    "address": "Address *",
-    "addressPlaceholder": "Street, building, floor...",
-    "invalid": "Enter the payment sender full name, valid Palestinian phone number, and address.",
-    "sending": "Continuing...",
-    "orderFailed": "Could not create the order. Try again.",
-    "errors": {
-      "fullNameRequired": "Enter the payment sender full name.",
-      "fullNameShort": "Enter a full name with at least 3 characters.",
-      "phoneRequired": "Enter the payment sender phone number.",
-      "phoneInvalid": "Enter a valid Palestinian mobile number, for example +970 598 304 517.",
-      "addressRequired": "Enter the delivery address.",
-      "addressShort": "Enter a more complete delivery address."
-    }
-  },
-  "manualPayment": {
-    "title": "Manual Payment",
-    "kicker": "Payment details",
-    "body": "Send the payment from your wallet or bank, then enter the sender details and delivery address so we can match your transfer.",
-    "receiverDetails": "Payment receiver details",
-    "fullName": "Full Name *",
-    "fullNamePlaceholder": "Example: Abdulrahman Hassan",
-    "accountIdentifier": "Phone Number / Sender Account Number *",
-    "accountPlaceholder": "Example: 059XXXXXXX or account number",
-    "address": "Address *",
-    "addressPlaceholder": "Street, building, floor...",
-    "invalid": "Enter the sender full name, phone/account number, and address.",
-    "sending": "Continuing...",
-    "errors": {
-      "fullNameRequired": "Enter the sender full name.",
-      "fullNameShort": "Enter a full name with at least 3 characters.",
-      "accountRequired": "Enter the sender phone number or account number.",
-      "accountShort": "Enter at least 5 characters.",
-      "accountInvalid": "Use letters, numbers, spaces, +, -, _, or . only.",
-      "addressRequired": "Enter the delivery address.",
-      "addressShort": "Enter a more complete delivery address."
-    }
-  },
   "otp": {
     "title": "Enter code",
     "heading": "Check your messages",
@@ -122,7 +78,9 @@
       "error": "Error",
       "warning": "Warning",
       "info": "Notice"
-    }
+    },
+    "currencyWithSymbol": "{{symbol}}{{amount}}",
+    "currencyWithCode": "{{code}} {{amount}}"
   },
   "product": {
     "soldOut": "Sold out",
@@ -136,117 +94,82 @@
     "selectAtLeastOne": "Select at least one option"
   },
   "payment": {
-    "selectTitle": "Select Payment Method",
+    "selectTitle": "Select payment method",
     "selectBody": "Choose how you want to pay for this order. Details are entered on the next step.",
     "title": "Payment method",
-    "types": {
-      "smart": "Smart Payment",
-      "manual": "Manual Payment"
+    "noMethods": "This store cannot take payment right now. Please try again later or contact the store.",
+    "panelTitle": "Payment",
+    "settlement": {
+      "peer": "Manual transfer",
+      "smart": "Online payment"
     },
-    "badges": {
-      "recommended": "Recommended"
+    "hints": {
+      "smart": "Pay in the app — confirmed automatically",
+      "peer": "Pay outside the app, then the store confirms it"
     },
-    "cash": {
-      "label": "Cash on delivery",
-      "hint": "Pay the driver in cash when your order arrives"
+    "methods": {
+      "jawwalpay": {
+        "label": "Jawwal Pay",
+        "hint": "Pay from your wallet with a confirmation request"
+      },
+      "palpay": {
+        "label": "PalPay",
+        "hint": "Transfer from PalPay, then the store confirms it"
+      },
+      "bop": {
+        "label": "Bank of Palestine",
+        "hint": "Bank transfer, then the store confirms it"
+      },
+      "cash": {
+        "label": "Cash",
+        "hint": "Pay at the store, then the cashier confirms it"
+      }
     },
-    "jawwalpay": {
-      "label": "Jawwal Pay",
-      "hint": "Pay from your wallet with a confirmation request"
+    "status": {
+      "pending": "Not started",
+      "awaiting_approval": "Awaiting approval",
+      "awaiting_transfer": "Awaiting transfer",
+      "paid": "Paid",
+      "declined": "Declined",
+      "expired": "Expired",
+      "refunded": "Refunded"
     },
-    "palpay": {
-      "label": "PalPay",
-      "hint": "Complete payment with PalPay after placing the order",
-      "instructions": "Use the order number as the transfer note so we can match your payment quickly."
+    "source": {
+      "manual": "Confirmed by the store",
+      "automatic": "Confirmed automatically"
     },
-    "bankOfPalestine": {
-      "label": "Bank of Palestine",
-      "hint": "Complete a Bank of Palestine transfer after placing the order",
-      "instructions": "Use the order number as the transfer reference, then upload the receipt below."
-    }
-  },
-  "paymentInstructions": {
-    "title": "Payment Instructions",
-    "manualPayment": "Manual payment",
-    "sendPaymentTo": "Send payment to",
-    "awaitingPaymentNote": "Your order is awaiting payment. Complete the transfer, then submit the proof below.",
-    "receiverName": "Receiver name",
-    "accountOrPhone": "Account number / wallet phone number",
-    "bankOrWalletName": "Bank or wallet name",
-    "iban": "IBAN",
-    "branchName": "Branch name",
-    "amountToPay": "Amount to pay",
-    "referenceNumber": "Order/reference number",
-    "copy": "Copy",
-    "copiedShort": "Copied",
-    "copied": "{{label}} copied",
-    "copyFailed": "Could not copy this value.",
-    "copyValue": "Copy {{label}}",
-    "notConfigured": "Not configured",
-    "afterTransferTitle": "After completing the transfer",
-    "proofStatus": "Submit proof",
-    "transactionReference": "Payment transaction/reference number",
-    "transactionReferencePlaceholder": "Example: 78349210",
-    "receiptPlaceholder": "Payment receipt/screenshot",
-    "receiptHint": "Upload an image or PDF of the transfer receipt.",
-    "missingTransaction": "Enter the payment transaction/reference number.",
-    "missingReceipt": "Upload the payment receipt or screenshot.",
-    "submitProof": "I've Paid — Submit Payment Proof",
-    "submitting": "Submitting proof...",
-    "submitted": "Payment proof submitted for verification.",
-    "submitFailed": "Could not submit payment proof. Try again."
-  },
-  "paymentPending": {
-    "title": "Payment Pending Verification",
-    "manualPayment": "Manual payment",
-    "eyebrow": "Manual payment",
-    "body": "Your order has been received. We are waiting for the store to verify your payment.",
-    "progressLabel": "Payment verification progress",
-    "steps": {
-      "created": "Order created",
-      "received": "Payment information received",
-      "waiting": "Waiting for store verification",
-      "confirmed": "Payment confirmed"
+    "field": {
+      "recipient": "Recipient",
+      "account_holder": "Account holder",
+      "wallet_number": "Mobile wallet number",
+      "account_number": "Account number",
+      "iban": "IBAN",
+      "bank_name": "Bank",
+      "branch_name": "Branch"
     },
-    "orderSummary": "Order Summary",
-    "orderNumber": "Order Number",
-    "totalAmount": "Total Amount",
-    "paymentMethod": "Payment Method",
-    "paymentStatus": "Payment Status",
-    "itemQuantity": "Quantity: {{count}}",
-    "sendPaymentTo": "Send Payment To",
-    "paymentTo": "Payment To",
-    "receiverName": "Receiver",
-    "accountHolderName": "Account Holder Name",
-    "walletPhoneNumber": "Wallet Phone Number",
-    "accountNumber": "Account Number",
-    "iban": "IBAN",
-    "bankName": "Bank Name",
-    "branchName": "Branch Name",
-    "amount": "Amount",
-    "reference": "Reference",
-    "copy": "Copy",
-    "copied": "Copied",
-    "copyValue": "Copy {{label}}",
-    "copyFailed": "Could not copy this value.",
-    "howToPay": "How to pay",
+    "awaiting": {
+      "body": "The store has been notified and is checking your payment. This order updates as soon as they confirm it."
+    },
+    "confirmedBy": "Confirmed by {{name}}",
+    "confirmedByAt": "Confirmed by {{name}} · {{at}}",
+    "retry": "Try paying again",
+    "retrying": "Starting a new attempt...",
+    "retryStarted": "A new payment attempt has started.",
+    "retryFailed": "Could not start a new payment attempt. Try again.",
+    "attemptsRemaining_one": "{{count}} attempt left",
+    "attemptsRemaining_other": "{{count}} attempts left",
     "instructions": {
-      "openApp": "Open your bank or wallet application.",
-      "transferExact": "Transfer the exact order amount.",
-      "sendToAccount": "Send it to the account shown above.",
-      "addReference": "Add the order reference if supported.",
-      "returnHere": "Return here after completing the transfer."
-    },
-    "note": "Please transfer the exact amount and keep your payment receipt until the order is confirmed.",
-    "paymentFrom": "Payment From",
-    "senderName": "Sender Name",
-    "senderPhoneOrAccount": "Sender Phone / Account Number",
-    "transactionNumber": "Transaction Number",
-    "paymentNote": "Payment Note",
-    "reminderButton": "🔔 Remind Store to Check Payment",
-    "reminderSending": "Sending reminder...",
-    "reminderSent": "Reminder sent to the store.",
-    "cooldown": "You can send another reminder in {{time}}."
+      "amount": "Amount to transfer",
+      "reference": "Transfer reference",
+      "referenceHint": "Write this order number as the transfer reference so the store can match your payment.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyValue": "Copy {{label}}",
+      "copiedValue": "{{label}} copied",
+      "copyFailed": "Could not copy this value.",
+      "viewDetails": "Transfer details",
+      "viewReceipt": "Payment details"
+    }
   },
   "status": {
     "title": "Order Status",
@@ -276,7 +199,6 @@
     "paymentMethod": "Payment method",
     "paymentStatus": "Payment status",
     "paymentPhone": "Payment notification phone",
-    "paymentFailure": "Payment failure reason",
     "discount": "Discount",
     "itemQuantity": "Quantity: {{count}}",
     "finalNegativeBody": "This order has stopped and will not continue toward delivery.",
@@ -297,20 +219,6 @@
       "canceled": "Cancelled",
       "rejected": "Rejected",
       "failed": "Failed"
-    },
-    "paymentValues": {
-      "awaiting_payment": "Awaiting payment",
-      "awaiting_verification": "Awaiting verification",
-      "pending": "Payment pending",
-      "awaiting": "Payment pending",
-      "processing": "Processing",
-      "approved": "Approved",
-      "paid": "Paid",
-      "completed": "Completed",
-      "declined": "Declined",
-      "failed": "Failed",
-      "cancelled": "Cancelled",
-      "timeout": "Timed out"
     },
     "steps": {
       "pending": {
@@ -356,5 +264,45 @@
     "deliveryPhone": "Delivery phone",
     "paymentMethod": "Payment method",
     "paymentStatus": "Payment status"
+  },
+  "paymentDetails": {
+    "title": "Payment details",
+    "smartBody": "Enter the full name, Palestinian mobile number and delivery address for the person who will approve this payment.",
+    "peerBody": "Enter your full name, Palestinian mobile number and delivery address. You will pay outside the app, and the store confirms the payment afterwards.",
+    "fullName": "Full name *",
+    "fullNamePlaceholder": "Example: Abdulrahman Hassan",
+    "phoneNumber": "Phone number *",
+    "phoneHintSmart": "Use the Palestinian mobile number connected to the wallet, without the leading 0.",
+    "phoneHintPeer": "We send the order confirmation code to this number. Enter it without the leading 0.",
+    "address": "Address *",
+    "addressPlaceholder": "Street, building, floor...",
+    "invalid": "Enter your full name, a valid Palestinian phone number, and the delivery address.",
+    "sending": "Continuing...",
+    "orderFailed": "Could not create the order. Try again.",
+    "errors": {
+      "fullNameRequired": "Enter the full name.",
+      "fullNameShort": "Enter a full name with at least 3 characters.",
+      "phoneRequired": "Enter the phone number.",
+      "phoneInvalid": "Enter a valid Palestinian mobile number, for example +970 598 304 517.",
+      "addressRequired": "Enter the delivery address.",
+      "addressShort": "Enter a more complete delivery address."
+    }
+  },
+  "transfer": {
+    "title": "Complete your payment",
+    "heading": "Transfer the amount to the store",
+    "body": "Send the exact amount to the account below and write the order number as the reference. The store confirms your payment once it arrives.",
+    "stepsTitle": "How to pay",
+    "steps": {
+      "open": "Open your bank or wallet app.",
+      "amount": "Transfer the exact amount shown above.",
+      "account": "Send it to the account shown above.",
+      "reference": "Write the order number as the transfer reference.",
+      "wait": "Come back here — the order updates once the store confirms your payment."
+    },
+    "acknowledge": "I've sent the payment",
+    "openOrder": "Open the order",
+    "unavailableTitle": "No transfer details",
+    "unavailableBody": "This order has no transfer instructions to show. Open the order to see its payment status."
   }
 }

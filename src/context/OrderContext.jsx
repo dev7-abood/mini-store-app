@@ -2,8 +2,9 @@
 |--------------------------------------------------------------------------
 | Order Context
 |--------------------------------------------------------------------------
-| Holds the payment detail form data (name / address / note / phones) and the
-| confirmed order number, shared across the checkout -> OTP -> status flow.
+| Holds the checkout form data (name / address / note / phones), the
+| chosen payment method and the confirmed order number, shared across the
+| checkout -> OTP -> status flow.
 |
 | Delivery phone behavior: mirrors the main phone while the user types,
 | until the delivery field is edited manually — then it becomes
@@ -12,7 +13,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useCustomer } from './CustomerContext';
 import { formatLocalPhone, toLocalDigits } from '../lib/phone';
-import { DEFAULT_PAYMENT_METHOD } from '../lib/paymentMethods';
 import { usePaymentMethods } from './PaymentMethodsContext';
 
 export const PHONE_PREFIX = '+970';
@@ -33,18 +33,16 @@ export function OrderProvider({ children }) {
   const [deliveryPhone, setDeliveryPhoneState] = useState('');
   const [deliveryEdited, setDeliveryEdited] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState(DEFAULT_PAYMENT_METHOD);
-  const [manualPaymentSender, setManualPaymentSender] = useState({
-    fullName: '',
-    accountIdentifier: '',
-  });
+  /* Empty until the API answers: the methods a store accepts are its
+     own, and there is no local list to guess from. */
+  const [paymentMethod, setPaymentMethod] = useState('');
   const prefilled = useRef(false);
 
+  /* Keep the selection valid as methods load or change under it. */
   useEffect(() => {
-    setPaymentMethod((current) => {
-      if (findAvailablePaymentMethod(current)) return current;
-      return defaultPaymentMethod || DEFAULT_PAYMENT_METHOD;
-    });
+    setPaymentMethod((current) => (
+      findAvailablePaymentMethod(current) ? current : defaultPaymentMethod
+    ));
   }, [defaultPaymentMethod, findAvailablePaymentMethod]);
 
   /* Pre-fill for returning customers: when the launch sync delivers a
@@ -91,9 +89,6 @@ export function OrderProvider({ children }) {
       },
       paymentMethod,
       setPaymentMethod,
-      manualPaymentSender,
-      updateManualPaymentSender: (patch) =>
-        setManualPaymentSender((prev) => ({ ...prev, ...patch })),
       fullPhone: toE164(phone),
       /** Falls back to the main phone when the delivery field is empty. */
       /* Delivery phone: the number the driver calls. Falls back to the
@@ -120,8 +115,7 @@ export function OrderProvider({ children }) {
         setDeliveryPhoneState('');
         setDeliveryEdited(false);
         setOrderNumber(null);
-        setPaymentMethod(defaultPaymentMethod || DEFAULT_PAYMENT_METHOD);
-        setManualPaymentSender({ fullName: '', accountIdentifier: '' });
+        setPaymentMethod(defaultPaymentMethod);
       },
     }),
     [
@@ -131,7 +125,6 @@ export function OrderProvider({ children }) {
       deliveryEdited,
       orderNumber,
       paymentMethod,
-      manualPaymentSender,
       defaultPaymentMethod,
     ],
   );

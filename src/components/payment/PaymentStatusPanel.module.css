@@ -1,0 +1,166 @@
+.panel {
+  display: grid;
+  gap: var(--space-3);
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--card));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+}
+
+/* Waiting on a person at the store — the one state a customer may need
+   to chase, so it reads as active rather than neutral. */
+.awaiting {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--saffron) 16%, var(--card)), var(--card) 60%),
+    var(--card);
+  border-color: color-mix(in srgb, var(--saffron) 38%, var(--line));
+}
+
+.paid {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--ok) 12%, var(--card)), var(--card) 60%),
+    var(--card);
+  border-color: color-mix(in srgb, var(--ok) 34%, var(--line));
+}
+
+.failed {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--tomato) 10%, var(--card)), var(--card) 60%),
+    var(--card);
+  border-color: color-mix(in srgb, var(--tomato) 32%, var(--line));
+}
+
+.head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 70%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+  font-size: var(--text-body);
+  line-height: 1;
+}
+
+.paid .mark {
+  background: color-mix(in srgb, var(--ok) 18%, var(--card));
+  border-color: color-mix(in srgb, var(--ok) 42%, var(--line));
+  color: var(--ok);
+}
+
+.failed .mark {
+  background: color-mix(in srgb, var(--tomato) 14%, var(--card));
+  border-color: color-mix(in srgb, var(--tomato) 40%, var(--line));
+  color: var(--tomato);
+}
+
+.headText {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-0-5);
+}
+
+.eyebrow {
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  line-height: 1.35;
+}
+
+.headText b {
+  color: var(--basil);
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-snug);
+}
+
+.body {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+.confirmation {
+  display: grid;
+  gap: var(--space-1);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--ok) 26%, var(--line));
+}
+
+.confirmationSource {
+  color: var(--ok);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  line-height: 1.35;
+}
+
+.confirmation b {
+  color: var(--ink);
+  font-size: var(--text-meta);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-snug);
+}
+
+.confirmationNote {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.failure {
+  margin: 0;
+  border-radius: var(--radius-md);
+  padding: var(--space-2-5) var(--space-3);
+  background: color-mix(in srgb, var(--tomato) 8%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--tomato) 28%, var(--line));
+  color: var(--ink);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+.disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--control-height-sm);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--bg) 66%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+  color: var(--basil);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+}
+
+.instructions {
+  margin-top: var(--space-1);
+}
+
+.retry {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.attempts {
+  margin: 0;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}

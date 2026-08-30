@@ -7,7 +7,11 @@ import { useOrderFlow } from '../context/OrderFlowContext';
 import { useToasts } from '../context/ToastContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useMoney } from '../hooks/useMoney';
+import { useAppResume } from '../hooks/useAppResume';
 import { pickMoney } from '../lib/money';
+import { MANUAL_REFRESH_MIN_MS, paymentStatusText } from '../lib/payment';
+import { paymentMethodLabel } from '../lib/paymentMethods';
+import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import {
   isNegativeFinalStatus,
   isOrderFinal,
@@ -17,10 +21,12 @@ import {
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import OrderTimeline from '../components/OrderTimeline';
+import PaymentStatusPanel from '../components/payment/PaymentStatusPanel';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './StatusScreen.module.css';
 
+/* How often the order is re-read while it is still moving. */
 const REFRESH_MS = 15000;
 
 function useFormattedDate() {
@@ -37,12 +43,6 @@ function useFormattedDate() {
 
 function statusText(t, value, fallback) {
   const key = `status.values.${normalizeStatusValue(value)}`;
-  const translated = t(key);
-  return translated === key ? fallback || value : translated;
-}
-
-function paymentText(t, value, fallback) {
-  const key = `status.paymentValues.${normalizeStatusValue(value)}`;
   const translated = t(key);
   return translated === key ? fallback || value : translated;
 }
@@ -192,12 +192,15 @@ export default function StatusScreen() {
     loadOrder,
     refresh,
     cancel,
+    retryPayment,
     reset: resetOrderFlow,
     isBusy,
   } = useOrderFlow();
+  const { findPaymentMethod } = usePaymentMethods();
   const [loadState, setLoadState] = useState('idle');
   const [loadMessage, setLoadMessage] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [isRetryingPayment, setIsRetryingPayment] = useState(false);
 
   const routeNumber = useMemo(
     () => (routeOrderNumber ? normalizeOrderNumber(routeOrderNumber) : null),
@@ -248,20 +251,54 @@ export default function StatusScreen() {
     };
   }, [activeOrderNumber, invalidRouteNumber, loadOrder, reloadKey]);
 
-  useEffect(() => {
-    if (loadState !== 'ready' || !activeOrderNumber || !order || isOrderFinal(order)) {
-      return undefined;
-    }
+  const isLive = loadState === 'ready' && Boolean(activeOrderNumber && order) && !isOrderFinal(order);
+  /* A payment a cashier has to confirm can sit for hours. Refreshing it
+     on the usual cadence would be a poll in all but name, so it drops to
+     the slowest acceptable interval and leans on app-resume instead. */
+  const refreshMs = order?.payment?.awaitingConfirmation ? MANUAL_REFRESH_MIN_MS : REFRESH_MS;
 
-    const timer = window.setInterval(() => refresh(activeOrderNumber), REFRESH_MS);
+  useEffect(() => {
+    if (!isLive) return undefined;
+
+    const tick = () => {
+      /* Never refresh a backgrounded screen — the resume handler below
+         covers coming back, and this way a hidden tab costs nothing. */
+      if (document.visibilityState === 'hidden') return;
+      refresh(activeOrderNumber);
+    };
+
+    const timer = window.setInterval(tick, refreshMs);
     return () => window.clearInterval(timer);
-  }, [activeOrderNumber, loadState, order, refresh]);
+  }, [activeOrderNumber, isLive, refreshMs, refresh]);
+
+  /* Coming back from the banking app, or reopening the order, is the
+     moment a manual payment is most likely to have changed. */
+  useAppResume(() => {
+    if (activeOrderNumber) refresh(activeOrderNumber);
+  }, isLive);
 
   const orderAgain = () => {
     resetOrderFlow();
     resetOrder();
     flowNavigate(SCREENS.MENU);
     routeNavigate('/', { replace: true });
+  };
+
+  const retryOrderPaymentAttempt = async () => {
+    setIsRetryingPayment(true);
+    const result = await retryPayment();
+    setIsRetryingPayment(false);
+
+    notify(
+      result.ok ? t('payment.retryStarted') : result.message || t('payment.retryFailed'),
+      result.ok ? 'success' : 'error',
+    );
+
+    /* A fresh attempt reissues the instructions — take a manual payment
+       straight back to them. */
+    if (result.ok && result.payment?.instructions && activeOrderNumber) {
+      routeNavigate(`/orders/${encodeURIComponent(activeOrderNumber)}/payment`);
+    }
   };
 
   const cancelCurrentOrder = async () => {
@@ -349,7 +386,19 @@ export default function StatusScreen() {
     negativeFinal || positiveFinal
       ? finalDescription
       : order.statusDescription || t('status.currentBody');
-  const paymentLabel = paymentText(t, order.paymentStatus, order.paymentStatusLabel);
+  const payment = order.payment;
+  const paymentLabel = payment ? paymentStatusText(t, payment) : null;
+  /* The API's `method_label` is English for every caller, so prefer the
+     translated name for a method we ship one for. */
+  const paymentMethodName = payment
+    ? paymentMethodLabel(findPaymentMethod(payment.method), t)
+      || payment.methodLabel
+      || payment.method
+    : null;
+  const formatTimestamp = (iso) => {
+    const parsed = new Date(iso);
+    return Number.isNaN(parsed.getTime()) ? null : dateFormat.format(parsed);
+  };
   const items = orderItems(order);
 
   return (
@@ -426,12 +475,18 @@ export default function StatusScreen() {
           </section>
         )}
 
+        <PaymentStatusPanel
+          payment={payment}
+          formatDate={formatTimestamp}
+          onRetry={retryOrderPaymentAttempt}
+          isRetrying={isRetryingPayment}
+        />
+
         <section className={styles.panel}>
           <h3>{t('status.paymentTitle')}</h3>
-          <InfoRow label={t('status.paymentMethod')} value={order.paymentMethodLabel || order.paymentMethod} />
+          <InfoRow label={t('status.paymentMethod')} value={paymentMethodName} />
           <InfoRow label={t('status.paymentStatus')} value={paymentLabel} />
-          <InfoRow label={t('status.paymentPhone')} value={order.paymentPhone} />
-          <InfoRow label={t('status.paymentFailure')} value={order.paymentFailureReason} />
+          <InfoRow label={t('status.paymentPhone')} value={payment?.notifiedPhone} />
         </section>
 
         <section className={styles.panel}>

@@ -23,10 +23,9 @@ import MenuScreen from './screens/MenuScreen';
 import CartScreen from './screens/CartScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import PhoneScreen from './screens/PhoneScreen';
-import SmartPaymentScreen from './screens/SmartPaymentScreen';
-import ManualPaymentScreen from './screens/ManualPaymentScreen';
+import PaymentDetailsScreen from './screens/PaymentDetailsScreen';
 import OtpScreen from './screens/OtpScreen';
-import PaymentPendingScreen from './screens/PaymentPendingScreen';
+import TransferInstructionsScreen from './screens/TransferInstructionsScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import StatusScreen from './screens/StatusScreen';
 import OpenFromBotScreen from './screens/OpenFromBotScreen';
@@ -42,8 +41,7 @@ const SCREEN_COMPONENTS = {
   [SCREENS.CART]: CartScreen,
   [SCREENS.CHECKOUT]: CheckoutScreen,
   [SCREENS.PHONE]: PhoneScreen,
-  [SCREENS.SMART_PAYMENT]: SmartPaymentScreen,
-  [SCREENS.MANUAL_PAYMENT]: ManualPaymentScreen,
+  [SCREENS.PAYMENT_DETAILS]: PaymentDetailsScreen,
   [SCREENS.OTP]: OtpScreen,
   [SCREENS.SUCCESS]: SuccessScreen,
   [SCREENS.STATUS]: StatusScreen,
@@ -81,7 +79,12 @@ function OrderFlowScreens() {
     <>
       <TelegramStartParamRedirect />
       <Routes>
-        <Route path="/orders/:orderNumber/payment/pending" element={<PaymentPendingScreen />} />
+        <Route path="/orders/:orderNumber/payment" element={<TransferInstructionsScreen />} />
+        {/* Kept so links already sent to customers keep resolving. */}
+        <Route
+          path="/orders/:orderNumber/payment/pending"
+          element={<TransferInstructionsScreen />}
+        />
         <Route path="/orders/:orderNumber" element={<StatusScreen />} />
         <Route
           path="*"

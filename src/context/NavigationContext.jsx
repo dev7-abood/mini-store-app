@@ -15,8 +15,9 @@ export const SCREENS = Object.freeze({
   CART: 'cart',
   CHECKOUT: 'checkout',
   PHONE: 'phone',
-  SMART_PAYMENT: 'smartPayment',
-  MANUAL_PAYMENT: 'manualPayment',
+  /* One details screen for every method: a smart payment and a manual
+     one need the same fields, so the flow doesn't fork on settlement. */
+  PAYMENT_DETAILS: 'paymentDetails',
   OTP: 'otp',
   SUCCESS: 'success',
   STATUS: 'status',
@@ -27,9 +28,8 @@ const BACK_MAP = {
   [SCREENS.CART]: SCREENS.MENU,
   [SCREENS.CHECKOUT]: SCREENS.CART,
   [SCREENS.PHONE]: SCREENS.CHECKOUT,
-  [SCREENS.SMART_PAYMENT]: SCREENS.CHECKOUT,
-  [SCREENS.MANUAL_PAYMENT]: SCREENS.CHECKOUT,
-  [SCREENS.OTP]: SCREENS.SMART_PAYMENT,
+  [SCREENS.PAYMENT_DETAILS]: SCREENS.CHECKOUT,
+  [SCREENS.OTP]: SCREENS.PAYMENT_DETAILS,
 };
 
 const NavigationContext = createContext(null);

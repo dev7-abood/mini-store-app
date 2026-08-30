@@ -25,7 +25,7 @@
 */
 import { normalizeBusinessType, pickPlaceholderIcon } from '../lib/businessType';
 import { apiPathFromConfirmationUrl } from '../lib/jawwalPayCheckout';
-import { normalizeManualPaymentReceivingInfo } from '../lib/paymentMethods';
+import { normalizePayment } from '../lib/payment';
 import { pickMoney } from '../lib/money';
 
 /** Path prefix appended to the tenant URL from the deep-link payload. */
@@ -122,51 +122,6 @@ async function jsonRequest(path, { timeoutMs = 10000, ...options } = {}) {
 async function request(path, options = {}) {
   const { payload } = await jsonRequest(path, options);
   return payload;
-}
-
-/**
- * Multipart request helper for file uploads. Do not set Content-Type here;
- * the browser adds the form-data boundary.
- *
- * @param {string} path
- * @param {RequestInit & {timeoutMs?: number}} [options]
- * @returns {Promise<any>}
- */
-async function formRequest(path, { timeoutMs = 15000, ...options } = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(`${runtimeBaseUrl}${path}`, {
-      signal: controller.signal,
-      ...options,
-      headers: {
-        Accept: 'application/json',
-        'X-Telegram-Init-Data': telegramInitData(),
-        ...(runtimeBranchId != null ? { 'X-Branch-Id': String(runtimeBranchId) } : {}),
-        ...options.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      let payload = null;
-      try {
-        payload = JSON.parse(text);
-      } catch {
-        /* non-JSON error body */
-      }
-
-      const error = new Error(`API ${response.status}: ${text}`);
-      error.status = response.status;
-      error.payload = payload;
-      throw error;
-    }
-
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 /*
@@ -443,8 +398,10 @@ export async function fetchStoreStatus() {
 |--------------------------------------------------------------------------
 | Payment Methods (GET /payment-methods)
 |--------------------------------------------------------------------------
-| Tenant payment settings decide which manual methods are active and which
-| receiving details belong to each manual method.
+| Returns ONLY the methods that are both enabled and fully configured,
+| each with its settlement and — for a manual method — the account the
+| customer transfers to. An empty list means the store cannot take
+| payment at all.
 */
 
 export const fetchPaymentMethods = () =>
@@ -772,7 +729,7 @@ export async function removeCartItem(productId, priceOptionId = null) {
 |   POST   /orders/{n}/cancel            -> cancel
 |   POST   /orders/{n}/verify   {code}   -> confirm the phone OTP
 |   POST   /orders/{n}/resend            -> re-send the OTP
-|   GET    /orders/{n}/payment           -> payment state (polled)
+|   GET    /orders/{n}/payment           -> payment state (smart: polled)
 |   POST   /orders/{n}/payment/retry     -> new payment attempt
 |
 | Each helper returns { ok, data, message, status, code } so screens can
@@ -818,41 +775,6 @@ async function orderRequest(path, options = {}) {
 }
 
 /**
- * Envelope for multipart order-flow calls.
- *
- * @param {string} path
- * @param {{method?: string, body?: FormData, timeoutMs?: number}} [options]
- * @returns {Promise<{ok: boolean, data: any, message: string|null,
- *   status: number|null, code?: string|null}>}
- */
-async function orderFormRequest(path, options = {}) {
-  try {
-    const payload = await formRequest(path, {
-      timeoutMs: 15000,
-      ...options,
-    });
-    return {
-      ok: payload?.success !== false,
-      data: payload?.data ?? payload ?? null,
-      message: payload?.message ?? null,
-      status: 200,
-    };
-  } catch (error) {
-    const status = Number(error?.status) || null;
-    const payload = error?.payload ?? null;
-    console.warn(`Order upload failed (${path}):`, error);
-    return {
-      ok: false,
-      data: payload?.data ?? null,
-      message: payload?.message ?? payload?.error?.message ?? payload?.error?.description ?? null,
-      status,
-      code: payload?.error?.code ?? payload?.code ?? null,
-      error: payload?.error ?? null,
-    };
-  }
-}
-
-/**
  * Normalize an order payload into the shape the screens consume.
  *
  * @param {any} raw
@@ -863,27 +785,9 @@ export function normalizeOrder(raw) {
   if (!o || typeof o !== 'object') return null;
 
   const status = o.status && typeof o.status === 'object' ? o.status : null;
-  const payment = o.payment && typeof o.payment === 'object' ? o.payment : null;
   const totals = o.totals && typeof o.totals === 'object' ? o.totals : null;
   const summary = o.summary && typeof o.summary === 'object' ? o.summary : null;
   const verification = o.verification && typeof o.verification === 'object' ? o.verification : null;
-  const proof = payment?.proof && typeof payment.proof === 'object'
-    ? payment.proof
-    : o.payment_proof && typeof o.payment_proof === 'object'
-      ? o.payment_proof
-      : o.paymentProof && typeof o.paymentProof === 'object'
-        ? o.paymentProof
-        : null;
-  const receivingInfo = normalizeManualPaymentReceivingInfo(
-    payment?.receiving_info
-    ?? payment?.receivingInfo
-    ?? payment?.receiver
-    ?? payment?.destination
-    ?? o.payment_receiving_info
-    ?? o.paymentReceivingInfo
-    ?? o.manual_payment_info
-    ?? o.manualPaymentInfo,
-  );
   const statusValue = status?.value ?? (status ? null : o.status) ?? 'pending';
   const items = Array.isArray(o.items)
     ? o.items
@@ -921,32 +825,11 @@ export function normalizeOrder(raw) {
     total: pickMoney(summary?.total, totals?.total, o.total, o.total_price),
     currency: totals?.currency ?? o.currency ?? null,
     isVerified: Boolean(o.is_verified ?? o.verified ?? false),
-    paymentMethod: payment?.method ?? o.payment_method ?? null,
-    paymentMethodLabel: payment?.method_label ?? payment?.methodLabel ?? null,
-    paymentStatus: payment?.status ?? o.payment_status ?? null,
-    paymentStatusLabel: payment?.status_label ?? payment?.statusLabel ?? null,
-    paymentDescription: payment?.description ?? null,
-    paymentPhone: payment?.notified_phone ?? payment?.notifiedPhone ?? null,
-    paymentFailureReason: payment?.failure_reason ?? payment?.failureReason ?? null,
-    paymentExpiresIn: payment?.expires_in ?? payment?.expiresIn ?? null,
-    paymentAttemptsRemaining: payment?.attempts_remaining ?? payment?.attemptsRemaining ?? null,
-    paymentShouldPoll: Boolean(payment?.should_poll ?? payment?.shouldPoll ?? false),
-    paymentIsRetryable: Boolean(payment?.is_retryable ?? payment?.isRetryable ?? false),
-    paymentPaidAt: payment?.paid_at ?? payment?.paidAt ?? null,
-    paymentUrl: payment?.url ?? o.payment_url ?? null,
-    paymentReceivingInfo: receivingInfo,
-    paymentProofTransactionReference:
-      proof?.transaction_reference
-      ?? proof?.transactionReference
-      ?? payment?.transaction_reference
-      ?? payment?.transactionReference
-      ?? null,
-    paymentReceiptUrl:
-      proof?.receipt_url
-      ?? proof?.receiptUrl
-      ?? proof?.screenshot_url
-      ?? proof?.screenshotUrl
-      ?? null,
+    /* The whole payment contract in one object — settlement, whether a
+       human confirms it, whether that confirmation is outstanding, who
+       confirmed it, and the transfer instructions. Identical in shape to
+       what GET /orders/{n}/payment returns, so the two can't disagree. */
+    payment: normalizePayment(o.payment),
     phoneNumber: o.phone_number ?? o.phoneNumber ?? null,
     deliveryPhone: o.delivery_phone ?? o.deliveryPhone ?? null,
     hasThirdPartyDelivery: Boolean(o.has_third_party_delivery ?? o.hasThirdPartyDelivery ?? false),
@@ -1025,7 +908,12 @@ export const resendOrderOtp = (orderNumber) =>
   orderRequest(`/orders/${encodeURIComponent(orderNumber)}/resend`, { method: 'POST' });
 
 /**
- * Payment state — polled while the customer approves in their wallet.
+ * Payment state — the lighter of the two lookups that carry the payment
+ * block, for refreshing just the payment without re-reading the order.
+ *
+ * Polled while a SMART payment is being approved in the wallet. A manual
+ * payment is resolved by a cashier, sometimes hours later, and must
+ * never be polled on a timer (see startPaymentPolling).
  *
  * @param {string} orderNumber
  */
@@ -1033,30 +921,14 @@ export const fetchOrderPayment = (orderNumber) =>
   orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment`, { timeoutMs: 8000 });
 
 /**
- * Start a fresh payment attempt after a decline.
+ * Start a fresh payment attempt after a decline or an expiry. The ORDER
+ * is untouched — only the previous payment attempt failed — and a manual
+ * method goes back to `awaiting_transfer` with fresh instructions.
  *
  * @param {string} orderNumber
  */
 export const retryOrderPayment = (orderNumber) =>
   orderRequest(`/orders/${encodeURIComponent(orderNumber)}/payment/retry`, { method: 'POST' });
-
-/**
- * Submit manual payment proof after the customer completes a transfer.
- *
- * @param {string} orderNumber
- * @param {{transactionReference: string, receiptFile: File}} proof
- */
-export const submitOrderPaymentProof = (orderNumber, proof) => {
-  const body = new FormData();
-  body.append('transaction_reference', String(proof.transactionReference ?? '').trim());
-  body.append('receipt', proof.receiptFile);
-
-  return orderFormRequest(`/orders/${encodeURIComponent(orderNumber)}/payment/proof`, {
-    method: 'POST',
-    body,
-    timeoutMs: 20000,
-  });
-};
 
 /**
  * Submit a confirmed order.

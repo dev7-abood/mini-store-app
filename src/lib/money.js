@@ -58,3 +58,45 @@ export function pickMoney(...candidates) {
   }
   return null;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Currency
+|--------------------------------------------------------------------------
+| An order freezes its own currency, and the payment instructions carry
+| it. Amounts are rendered in THAT currency, never in a hardcoded symbol
+| or the store default.
+*/
+
+/** ISO code -> symbol, for the currencies that HAVE one. */
+const CURRENCY_SYMBOLS = {
+  ILS: '₪',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+};
+
+/**
+ * Normalized ISO code, or null when no currency was given — callers then
+ * fall back to the locale's own currency template.
+ *
+ * @param {string|null|undefined} code
+ * @returns {string|null}
+ */
+export function currencyCode(code) {
+  const normalized = String(code ?? '').trim().toUpperCase();
+  return normalized || null;
+}
+
+/**
+ * Display symbol for a currency code, or null when it has none — a code
+ * without a symbol is written out in full instead ("JOD 12.00"), which
+ * beats inventing a glyph for it.
+ *
+ * @param {string|null|undefined} code
+ * @returns {string|null}
+ */
+export function currencySymbol(code) {
+  const normalized = currencyCode(code);
+  return normalized ? CURRENCY_SYMBOLS[normalized] ?? null : null;
+}

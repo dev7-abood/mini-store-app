@@ -19,7 +19,7 @@ export default function CheckoutScreen() {
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
   const { notify } = useTelegram();
-  const { findPaymentMethod } = usePaymentMethods();
+  const { findPaymentMethod, hasMethods, isLoading } = usePaymentMethods();
   const selectedMethod = findPaymentMethod(paymentMethod);
 
   const submit = () => {
@@ -28,12 +28,9 @@ export default function CheckoutScreen() {
       return;
     }
 
-    if (selectedMethod?.type === 'manual') {
-      navigate(SCREENS.MANUAL_PAYMENT);
-      return;
-    }
-
-    navigate(SCREENS.SMART_PAYMENT);
+    /* Same next screen whatever the settlement — the details a checkout
+       needs don't depend on how the money moves. */
+    navigate(SCREENS.PAYMENT_DETAILS);
   };
 
   return (
@@ -45,7 +42,13 @@ export default function CheckoutScreen() {
             <h2 id="payment-method-title">{t('payment.title')}</h2>
             <p>{t('payment.selectBody')}</p>
           </div>
-          <PaymentMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
+          {/* An empty list is a real answer: the store cannot take
+              payment at all. Say so rather than show an empty chooser. */}
+          {!hasMethods && !isLoading ? (
+            <p className={styles.noMethods} role="status">{t('payment.noMethods')}</p>
+          ) : (
+            <PaymentMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
+          )}
         </section>
       </div>
       <StoreStatusNotice />

@@ -77,51 +77,6 @@
     "sending": "جاري الإرسال...",
     "orderFailed": "تعذّر إنشاء الطلب. حاول مرة أخرى."
   },
-  "smartPayment": {
-    "title": "الدفع الذكي",
-    "kicker": "مرسل الدفعة",
-    "body": "أدخل الاسم الكامل ورقم الموبايل الفلسطيني وعنوان التوصيل للشخص الذي سيؤكد ويرسل دفعة جوال باي.",
-    "fullName": "الاسم الكامل *",
-    "fullNamePlaceholder": "مثال: عبدالرحمن حسن",
-    "phoneNumber": "رقم الهاتف *",
-    "phoneHint": "استخدم رقم الموبايل الفلسطيني المرتبط بمحفظة جوال باي، بدون صفر البداية.",
-    "address": "العنوان *",
-    "addressPlaceholder": "الشارع، البناية، الطابق...",
-    "invalid": "أدخل اسم مرسل الدفعة ورقم هاتف فلسطيني صحيح والعنوان.",
-    "sending": "جاري المتابعة...",
-    "orderFailed": "تعذّر إنشاء الطلب. حاول مرة أخرى.",
-    "errors": {
-      "fullNameRequired": "أدخل الاسم الكامل لمرسل الدفعة.",
-      "fullNameShort": "أدخل اسماً لا يقل عن 3 أحرف.",
-      "phoneRequired": "أدخل رقم هاتف مرسل الدفعة.",
-      "phoneInvalid": "أدخل رقم موبايل فلسطيني صحيح، مثل +970 598 304 517.",
-      "addressRequired": "أدخل عنوان التوصيل.",
-      "addressShort": "أدخل عنوان توصيل أكثر وضوحاً."
-    }
-  },
-  "manualPayment": {
-    "title": "الدفع اليدوي",
-    "kicker": "تفاصيل الدفع",
-    "body": "أرسل الدفعة من محفظتك أو حسابك البنكي، ثم أدخل بيانات المرسل وعنوان التوصيل حتى نطابق التحويل.",
-    "receiverDetails": "بيانات مستلم الدفع",
-    "fullName": "الاسم الكامل *",
-    "fullNamePlaceholder": "مثال: عبدالرحمن حسن",
-    "accountIdentifier": "رقم الهاتف / رقم الحساب المرسل منه *",
-    "accountPlaceholder": "مثال: 059XXXXXXX أو رقم الحساب",
-    "address": "العنوان *",
-    "addressPlaceholder": "الشارع، البناية، الطابق...",
-    "invalid": "أدخل اسم المرسل ورقم الهاتف أو الحساب والعنوان.",
-    "sending": "جاري المتابعة...",
-    "errors": {
-      "fullNameRequired": "أدخل الاسم الكامل للمرسل.",
-      "fullNameShort": "أدخل اسماً لا يقل عن 3 أحرف.",
-      "accountRequired": "أدخل رقم الهاتف أو رقم الحساب المرسل منه.",
-      "accountShort": "أدخل 5 أحرف أو أرقام على الأقل.",
-      "accountInvalid": "استخدم الأحرف أو الأرقام أو المسافات أو + أو - أو _ أو . فقط.",
-      "addressRequired": "أدخل عنوان التوصيل.",
-      "addressShort": "أدخل عنوان توصيل أكثر وضوحاً."
-    }
-  },
   "otp": {
     "title": "إدخال الرمز",
     "heading": "افحص رسائلك",
@@ -147,9 +102,10 @@
   "success": {
     "heading": "تم الطلب! 🎉",
     "body": "تم تأكيد طلبك والمطبخ بدأ يجهزه.",
-    "manualHeading": "تم إرسال إثبات الدفع",
-    "manualBody": "استلمنا بيانات التحويل. طلبك الآن بانتظار التحقق من الدفع.",
-    "track": "تتبع طلبي"
+    "track": "تتبع طلبي",
+    "awaitingHeading": "تم الطلب! 🎉",
+    "awaitingBody": "تم إشعار المتجر وسيقوم بتأكيد دفعتك.",
+    "viewInstructions": "عرض تفاصيل التحويل"
   },
   "status": {
     "title": "حالة الطلب",
@@ -179,7 +135,6 @@
     "paymentMethod": "طريقة الدفع",
     "paymentStatus": "حالة الدفع",
     "paymentPhone": "رقم إشعار الدفع",
-    "paymentFailure": "سبب فشل الدفع",
     "discount": "الخصم",
     "itemQuantity": "الكمية: {{count}}",
     "finalNegativeBody": "تم إيقاف هذا الطلب ولن يتابع مراحل التوصيل.",
@@ -203,20 +158,6 @@
       "canceled": "ملغي",
       "rejected": "مرفوض",
       "failed": "فشل"
-    },
-    "paymentValues": {
-      "awaiting_payment": "بانتظار الدفع",
-      "awaiting_verification": "بانتظار التحقق",
-      "pending": "بانتظار الدفع",
-      "awaiting": "بانتظار الدفع",
-      "processing": "قيد المعالجة",
-      "approved": "تمت الموافقة",
-      "paid": "مدفوع",
-      "completed": "مكتمل",
-      "declined": "مرفوض",
-      "failed": "فشل",
-      "cancelled": "ملغي",
-      "timeout": "انتهت المهلة"
     },
     "steps": {
       "pending": {
@@ -251,7 +192,6 @@
     "cancelled": "تم إلغاء الطلب",
     "cancelFailed": "تعذّر إلغاء الطلب.",
     "refresh": "تحديث الحالة",
-    "paymentPending": "بانتظار تأكيد الدفع من محفظتك...",
     "paymentApproved": "تم تأكيد الدفع ✅",
     "paymentDeclined": "تم رفض الدفع",
     "paymentTimeout": "انتهت مهلة انتظار الدفع",
@@ -269,7 +209,9 @@
       "error": "خطأ",
       "warning": "تنبيه",
       "info": "معلومة"
-    }
+    },
+    "currencyWithSymbol": "{{symbol}}{{amount}}",
+    "currencyWithCode": "{{code}} {{amount}}"
   },
   "botMessage": {
     "title": "طلب جديد {{number}}",
@@ -318,120 +260,128 @@
     "selectTitle": "اختيار طريقة الدفع",
     "selectBody": "اختر طريقة الدفع المناسبة لهذا الطلب. ستدخل التفاصيل في الخطوة التالية.",
     "title": "طريقة الدفع",
-    "types": {
-      "smart": "دفع ذكي",
-      "manual": "دفع يدوي"
+    "noMethods": "لا يمكن استقبال الدفع في هذا المتجر حالياً. حاول لاحقاً أو تواصل مع المتجر.",
+    "panelTitle": "الدفع",
+    "settlement": {
+      "peer": "تحويل يدوي",
+      "smart": "دفع إلكتروني"
     },
-    "badges": {
-      "recommended": "موصى به"
+    "hints": {
+      "smart": "ادفع داخل التطبيق — يتم التأكيد تلقائياً",
+      "peer": "ادفع خارج التطبيق ثم يؤكد المتجر الدفع"
     },
-    "cash": {
-      "label": "الدفع عند الاستلام",
-      "hint": "ادفع كاش للسائق عند وصول الطلب"
+    "methods": {
+      "jawwalpay": {
+        "label": "جوال باي",
+        "hint": "ادفع من محفظتك — رح يوصلك طلب تأكيد"
+      },
+      "palpay": {
+        "label": "بال باي",
+        "hint": "حوّل عبر بال باي ثم يؤكد المتجر الدفع"
+      },
+      "bop": {
+        "label": "بنك فلسطين",
+        "hint": "حوّل بنكياً ثم يؤكد المتجر الدفع"
+      },
+      "cash": {
+        "label": "نقداً",
+        "hint": "ادفع في المتجر ثم يؤكد الكاشير الدفع"
+      }
     },
-    "jawwalpay": {
-      "label": "جوال باي",
-      "hint": "ادفع من محفظتك — رح يوصلك طلب تأكيد"
+    "status": {
+      "pending": "لم يبدأ بعد",
+      "awaiting_approval": "بانتظار الموافقة",
+      "awaiting_transfer": "بانتظار التحويل",
+      "paid": "مدفوع",
+      "declined": "تم رفض الدفع",
+      "expired": "انتهت صلاحية الدفع",
+      "refunded": "تم إرجاع المبلغ"
     },
-    "palpay": {
-      "label": "بال باي",
-      "hint": "أكمل الدفع عبر بال باي بعد إرسال الطلب",
-      "instructions": "استخدم رقم الطلب كملاحظة للتحويل حتى نطابق الدفع بسرعة."
+    "source": {
+      "manual": "تم التأكيد من المتجر",
+      "automatic": "تم التأكيد تلقائياً"
     },
-    "bankOfPalestine": {
-      "label": "بنك فلسطين",
-      "hint": "أكمل التحويل عبر بنك فلسطين بعد إرسال الطلب",
-      "instructions": "استخدم رقم الطلب كمرجع للتحويل، ثم ارفع الإيصال بالأسفل."
-    }
-  },
-  "paymentInstructions": {
-    "title": "تعليمات الدفع",
-    "manualPayment": "دفع يدوي",
-    "sendPaymentTo": "أرسل الدفع إلى",
-    "paymentTo": "الدفع إلى",
-    "awaitingPaymentNote": "طلبك بانتظار الدفع. أكمل التحويل، ثم أرسل إثبات الدفع بالأسفل.",
-    "receiverName": "اسم المستلم",
-    "accountOrPhone": "رقم الحساب / رقم محفظة الهاتف",
-    "bankOrWalletName": "اسم البنك أو المحفظة",
-    "iban": "IBAN",
-    "branchName": "اسم الفرع",
-    "amountToPay": "المبلغ المطلوب",
-    "referenceNumber": "رقم الطلب/المرجع",
-    "copy": "نسخ",
-    "copiedShort": "تم",
-    "copied": "تم نسخ {{label}}",
-    "copyFailed": "تعذر نسخ هذه القيمة.",
-    "copyValue": "نسخ {{label}}",
-    "notConfigured": "غير مهيأ",
-    "afterTransferTitle": "بعد إتمام التحويل",
-    "proofStatus": "إرسال الإثبات",
-    "transactionReference": "رقم عملية/مرجع الدفع",
-    "transactionReferencePlaceholder": "مثال: 78349210",
-    "receiptPlaceholder": "إيصال/لقطة شاشة الدفع",
-    "receiptHint": "ارفع صورة أو ملف PDF لإيصال التحويل.",
-    "missingTransaction": "أدخل رقم عملية/مرجع الدفع.",
-    "missingReceipt": "ارفع إيصال الدفع أو لقطة الشاشة.",
-    "submitProof": "دفعت — إرسال إثبات الدفع",
-    "submitting": "جارٍ إرسال الإثبات...",
-    "submitted": "تم إرسال إثبات الدفع للتحقق.",
-    "submitFailed": "تعذر إرسال إثبات الدفع. حاول مرة أخرى."
-  },
-  "paymentPending": {
-    "title": "الدفع بانتظار التحقق",
-    "manualPayment": "دفع يدوي",
-    "eyebrow": "دفع يدوي",
-    "body": "تم استلام طلبك. ننتظر من المتجر التحقق من الدفع.",
-    "progressLabel": "تقدم التحقق من الدفع",
-    "steps": {
-      "created": "تم إنشاء الطلب",
-      "received": "تم استلام معلومات الدفع",
-      "waiting": "بانتظار تحقق المتجر",
-      "confirmed": "تم تأكيد الدفع"
+    "field": {
+      "recipient": "المستلم",
+      "account_holder": "اسم صاحب الحساب",
+      "wallet_number": "رقم محفظة الهاتف",
+      "account_number": "رقم الحساب",
+      "iban": "IBAN",
+      "bank_name": "اسم البنك",
+      "branch_name": "اسم الفرع"
     },
-    "orderSummary": "ملخص الطلب",
-    "orderNumber": "رقم الطلب",
-    "totalAmount": "المبلغ الإجمالي",
-    "paymentMethod": "طريقة الدفع",
-    "paymentStatus": "حالة الدفع",
-    "itemQuantity": "الكمية: {{count}}",
-    "sendPaymentTo": "أرسل الدفع إلى",
-    "paymentTo": "الدفع إلى",
-    "receiverName": "المستلم",
-    "accountHolderName": "اسم صاحب الحساب",
-    "walletPhoneNumber": "رقم محفظة الهاتف",
-    "accountNumber": "رقم الحساب",
-    "iban": "IBAN",
-    "bankName": "اسم البنك",
-    "branchName": "اسم الفرع",
-    "amount": "المبلغ",
-    "reference": "المرجع",
-    "copy": "نسخ",
-    "copied": "تم",
-    "copyValue": "نسخ {{label}}",
-    "copyFailed": "تعذر نسخ هذه القيمة.",
-    "howToPay": "طريقة الدفع",
+    "awaiting": {
+      "body": "تم إشعار المتجر وجارٍ التحقق من دفعتك. سيتم تحديث الطلب فور تأكيدها."
+    },
+    "confirmedBy": "تم التأكيد من {{name}}",
+    "confirmedByAt": "تم التأكيد من {{name}} · {{at}}",
+    "retry": "إعادة محاولة الدفع",
+    "retrying": "جارٍ بدء محاولة جديدة...",
+    "retryStarted": "تم بدء محاولة دفع جديدة.",
+    "retryFailed": "تعذّر بدء محاولة دفع جديدة. حاول مرة أخرى.",
+    "attemptsRemaining_zero": "لا توجد محاولات متبقية",
+    "attemptsRemaining_one": "بقيت محاولة واحدة",
+    "attemptsRemaining_two": "بقيت محاولتان",
+    "attemptsRemaining_few": "بقيت {{count}} محاولات",
+    "attemptsRemaining_many": "بقيت {{count}} محاولة",
+    "attemptsRemaining_other": "بقيت {{count}} محاولة",
     "instructions": {
-      "openApp": "افتح تطبيق البنك أو المحفظة.",
-      "transferExact": "حوّل مبلغ الطلب بالضبط.",
-      "sendToAccount": "أرسله إلى الحساب الموضح أعلاه.",
-      "addReference": "أضف مرجع الطلب إذا كان مدعوماً.",
-      "returnHere": "ارجع إلى هنا بعد إتمام التحويل."
-    },
-    "note": "يرجى تحويل المبلغ بالضبط والاحتفاظ بإيصال الدفع حتى يتم تأكيد الطلب.",
-    "paymentFrom": "الدفع من",
-    "senderName": "اسم المرسل",
-    "senderPhoneOrAccount": "رقم هاتف/حساب المرسل",
-    "transactionNumber": "رقم العملية",
-    "paymentNote": "ملاحظة الدفع",
-    "reminderButton": "🔔 تذكير المتجر بفحص الدفع",
-    "reminderSending": "جارٍ إرسال التذكير...",
-    "reminderSent": "تم إرسال التذكير إلى المتجر.",
-    "cooldown": "يمكنك إرسال تذكير آخر بعد {{time}}."
+      "amount": "المبلغ المطلوب تحويله",
+      "reference": "مرجع التحويل",
+      "referenceHint": "اكتب رقم الطلب هذا كمرجع للتحويل حتى يتمكن المتجر من مطابقة دفعتك.",
+      "copy": "نسخ",
+      "copied": "تم النسخ",
+      "copyValue": "نسخ {{label}}",
+      "copiedValue": "تم نسخ {{label}}",
+      "copyFailed": "تعذّر نسخ هذه القيمة.",
+      "viewDetails": "تفاصيل التحويل",
+      "viewReceipt": "تفاصيل الدفع"
+    }
   },
   "search": {
     "placeholder": "دور على أكلة...",
     "clear": "مسح البحث",
     "emptyTitle": "ما لقينا إشي",
     "emptyBody": "ما في نتائج لـ «{{query}}». جرب كلمة ثانية."
+  },
+  "paymentDetails": {
+    "title": "بيانات الدفع",
+    "smartBody": "أدخل الاسم الكامل ورقم الجوال الفلسطيني وعنوان التوصيل للشخص الذي سيوافق على هذه الدفعة.",
+    "peerBody": "أدخل اسمك الكامل ورقم جوالك الفلسطيني وعنوان التوصيل. ستدفع خارج التطبيق، ثم يؤكد المتجر الدفع.",
+    "fullName": "الاسم الكامل *",
+    "fullNamePlaceholder": "مثال: عبدالرحمن حسن",
+    "phoneNumber": "رقم الجوال *",
+    "phoneHintSmart": "استخدم رقم الجوال الفلسطيني المرتبط بالمحفظة، بدون الصفر في البداية.",
+    "phoneHintPeer": "سنرسل رمز تأكيد الطلب إلى هذا الرقم. أدخله بدون الصفر في البداية.",
+    "address": "العنوان *",
+    "addressPlaceholder": "الشارع، البناية، الطابق...",
+    "invalid": "أدخل الاسم الكامل ورقم جوال فلسطيني صحيح وعنوان التوصيل.",
+    "sending": "جارٍ المتابعة...",
+    "orderFailed": "تعذّر إنشاء الطلب. حاول مرة أخرى.",
+    "errors": {
+      "fullNameRequired": "أدخل الاسم الكامل.",
+      "fullNameShort": "أدخل اسماً كاملاً من 3 أحرف على الأقل.",
+      "phoneRequired": "أدخل رقم الجوال.",
+      "phoneInvalid": "أدخل رقم جوال فلسطيني صحيح، مثال +970 598 304 517.",
+      "addressRequired": "أدخل عنوان التوصيل.",
+      "addressShort": "أدخل عنوان توصيل أوضح."
+    }
+  },
+  "transfer": {
+    "title": "أكمل عملية الدفع",
+    "heading": "حوّل المبلغ إلى المتجر",
+    "body": "أرسل المبلغ بالضبط إلى الحساب أدناه واكتب رقم الطلب كمرجع للتحويل. يؤكد المتجر دفعتك فور وصولها.",
+    "stepsTitle": "طريقة الدفع",
+    "steps": {
+      "open": "افتح تطبيق البنك أو المحفظة.",
+      "amount": "حوّل المبلغ المذكور أعلاه بالضبط.",
+      "account": "أرسله إلى الحساب الموضّح أعلاه.",
+      "reference": "اكتب رقم الطلب كمرجع للتحويل.",
+      "wait": "ارجع إلى هنا — سيتم تحديث الطلب فور تأكيد المتجر لدفعتك."
+    },
+    "acknowledge": "قمت بإرسال الدفعة",
+    "openOrder": "فتح الطلب",
+    "unavailableTitle": "لا توجد تفاصيل تحويل",
+    "unavailableBody": "لا توجد تعليمات تحويل لهذا الطلب. افتح الطلب لعرض حالة الدفع."
   }
 }

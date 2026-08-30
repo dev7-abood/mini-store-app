@@ -1,1 +1,1 @@
-export { default } from './SmartPaymentScreen';
+export { default } from './PaymentDetailsScreen';

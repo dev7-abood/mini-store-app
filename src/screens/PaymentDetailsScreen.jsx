@@ -1,3 +1,21 @@
+/*
+|--------------------------------------------------------------------------
+| Payment Details
+|--------------------------------------------------------------------------
+| The last step before the order exists: who is ordering, the phone the
+| OTP goes to, and where it is delivered. Then POST /checkout.
+|
+| One screen for every method. A smart payment and a manual one need the
+| SAME three fields — the phone is the order's verification channel
+| either way — so the only difference is the sentence that sets the
+| customer's expectation, and that comes from `isAutomatic`, not from the
+| method's name.
+|
+| Nothing about the sender of a manual transfer is asked for here. The
+| store matches a transfer by the order number the customer writes on it,
+| and the transfer details themselves only exist AFTER the order does —
+| they arrive with the verify response (see TransferInstructionsScreen).
+*/
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOrder, PHONE_PREFIX } from '../context/OrderContext';
@@ -8,8 +26,8 @@ import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { formatLocalPhone, LOCAL_DIGITS } from '../lib/phone';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
-import { paymentMethodLabel } from '../lib/paymentMethods';
-import { validateSmartPaymentDetails } from '../lib/paymentDetailsValidation';
+import { paymentMethodLabel, paymentMethodSettlementLabel } from '../lib/paymentMethods';
+import { validatePaymentDetails } from '../lib/paymentDetailsValidation';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import Field from '../components/ui/Field';
@@ -18,14 +36,14 @@ import PaymentMethodHeader from '../components/payment/PaymentMethodHeader';
 import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
-import styles from './SmartPaymentScreen.module.css';
+import styles from './PaymentDetailsScreen.module.css';
 
 function PhoneField({ label, hint, error, value, onChange, onBlur, inputRef }) {
-  const descriptionId = error || hint ? 'smart-payment-phone-description' : undefined;
+  const descriptionId = error || hint ? 'payment-details-phone-description' : undefined;
 
   return (
     <div className={styles.fieldBlock}>
-      <label className={styles.label} htmlFor="smart-payment-phone">
+      <label className={styles.label} htmlFor="payment-details-phone">
         {label}
       </label>
       <div className={`${styles.phoneField} ${error ? styles.invalidField : ''}`}>
@@ -35,7 +53,7 @@ function PhoneField({ label, hint, error, value, onChange, onBlur, inputRef }) {
         </span>
         <input
           ref={inputRef}
-          id="smart-payment-phone"
+          id="payment-details-phone"
           className={styles.input}
           placeholder="598 304 517"
           type="tel"
@@ -64,11 +82,7 @@ function PhoneField({ label, hint, error, value, onChange, onBlur, inputRef }) {
   );
 }
 
-/**
- * Smart payment details: these belong to the person who will approve and
- * send the Jawwal Pay payment.
- */
-export default function SmartPaymentScreen() {
+export default function PaymentDetailsScreen() {
   const { t } = useTranslation();
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -91,16 +105,19 @@ export default function SmartPaymentScreen() {
   const [isCheckingStore, setIsCheckingStore] = useState(false);
   const [touched, setTouched] = useState({ fullName: false, phone: false, address: false });
 
-  const method = findPaymentMethod(paymentMethod) ?? findPaymentMethod('jawwalpay');
-  const methodLabel = paymentMethodLabel(method, t) || t('payment.jawwalpay.label');
-  const paymentValidation = validateSmartPaymentDetails(
+  const method = findPaymentMethod(paymentMethod);
+  const methodLabel = paymentMethodLabel(method, t);
+  /* The one thing that differs: a manual method is paid outside the app
+     and confirmed by the store afterwards. */
+  const isManual = Boolean(method) && !method.isAutomatic;
+  const validation = validatePaymentDetails(
     { fullName: details.name, phone, address: details.address },
     t,
   );
   const visibleErrors = {
-    fullName: touched.fullName ? paymentValidation.errors.fullName : '',
-    phone: touched.phone ? paymentValidation.errors.phone : '',
-    address: touched.address ? paymentValidation.errors.address : '',
+    fullName: touched.fullName ? validation.errors.fullName : '',
+    phone: touched.phone ? validation.errors.phone : '',
+    address: touched.address ? validation.errors.address : '',
   };
 
   const sendCode = async () => {
@@ -111,11 +128,11 @@ export default function SmartPaymentScreen() {
 
     setTouched({ fullName: true, phone: true, address: true });
 
-    if (!paymentValidation.isValid) {
-      notify(t('smartPayment.invalid'), 'warning');
-      if (paymentValidation.errors.fullName) {
+    if (!validation.isValid) {
+      notify(t('paymentDetails.invalid'), 'warning');
+      if (validation.errors.fullName) {
         nameRef.current?.focus();
-      } else if (paymentValidation.errors.phone) {
+      } else if (validation.errors.phone) {
         phoneRef.current?.focus();
       } else {
         addressRef.current?.focus();
@@ -133,7 +150,7 @@ export default function SmartPaymentScreen() {
     }
 
     const result = await place(buildJawwalPayCheckoutPayload({
-      address: paymentValidation.value.address,
+      address: validation.value.address,
       phone: fullPhone,
       deliveryPhone: deliveryEdited ? fullDeliveryPhone : null,
       paymentMethod,
@@ -143,34 +160,41 @@ export default function SmartPaymentScreen() {
     if (!result.ok) {
       const isStoreClosed = result.code === 'STORE_CLOSED';
       notify(
-        isStoreClosed ? t('storeStatus.closedFallback') : result.message || t('smartPayment.orderFailed'),
+        isStoreClosed ? t('storeStatus.closedFallback') : result.message || t('paymentDetails.orderFailed'),
         isStoreClosed ? 'warning' : 'error',
       );
       return;
     }
 
+    /* The order exists but its phone is unverified, so no payment
+       request has been pushed yet — for a manual method that means the
+       store has NOT been notified and no cashier can confirm anything.
+       The OTP screen comes next, exactly as it always has. */
     navigate(SCREENS.OTP);
   };
 
   return (
     <Screen>
-      <SubHeader title={t('smartPayment.title')} />
+      <SubHeader title={t('paymentDetails.title')} />
       <div className={styles.pad}>
-        <section className={styles.paymentPanel} aria-labelledby="smart-payment-heading">
+        <section className={styles.paymentPanel} aria-labelledby="payment-details-heading">
           <PaymentMethodHeader
             method={method}
             label={methodLabel}
-            kicker={t('smartPayment.kicker')}
-            headingId="smart-payment-heading"
+            kicker={paymentMethodSettlementLabel(method, t)}
+            headingId="payment-details-heading"
+            variant={isManual ? 'manual' : 'default'}
           />
 
-          <p className={styles.body}>{t('smartPayment.body')}</p>
+          <p className={styles.body}>
+            {t(isManual ? 'paymentDetails.peerBody' : 'paymentDetails.smartBody')}
+          </p>
 
           <div className={styles.fields}>
             <Field
               inputRef={nameRef}
-              label={t('smartPayment.fullName')}
-              placeholder={t('smartPayment.fullNamePlaceholder')}
+              label={t('paymentDetails.fullName')}
+              placeholder={t('paymentDetails.fullNamePlaceholder')}
               value={details.name}
               onChange={(event) => updateDetails({ name: event.target.value })}
               onBlur={() => setTouched((prev) => ({ ...prev, fullName: true }))}
@@ -181,8 +205,8 @@ export default function SmartPaymentScreen() {
             />
 
             <PhoneField
-              label={t('smartPayment.phoneNumber')}
-              hint={t('smartPayment.phoneHint')}
+              label={t('paymentDetails.phoneNumber')}
+              hint={t(isManual ? 'paymentDetails.phoneHintPeer' : 'paymentDetails.phoneHintSmart')}
               error={visibleErrors.phone}
               value={phone}
               onChange={setPhone}
@@ -194,8 +218,8 @@ export default function SmartPaymentScreen() {
               inputRef={addressRef}
               multiline
               rows={3}
-              label={t('smartPayment.address')}
-              placeholder={t('smartPayment.addressPlaceholder')}
+              label={t('paymentDetails.address')}
+              placeholder={t('paymentDetails.addressPlaceholder')}
               value={details.address}
               onChange={(event) => updateDetails({ address: event.target.value })}
               onBlur={() => setTouched((prev) => ({ ...prev, address: true }))}
@@ -209,9 +233,14 @@ export default function SmartPaymentScreen() {
       </div>
       <StoreStatusNotice />
       <FixedCta>
-        <Button variant="green" full onClick={sendCode} disabled={isBusy || isCheckingStore || !canCheckout}>
+        <Button
+          variant="green"
+          full
+          onClick={sendCode}
+          disabled={isBusy || isCheckingStore || !canCheckout || !method}
+        >
           {isBusy || isCheckingStore
-            ? t('smartPayment.sending')
+            ? t('paymentDetails.sending')
             : canCheckout
               ? t('checkout.continue')
               : t('storeStatus.closedCheckout')}

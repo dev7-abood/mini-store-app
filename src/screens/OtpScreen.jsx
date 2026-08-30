@@ -29,7 +29,12 @@ import styles from './OtpScreen.module.css';
 | screen) and the API has dispatched the code. Here we:
 |   1. POST /orders/{n}/verify with the entered code,
 |   2. on success mirror the order to the Telegram chat,
-|   3. start payment polling and show the success screen.
+|   3. hand off to whatever the pushed payment needs next.
+|
+| Verifying is also the moment the payment request goes out — and, for a
+| payment made outside the app, the moment the STORE is notified. The
+| response's payment block decides where the customer lands: transfer
+| instructions when it carries them, the success screen otherwise.
 |
 | A wrong code is an expected outcome, not an error state: the input
 | shakes and the customer types again. Resend is throttled server-side
@@ -50,7 +55,7 @@ export default function OtpScreen() {
     confirmJawwalPayOtp,
     resendJawwalPayOtp,
     clearJawwalPayOtpSession,
-    startPaymentPolling,
+    watchPayment,
     isBusy,
   } = useOrderFlow();
   const [error, setError] = useState(false);
@@ -123,11 +128,26 @@ export default function OtpScreen() {
       /* Keep the local order number in sync for the status screen. */
       confirmOrder(orderNumber);
       submitOrder(orderNumber);
-      /* Payment (if any) is approved in the wallet app — start watching. */
-      startPaymentPolling(orderNumber);
+
+      /* Verifying pushed the payment request. Watch it only if the
+         server says to: a smart payment is approved in the wallet app
+         and polls, a manual one is confirmed by a cashier and must not. */
+      watchPayment(result.payment, orderNumber);
+
+      /* A payment made outside the app comes back with the transfer
+         instructions attached — amount, reference and the account to pay.
+         Show them straight away instead of a generic success screen. */
+      if (result.payment?.instructions) {
+        routeNavigate(`/orders/${encodeURIComponent(orderNumber)}/payment`);
+        return;
+      }
+
       navigate(SCREENS.SUCCESS);
     },
-    [verifyCode, haptic, notify, t, confirmOrder, orderNumber, submitOrder, startPaymentPolling, navigate],
+    [
+      verifyCode, haptic, notify, t, confirmOrder, orderNumber, submitOrder,
+      watchPayment, routeNavigate, navigate,
+    ],
   );
 
   const confirmJawwalPay = useCallback(async () => {
@@ -152,7 +172,7 @@ export default function OtpScreen() {
       if (outcome?.expiredSession || result.missingSession) {
         clearJawwalPayOtpSession();
         notify(nextMessage || t('otp.sessionExpired'), 'warning');
-        navigate(SCREENS.SMART_PAYMENT);
+        navigate(SCREENS.PAYMENT_DETAILS);
         return;
       }
 
