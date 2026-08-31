@@ -317,7 +317,7 @@
     "loadFailed": "Could not load the payment details. Try again.",
     "check": {
       "title": "Quick check before you confirm",
-      "body": "Answer the sum below to confirm you meant to send this payment. It uses whole numbers only.",
+      "body": "Answer the short sum below to confirm you meant to send this payment.",
       "label": "Your answer",
       "placeholder": "Enter the result",
       "incorrect": "Incorrect answer. Please check the calculation and try again."

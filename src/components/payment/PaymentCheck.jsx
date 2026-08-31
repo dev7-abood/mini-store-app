@@ -7,16 +7,16 @@
 | anything — the screen owns the gate, so this component can never let a
 | claim through on its own.
 |
-| The question is always whole numbers (see lib/paymentVerification.js).
-| The figure in it is a rounded copy of the total for the question only:
-| the real amount, with its cents, is the one above in PaymentInstructions.
+| The sum is two small whole numbers with no relation to the order (see
+| lib/paymentVerification.js) — the amount the customer owes is the one
+| above, in PaymentInstructions, and nothing here can affect it.
 */
 import { useTranslation } from 'react-i18next';
 import Field from '../ui/Field';
 import styles from './PaymentCheck.module.css';
 
 /**
- * @param {{check: {total: number, addend: number}, value: string,
+ * @param {{check: {left: number, right: number}, value: string,
  *          onChange: (value: string) => void, error?: string,
  *          disabled?: boolean}} props
  */
@@ -35,9 +35,9 @@ export default function PaymentCheck({ check, value, onChange, error = '', disab
       {/* Latin digits and a leading operator: forced LTR so the sum reads
           left-to-right inside the RTL layout. */}
       <p className={styles.question} dir="ltr">
-        <span>{check.total}</span>
+        <span>{check.left}</span>
         <span className={styles.operator} aria-hidden="true">+</span>
-        <span>{check.addend}</span>
+        <span>{check.right}</span>
         <span className={styles.operator} aria-hidden="true">=</span>
         <span className={styles.blank} aria-hidden="true">?</span>
       </p>

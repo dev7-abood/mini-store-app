@@ -19,10 +19,11 @@
 | "Complete payment" — the payment already happened outside the app, and
 | only the store can decide whether it arrived.
 |
-| In front of that button sits one small sum (X + Y, whole numbers). It
-| guards against the reflex tap: a claim creates an order and puts a
-| cashier on the hook for verifying money that may never have moved. The
-| check is local to this screen — a wrong answer never reaches the API.
+| In front of that button sits one small sum (X + Y, small whole numbers
+| unrelated to the order). It guards against the reflex tap: a claim
+| creates an order and puts a cashier on the hook for verifying money
+| that may never have moved. The check is local to this screen — a wrong
+| answer never reaches the API.
 */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -69,7 +70,9 @@ export default function ManualPaymentScreen() {
   const { notify } = useTelegram();
   const [state, setState] = useState({ status: 'loading', details: null, message: null });
   const [isClaiming, setIsClaiming] = useState(false);
-  const [check, setCheck] = useState(null);
+  /* Drawn once per visit: a re-render must never swap the sum out from
+     under someone mid-answer. */
+  const [check] = useState(createPaymentCheck);
   const [checkAnswer, setCheckAnswer] = useState('');
   const [checkError, setCheckError] = useState('');
   const ctaRef = useRef(null);
@@ -92,21 +95,6 @@ export default function ManualPaymentScreen() {
   useEffect(() => {
     load();
   }, [load]);
-
-  /*
-   | The question is built from the total the customer was just shown —
-   | the order total when the API sends one, the amount to transfer
-   | otherwise. Rebuilt only when that figure changes, so a re-render
-   | never swaps the sum out from under someone mid-answer.
-   */
-  const checkAmount =
-    state.details?.totals?.total ?? state.details?.instructions?.amount ?? null;
-
-  useEffect(() => {
-    setCheck(createPaymentCheck(checkAmount));
-    setCheckAnswer('');
-    setCheckError('');
-  }, [checkAmount]);
 
   /*
    | The CTA is fixed, so it covers the end of the page. Its height is not
@@ -147,9 +135,8 @@ export default function ManualPaymentScreen() {
 
     /* The gate. Nothing below this runs on a wrong answer: no order is
        created, no request leaves, and the screen stays exactly where it
-       is with the sum still on it. A check we could not build (no amount
-       to ask about) is not a check, and does not block the claim. */
-    if (check && !isPaymentCheckAnswered(checkAnswer, check)) {
+       is with the sum still on it. */
+    if (!isPaymentCheckAnswered(checkAnswer, check)) {
       setCheckError(t('manualPayment.check.incorrect'));
       notify(t('manualPayment.check.incorrect'), 'error');
       return;
