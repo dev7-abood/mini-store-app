@@ -4,8 +4,13 @@ import styles from './Field.module.css';
 /**
  * Labelled input / textarea with optional validation text.
  *
+ * `className` styles the FIELD WRAPPER, not the control — it is how a
+ * caller that lays its own form out (a grid with its own gap, say) drops
+ * the stacked-form bottom margin.
+ *
  * @param {{label: string, multiline?: boolean, rows?: number, error?: string,
- *          hint?: string, inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>}
+ *          hint?: string, className?: string,
+ *          inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>}
  *         & React.InputHTMLAttributes<HTMLInputElement>} props
  */
 export default function Field({
@@ -14,6 +19,7 @@ export default function Field({
   rows = 3,
   error = '',
   hint = '',
+  className = '',
   inputRef = null,
   ...rest
 }) {
@@ -27,7 +33,7 @@ export default function Field({
   };
 
   return (
-    <div className={styles.field}>
+    <div className={[styles.field, className].filter(Boolean).join(' ')}>
       <label htmlFor={id}>{label}</label>
       {multiline ? <textarea id={id} rows={rows} {...controlProps} /> : <input id={id} {...controlProps} />}
       {error ? (

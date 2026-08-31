@@ -314,7 +314,14 @@
     "claimPaid": "I have paid — continue",
     "claiming": "Sending to the store...",
     "notYet": "Not yet — go back",
-    "loadFailed": "Could not load the payment details. Try again."
+    "loadFailed": "Could not load the payment details. Try again.",
+    "check": {
+      "title": "Quick check before you confirm",
+      "body": "Answer the sum below to confirm you meant to send this payment. It uses whole numbers only.",
+      "label": "Your answer",
+      "placeholder": "Enter the result",
+      "incorrect": "Incorrect answer. Please check the calculation and try again."
+    }
   },
   "orderPayment": {
     "title": "Payment",

@@ -18,8 +18,13 @@
 | The button is a CLAIM, never a completion. It cannot say "Pay now" or
 | "Complete payment" — the payment already happened outside the app, and
 | only the store can decide whether it arrived.
+|
+| In front of that button sits one small sum (X + Y, whole numbers). It
+| guards against the reflex tap: a claim creates an order and puts a
+| cashier on the hook for verifying money that may never have moved. The
+| check is local to this screen — a wrong answer never reaches the API.
 */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useOrder } from '../context/OrderContext';
@@ -31,14 +36,19 @@ import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
 import { paymentMethodLabel, paymentMethodSettlementLabel } from '../lib/paymentMethods';
+import { createPaymentCheck, isPaymentCheckAnswered } from '../lib/paymentVerification';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import PaymentMethodHeader from '../components/payment/PaymentMethodHeader';
 import PaymentInstructions from '../components/payment/PaymentInstructions';
+import PaymentCheck from '../components/payment/PaymentCheck';
 import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './ManualPaymentScreen.module.css';
+
+/** Gap left between the end of the content and the fixed CTA, in px. */
+const CTA_BREATHING_ROOM = 16;
 
 export default function ManualPaymentScreen() {
   const { t } = useTranslation();
@@ -59,6 +69,11 @@ export default function ManualPaymentScreen() {
   const { notify } = useTelegram();
   const [state, setState] = useState({ status: 'loading', details: null, message: null });
   const [isClaiming, setIsClaiming] = useState(false);
+  const [check, setCheck] = useState(null);
+  const [checkAnswer, setCheckAnswer] = useState('');
+  const [checkError, setCheckError] = useState('');
+  const ctaRef = useRef(null);
+  const [ctaHeight, setCtaHeight] = useState(0);
 
   const method = findPaymentMethod(paymentMethod);
 
@@ -79,6 +94,43 @@ export default function ManualPaymentScreen() {
   }, [load]);
 
   /*
+   | The question is built from the total the customer was just shown —
+   | the order total when the API sends one, the amount to transfer
+   | otherwise. Rebuilt only when that figure changes, so a re-render
+   | never swaps the sum out from under someone mid-answer.
+   */
+  const checkAmount =
+    state.details?.totals?.total ?? state.details?.instructions?.amount ?? null;
+
+  useEffect(() => {
+    setCheck(createPaymentCheck(checkAmount));
+    setCheckAnswer('');
+    setCheckError('');
+  }, [checkAmount]);
+
+  /*
+   | The CTA is fixed, so it covers the end of the page. Its height is not
+   | a constant here — two buttons, and labels that wrap in some locales
+   | and lengthen while claiming — so it is measured and reserved rather
+   | than guessed at.
+   */
+  useLayoutEffect(() => {
+    const node = ctaRef.current;
+    if (!node) return undefined;
+
+    /* The bar's own height already carries its safe-area padding; the
+       extra is breathing room so the last card never sits flush under
+       the fade. */
+    const measure = () => setCtaHeight(node.getBoundingClientRect().height + CTA_BREATHING_ROOM);
+    measure();
+
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  /*
    | "I have paid" — a statement, not a payment.
    |
    | It creates the order and tells the store. A 201 back means the order
@@ -92,6 +144,17 @@ export default function ManualPaymentScreen() {
       if (!canCheckout) notify(t('storeStatus.closedFallback'), 'warning');
       return;
     }
+
+    /* The gate. Nothing below this runs on a wrong answer: no order is
+       created, no request leaves, and the screen stays exactly where it
+       is with the sum still on it. A check we could not build (no amount
+       to ask about) is not a check, and does not block the claim. */
+    if (check && !isPaymentCheckAnswered(checkAnswer, check)) {
+      setCheckError(t('manualPayment.check.incorrect'));
+      notify(t('manualPayment.check.incorrect'), 'error');
+      return;
+    }
+    setCheckError('');
 
     setIsClaiming(true);
     const latestStatus = await refreshStoreStatus();
@@ -178,13 +241,32 @@ export default function ManualPaymentScreen() {
               <h3>{t('manualPayment.confirmTitle')}</h3>
               <p>{t('manualPayment.confirmBody')}</p>
             </section>
+
+            <PaymentCheck
+              check={check}
+              value={checkAnswer}
+              onChange={(value) => {
+                setCheckAnswer(value);
+                if (checkError) setCheckError('');
+              }}
+              error={checkError}
+              disabled={isClaiming}
+            />
           </>
         )}
       </div>
 
       <StoreStatusNotice />
 
-      <FixedCta>
+      {/* Holds open exactly as much room as the fixed bar occupies, so
+          the last card can always be scrolled clear of it. */}
+      <div
+        className={styles.ctaSpacer}
+        style={ctaHeight ? { height: ctaHeight } : undefined}
+        aria-hidden="true"
+      />
+
+      <FixedCta elementRef={ctaRef}>
         <div className={styles.actions}>
           <Button
             variant="green"

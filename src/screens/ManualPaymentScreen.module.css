@@ -2,7 +2,25 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: 0 var(--edge) var(--space-8);
+  padding: 0 var(--edge) var(--space-3);
+  /* Cards are grid/flex children: without this a long unbroken value
+     inside one widens the column instead of wrapping, and the page picks
+     up a horizontal scroll. */
+  min-width: 0;
+}
+
+.pad > * {
+  min-width: 0;
+}
+
+/*
+ | The fixed CTA floats over the end of the page. The screen measures the
+ | bar and sets this element's height inline; the value here is the
+ | fallback for the first paint and for a client with no ResizeObserver,
+ | and the safe-area inset is added on top for a home-indicator device.
+ */
+.ctaSpacer {
+  height: calc(var(--bottom-cta-space) + env(safe-area-inset-bottom, 0px));
 }
 
 .panel,
@@ -13,6 +31,9 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   padding: var(--space-4);
+  /* A long name, address or account string wraps inside the card rather
+     than pushing its edge past the viewport. */
+  overflow-wrap: anywhere;
 }
 
 .body {
@@ -74,6 +95,14 @@
 .actions {
   display: grid;
   gap: var(--space-2);
+}
+
+/* A wrapping label ("I have paid — continue" and its translations) grows
+   the button rather than spilling out of it; the spacer above follows
+   the new height. */
+.actions button {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .backButton {

@@ -1,0 +1,62 @@
+.card {
+  display: grid;
+  gap: var(--space-2);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--saffron) 10%, var(--card)), var(--card) 62%),
+    var(--card);
+  border: 1px solid color-mix(in srgb, var(--saffron) 30%, var(--line));
+  box-shadow: var(--shadow-md);
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-section);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-snug);
+}
+
+.body {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-meta);
+  line-height: var(--leading-relaxed);
+}
+
+/* The sum itself: big, centred, and allowed to wrap on a narrow screen
+   rather than run off the edge. */
+.question {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 var(--space-2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-3-5);
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
+  color: var(--ink);
+  font-size: var(--text-hero);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
+}
+
+.operator {
+  color: var(--ink-soft);
+  font-weight: var(--font-semibold);
+}
+
+.blank {
+  color: var(--saffron);
+}
+
+/* Field carries its own bottom margin for stacked forms; this card is a
+   grid and supplies the gap itself. */
+.input {
+  margin-bottom: 0;
+}
