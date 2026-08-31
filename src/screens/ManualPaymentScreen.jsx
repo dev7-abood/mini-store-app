@@ -25,7 +25,7 @@
 | that may never have moved. The check is local to this screen — a wrong
 | answer never reaches the API.
 */
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useOrder } from '../context/OrderContext';
@@ -35,6 +35,7 @@ import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
+import { useFixedCtaSpace } from '../hooks/useFixedCtaSpace';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
 import { paymentMethodLabel, paymentMethodSettlementLabel } from '../lib/paymentMethods';
 import { createPaymentCheck, isPaymentCheckAnswered } from '../lib/paymentVerification';
@@ -47,9 +48,6 @@ import { StoreStatusNotice } from '../components/StoreStatus';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './ManualPaymentScreen.module.css';
-
-/** Gap left between the end of the content and the fixed CTA, in px. */
-const CTA_BREATHING_ROOM = 16;
 
 export default function ManualPaymentScreen() {
   const { t } = useTranslation();
@@ -75,8 +73,7 @@ export default function ManualPaymentScreen() {
   const [check] = useState(createPaymentCheck);
   const [checkAnswer, setCheckAnswer] = useState('');
   const [checkError, setCheckError] = useState('');
-  const ctaRef = useRef(null);
-  const [ctaHeight, setCtaHeight] = useState(0);
+  const [ctaRef, ctaHeight] = useFixedCtaSpace();
 
   const method = findPaymentMethod(paymentMethod);
 
@@ -95,28 +92,6 @@ export default function ManualPaymentScreen() {
   useEffect(() => {
     load();
   }, [load]);
-
-  /*
-   | The CTA is fixed, so it covers the end of the page. Its height is not
-   | a constant here — two buttons, and labels that wrap in some locales
-   | and lengthen while claiming — so it is measured and reserved rather
-   | than guessed at.
-   */
-  useLayoutEffect(() => {
-    const node = ctaRef.current;
-    if (!node) return undefined;
-
-    /* The bar's own height already carries its safe-area padding; the
-       extra is breathing room so the last card never sits flush under
-       the fade. */
-    const measure = () => setCtaHeight(node.getBoundingClientRect().height + CTA_BREATHING_ROOM);
-    measure();
-
-    if (typeof ResizeObserver === 'undefined') return undefined;
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
 
   /*
    | "I have paid" — a statement, not a payment.

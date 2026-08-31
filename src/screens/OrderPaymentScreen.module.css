@@ -2,13 +2,37 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: 0 var(--edge) var(--space-8);
+  padding: 0 var(--edge) var(--space-3);
+  /* Cards are flex children: without this a long IBAN or account holder
+     name inside one sets the column's floor and pushes the card past the
+     viewport instead of wrapping in it. */
+  min-width: 0;
+}
+
+.content > * {
+  min-width: 0;
+}
+
+/*
+ | The CTA is fixed, so it floats over the end of the page. Its height is
+ | not a constant — one, two or three buttons depending on the payment's
+ | state — so the screen measures the bar and sets this element's height
+ | inline. The value here is the fallback for the first paint and for a
+ | client with no ResizeObserver; the safe-area inset covers the home
+ | indicator on a device that has one.
+ */
+.ctaSpacer {
+  /* A flex child inside .content — never let it shrink away. */
+  flex: none;
+  height: calc(var(--bottom-cta-space) + env(safe-area-inset-bottom, 0px));
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  max-width: 156px;
+  /* Long enough for a full order number, but it gives way before the
+     screen title does on a narrow phone. */
+  max-width: min(156px, 46vw);
   min-height: var(--control-height-sm);
   border-radius: var(--radius-pill);
   padding: var(--space-1-5) var(--space-2-5);
@@ -30,6 +54,9 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   padding: var(--space-4);
+  /* A long name, address or account string wraps inside the card rather
+     than pushing its edge past the screen. */
+  overflow-wrap: anywhere;
 }
 
 .hero {
@@ -117,6 +144,13 @@
   gap: var(--space-2);
 }
 
+/* A label that wraps in one locale grows the button rather than spilling
+   out of it; the spacer above follows the new height. */
+.actions button {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .cancelButton,
 .secondary {
   background: transparent;
@@ -127,4 +161,27 @@
 .cancelButton {
   border-color: color-mix(in srgb, var(--tomato) 30%, var(--line));
   color: var(--tomato);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Narrow screens
+|--------------------------------------------------------------------------
+| A Mini App viewport can be narrower than the phone it runs on. Tighten
+| the card padding so the values inside keep their width, and step the
+| hero heading down to match.
+*/
+@media (max-width: 360px) {
+  .content {
+    gap: var(--space-2-5);
+  }
+
+  .hero,
+  .panel {
+    padding: var(--space-3-5);
+  }
+
+  .hero h2 {
+    font-size: var(--text-section);
+  }
 }

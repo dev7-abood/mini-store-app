@@ -6,6 +6,10 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   padding: var(--space-4);
+  /* A grid child sized by its content would widen the panel past the
+     screen; everything inside wraps instead. */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* Waiting on a person at the store — the one state a customer may need
@@ -85,6 +89,7 @@
 }
 
 .headText b {
+  overflow-wrap: anywhere;
   color: var(--basil);
   font-size: var(--text-section);
   font-weight: var(--font-bold);
@@ -101,6 +106,7 @@
 .confirmation {
   display: grid;
   gap: var(--space-1);
+  min-width: 0;
   border-radius: var(--radius-md);
   padding: var(--space-3);
   background: var(--card);
@@ -115,6 +121,7 @@
 }
 
 .confirmation b {
+  overflow-wrap: anywhere;
   color: var(--ink);
   font-size: var(--text-meta);
   font-weight: var(--font-bold);
@@ -145,8 +152,11 @@
   justify-content: space-between;
   gap: var(--space-2);
   width: 100%;
+  min-width: 0;
   min-height: var(--control-height-sm);
-  padding: 0 var(--space-3);
+  padding: var(--space-1-5) var(--space-3);
+  text-align: start;
+  overflow-wrap: anywhere;
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--bg) 66%, var(--card));
   border: 1px solid color-mix(in srgb, var(--line) 70%, var(--card));
@@ -177,6 +187,7 @@
 .rejection {
   display: grid;
   gap: var(--space-1-5);
+  min-width: 0;
   border-radius: var(--radius-md);
   padding: var(--space-3);
   background: var(--card);

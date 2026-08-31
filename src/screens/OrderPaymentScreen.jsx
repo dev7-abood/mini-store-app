@@ -32,6 +32,7 @@ import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useToasts } from '../context/ToastContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useAppResume } from '../hooks/useAppResume';
+import { useFixedCtaSpace } from '../hooks/useFixedCtaSpace';
 import { settlementText } from '../lib/payment';
 import { normalizeOrderNumber } from '../lib/orderStatus';
 import Screen from '../components/ui/Screen';
@@ -41,6 +42,23 @@ import PaymentStatusPanel from '../components/payment/PaymentStatusPanel';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './OrderPaymentScreen.module.css';
+
+/**
+ * Holds open as much room as the fixed CTA occupies, so the last card can
+ * always be scrolled clear of the buttons. `height` is the measured bar;
+ * until it is measured the CSS fallback applies.
+ *
+ * @param {{height: number}} props
+ */
+function CtaSpacer({ height }) {
+  return (
+    <div
+      className={styles.ctaSpacer}
+      style={height ? { height } : undefined}
+      aria-hidden="true"
+    />
+  );
+}
 
 export default function OrderPaymentScreen() {
   const { t, i18n } = useTranslation();
@@ -61,6 +79,10 @@ export default function OrderPaymentScreen() {
     isBusy,
   } = useOrderFlow();
   const [loadState, setLoadState] = useState(payment ? 'ready' : 'loading');
+  /* The bar is one, two or three buttons depending on the payment's state
+     and whether the order is still cancellable, so the room to leave for
+     it is measured rather than assumed. */
+  const [ctaRef, ctaHeight] = useFixedCtaSpace();
 
   const orderNumber = normalizeOrderNumber(routeOrderNumber);
 
@@ -154,8 +176,9 @@ export default function OrderPaymentScreen() {
             <h2>{t('orderPayment.unavailableTitle')}</h2>
             <p>{t('orderPayment.unavailableBody')}</p>
           </section>
+          <CtaSpacer height={ctaHeight} />
         </main>
-        <FixedCta>
+        <FixedCta elementRef={ctaRef}>
           <Button full onClick={openOrder} disabled={!orderNumber}>
             {t('orderPayment.openOrder')}
           </Button>
@@ -221,9 +244,11 @@ export default function OrderPaymentScreen() {
             <PaymentInstructions instructions={instructions} />
           </section>
         )}
+
+        <CtaSpacer height={ctaHeight} />
       </main>
 
-      <FixedCta>
+      <FixedCta elementRef={ctaRef}>
         <div className={styles.actions}>
           <Button variant="green" full onClick={openOrder}>
             {t('orderPayment.trackOrder')}
