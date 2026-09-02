@@ -12,17 +12,5 @@
         "name": "O2"
       }
     },
-	{
-      "telegram_bot_id": 8962731658,
-      "tenant_base_url": "https://warif.r-gaza.store",
-      "telegram_name": "ChefWarifBot",
-      "business_type": "restaurant",
-      "theme": {
-        "primary_color": "#870413",
-        "secondary_color": "#fce300",
-        "background_color": "#e0f2df",
-        "name": "Chef Warif"
-      }
-    },
   ]
 }
