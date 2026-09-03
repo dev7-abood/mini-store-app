@@ -22,29 +22,6 @@ const OrderContext = createContext(null);
 /** "+970" + normalized local digits, e.g. +970598304517 */
 const toE164 = (value) => `${PHONE_PREFIX}${toLocalDigits(value)}`;
 
-/**
- * The saved DELIVERY name, or '' when the record is only echoing the
- * Telegram identity back at us.
- *
- * The API returns `name` equal to `username` for a customer who has
- * never typed one — the handle standing in for a name it doesn't have.
- * Seeding the form from that puts "A H" in the field the customer is
- * being asked to fill, and one thoughtless tap later it is the name on
- * the order. A name that is indistinguishable from the account's own
- * label is not evidence the customer typed anything, so the field stays
- * empty and asks.
- *
- * @param {{name?: string|null, username?: string|null}} customer
- * @returns {string}
- */
-function deliveryName(customer) {
-  const name = String(customer?.name ?? '').trim();
-  if (!name) return '';
-
-  const handle = String(customer?.username ?? '').trim().replace(/^@+/, '');
-  return handle && name.toLowerCase() === handle.toLowerCase() ? '' : name;
-}
-
 export function OrderProvider({ children }) {
   const { customer } = useCustomer();
   const {
@@ -71,16 +48,20 @@ export function OrderProvider({ children }) {
   /* Pre-fill for returning customers: when the launch sync delivers a
      profile, seed any still-empty fields once. Never overwrites what
      the user has already typed, and never runs twice.
-     NOTE: name is intentionally NOT seeded from the Telegram username —
-     only from a real saved delivery name (customer.name). A @handle is
-     not a person's name and shouldn't land on the order silently. */
+     NOTE: name is seeded from `customer.name` and from nothing else.
+     `username` is the Telegram account's own label, a separate field
+     with a separate meaning, and it is never read here — not as a
+     source, and not as a reason to distrust a saved name. Two customers
+     may well have typed a name that matches their Telegram label; that
+     is their name, and second-guessing it would throw away a real one
+     and re-ask a question already answered. */
   useEffect(() => {
     if (customer === null || prefilled.current) return;
     prefilled.current = true;
 
     setDetails((prev) => ({
       ...prev,
-      name: prev.name || deliveryName(customer),
+      name: prev.name || customer.name || '',
       address: prev.address || customer.address || '',
     }));
 

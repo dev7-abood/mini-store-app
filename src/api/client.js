@@ -460,16 +460,15 @@ export async function syncCustomer({ botId = null, name, phone, address } = {}) 
      |
      | A sync that stores something OTHER than the name we sent looks
      | exactly like a sync that worked: 200, a customer back, no error.
-     | That silence is how a `name` overwritten server-side stayed
-     | invisible for eleven orders. So when we sent a name and the record
-     | comes back with a different one, say so and name both sides — the
-     | typed value is the only correct answer here, and anything else is
-     | the API's doing, not the app's.
+     | So when the record comes back with a different name, say so and
+     | show both values — the typed name is the only correct answer here.
+     |
+     | `username` is not consulted. It is the Telegram account's own
+     | label and has nothing to do with whether this field saved.
      */
     if (name && record && record.name !== name) {
       console.warn(
-        `[customer-sync] sent name "${name}" but the API stored "${record.name}"`
-        + `${record.name === record.username ? ' — same as `username`, so it is being derived from the Telegram identity server-side' : ''}`,
+        `[customer-sync] sent name "${name}" but the API stored "${record.name}"`,
         { sent: body, stored: record },
       );
     }
