@@ -162,6 +162,7 @@ export default function PaymentDetailsScreen() {
     }
 
     const result = await place(buildJawwalPayCheckoutPayload({
+      name: validation.value.fullName,
       address: validation.value.address,
       phone: fullPhone,
       deliveryPhone: deliveryEdited ? fullDeliveryPhone : null,

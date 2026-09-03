@@ -185,6 +185,28 @@ After OTP verification the app:
 
 The menu header greets the user by `first_name` (falling back to `@username`) from `tg.initDataUnsafe.user`. Fine for a greeting — the serverless function trusts only **validated** initData.
 
+## Checkout rules
+
+**Full name** — at least two words. A first name alone is refused: the
+form shows `paymentDetails.errors.fullNameWords`, and the backend
+re-checks the same rule (`App\Support\CustomerName`) on the body it
+receives. Whitespace is collapsed identically on both sides so the word
+count cannot differ.
+
+**Telegram identity** — the handle is never a form field and never the
+customer's name. It travels inside the signed `initData` on every
+request, and the backend keeps it on `customers.username`; the name the
+customer types is stored separately on `customers.name` and is what the
+form pre-fills next time. Customers are identified by `telegram_user_id`
+(unique per branch), so re-opening the app never creates a second one.
+
+**Order value** — between **5** and **1,000 ILS**. The bound is enforced
+server-side against the final total the backend calculates from the
+locked cart, delivery included — never against a figure sent from here
+(`STORE_MINIMUM_ORDER_TOTAL` / `STORE_MAXIMUM_ORDER_TOTAL`). A basket
+outside the band comes back as a 422 whose message the checkout screen
+surfaces through the existing error toast.
+
 ## Wiring the Laravel backend
 
 1. Set `VITE_API_BASE_URL` in `.env` (and on Vercel).

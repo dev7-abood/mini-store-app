@@ -45,7 +45,16 @@ function confirmationUrlFromData(data) {
   );
 }
 
+/**
+ * The checkout body, identical for every settlement.
+ *
+ * `name` is the delivery name the customer typed — never the Telegram
+ * handle. The handle travels with the signed initData on every request
+ * and is resolved server-side, so it is deliberately absent here: it is
+ * not the customer's name and must not be sent as one.
+ */
 export function buildJawwalPayCheckoutPayload({
+  name,
   phone,
   deliveryPhone = null,
   address,
@@ -53,6 +62,10 @@ export function buildJawwalPayCheckoutPayload({
   note = null,
 }) {
   return {
+    /* Collapsed by the form before it gets here; trimmed again so a
+       caller that forgets sends an empty string the API can reject,
+       never an absent key. */
+    name: String(name ?? '').trim(),
     phone,
     delivery_phone: emptyToNull(deliveryPhone),
     address,

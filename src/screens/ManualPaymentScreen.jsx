@@ -39,6 +39,7 @@ import { useFixedCtaSpace } from '../hooks/useFixedCtaSpace';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
 import { paymentMethodLabel, paymentMethodSettlementLabel } from '../lib/paymentMethods';
 import { createPaymentCheck, isPaymentCheckAnswered } from '../lib/paymentVerification';
+import { normalizeFullName } from '../lib/paymentDetailsValidation';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import PaymentMethodHeader from '../components/payment/PaymentMethodHeader';
@@ -127,6 +128,9 @@ export default function ManualPaymentScreen() {
     }
 
     const result = await place(buildJawwalPayCheckoutPayload({
+      /* Already validated upstream on the details screen — normalized
+         again here so the claim sends the same string that screen did. */
+      name: normalizeFullName(details.name),
       address: details.address.trim(),
       phone: fullPhone,
       deliveryPhone: deliveryEdited ? fullDeliveryPhone : null,

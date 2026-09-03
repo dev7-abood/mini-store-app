@@ -299,6 +299,7 @@
     "errors": {
       "fullNameRequired": "Enter the full name.",
       "fullNameShort": "Enter a full name with at least 3 characters.",
+      "fullNameWords": "Enter a first name and a family name at least.",
       "phoneRequired": "Enter the phone number.",
       "phoneInvalid": "Enter a valid Palestinian mobile number, for example +970 598 304 517.",
       "addressRequired": "Enter the delivery address.",

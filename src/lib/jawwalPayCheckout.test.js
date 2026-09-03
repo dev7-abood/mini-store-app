@@ -17,6 +17,7 @@ import {
 } from './jawwalPayCheckout.js';
 
 const checkoutPayload = buildJawwalPayCheckoutPayload({
+  name: 'Customer Name',
   phone: '+970599002286',
   deliveryPhone: null,
   address: 'Customer address',
@@ -77,6 +78,7 @@ test('OTP confirmation uses confirmation_url, payment_session_id, and original f
   assert.equal(request.url, '/api/v1/checkout/jawwal-pay/confirm');
   assert.equal(apiPathFromConfirmationUrl(request.url), '/checkout/jawwal-pay/confirm');
   assert.deepEqual(request.payload, {
+    name: 'Customer Name',
     phone: '+970599002286',
     delivery_phone: null,
     address: 'Customer address',
