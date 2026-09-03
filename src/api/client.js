@@ -72,6 +72,34 @@ function telegramInitData() {
 }
 
 /**
+ * How Telegram labels this account, for the store's own records.
+ *
+ * The @handle when the account has one, otherwise the display name —
+ * plenty of accounts never set a handle, and the store would rather see
+ * "Eman Yaser" than nothing at all.
+ *
+ * Unverified on the client by definition; the backend re-derives it from
+ * the signed initData. It is a label for the ACCOUNT and travels in its
+ * own field, next to — never instead of — the name the customer typed.
+ *
+ * @returns {string|null} the label, or null outside Telegram
+ */
+function telegramUsername() {
+  if (typeof window === 'undefined') return null;
+
+  const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+  const handle = String(user?.username ?? '').trim().replace(/^@+/, '');
+  if (handle) return handle;
+
+  const displayName = [user?.first_name, user?.last_name]
+    .map((part) => String(part ?? '').trim())
+    .filter(Boolean)
+    .join(' ');
+
+  return displayName || null;
+}
+
+/**
  * Perform a JSON request against the backend.
  *
  * @param {string} path
@@ -427,12 +455,14 @@ export const fetchPaymentMethods = () =>
  * the form pre-fills from, so it is sent back exactly like the phone and
  * the address. Nothing else may write it.
  *
- * `username` is deliberately NOT sent. The Telegram identity travels on
- * the signed initData and the backend derives that column itself — the
- * body sending it too only gives the API a second, unverified source to
- * fall back on, and a `name` that falls back to a handle is exactly the
- * bug this endpoint keeps producing. The only name in this request is
- * one a customer typed.
+ * `username` is attached here in the background on every sync, straight
+ * from initDataUnsafe — no caller passes it. It is how Telegram labels
+ * the account, kept for the store's records.
+ *
+ * The two are never interchangeable. `username` is the account's label
+ * and `name` is the person's name; they occupy separate fields, and
+ * neither is ever derived from, compared against, or used to fill the
+ * other.
  *
  * @returns {Promise<{id: number, branch_id: number, telegram_user_id: string,
  *           username: string|null, name: string|null, phone: string|null,
@@ -443,6 +473,10 @@ export async function syncCustomer({ botId = null, name, phone, address } = {}) 
   try {
     const body = {};
     if (botId) body.bot_id = String(botId);
+
+    const username = telegramUsername();
+    if (username) body.username = username;
+
     if (name) body.name = name;
     if (phone) body.phone = phone;
     if (address) body.address = address;
