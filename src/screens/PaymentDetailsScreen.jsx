@@ -27,6 +27,7 @@ import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useOrderFlow } from '../context/OrderFlowContext';
 import { usePaymentMethods } from '../context/PaymentMethodsContext';
+import { useCustomer } from '../context/CustomerContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { formatLocalPhone, LOCAL_DIGITS } from '../lib/phone';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
@@ -105,6 +106,7 @@ export default function PaymentDetailsScreen() {
   const { notify } = useTelegram();
   const { place, isBusy } = useOrderFlow();
   const { findPaymentMethod } = usePaymentMethods();
+  const { updateProfile } = useCustomer();
   const { canCheckout, refresh: refreshStoreStatus } = useStoreStatus();
   const [isCheckingStore, setIsCheckingStore] = useState(false);
   const [touched, setTouched] = useState({ fullName: false, phone: false, address: false });
@@ -144,8 +146,31 @@ export default function PaymentDetailsScreen() {
       return;
     }
 
+    /*
+     | The name reaches the customer record HERE, not after the order.
+     |
+     | This screen is the only place a customer types their name, and the
+     | store reads an order's customer from that record — so a sync that
+     | waited for the checkout would leave the order showing the Telegram
+     | handle instead of the person's name. It is sent the moment the
+     | details are confirmed and validated, and AWAITED, so the record is
+     | already right by the time the order lands.
+     |
+     | Rides alongside the store-status check rather than after it: both
+     | are round trips the customer already waits through, so ordering
+     | the name correctly costs nothing. syncCustomer swallows its own
+     | failures and resolves to null, so a profile that didn't save can
+     | never reject here and never blocks the checkout.
+     */
     setIsCheckingStore(true);
-    const latestStatus = await refreshStoreStatus();
+    const [, latestStatus] = await Promise.all([
+      updateProfile({
+        name: validation.value.fullName,
+        phone: fullPhone,
+        address: validation.value.address,
+      }),
+      refreshStoreStatus(),
+    ]);
     setIsCheckingStore(false);
 
     if (latestStatus && latestStatus.canCheckout === false) {
