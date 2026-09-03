@@ -4,8 +4,13 @@
 |--------------------------------------------------------------------------
 | Syncs the Telegram user as a tenant Customer the moment the tenant is
 | resolved (POST /api/v1/telegram/customer). The backend derives the
-| identity from verified initData; we only send the bot id so it can
-| resolve the branch.
+| identity from verified initData; we send the bot id so it can resolve
+| the branch, and the @handle rides along in the background from the
+| client (see syncCustomer).
+|
+| Two different things, kept apart on purpose: `username` is the Telegram
+| handle, known at launch and never shown; `name` is the delivery name
+| the customer TYPES at checkout, and only a checkout can set it.
 |
 | The returned record (phone / address / username / total_orders) is
 | kept here so checkout can PRE-FILL for returning customers — they
