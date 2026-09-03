@@ -45,11 +45,11 @@ export function CustomerProvider({ children }) {
 
   /**
    * Re-sync with profile data (called after checkout completes so the
-   * next order pre-fills with the freshest phone/address).
+   * next order pre-fills with the freshest name/phone/address).
    */
   const updateProfile = useCallback(
-    async ({ phone, address }) => {
-      const record = await syncCustomer({ botId: tenant.botId, phone, address });
+    async ({ name, phone, address }) => {
+      const record = await syncCustomer({ botId: tenant.botId, name, phone, address });
       if (record) setCustomer(record);
       return record;
     },

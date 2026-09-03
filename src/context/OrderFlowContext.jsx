@@ -63,6 +63,7 @@ import {
 } from '../lib/payment';
 import { pickMoney } from '../lib/money';
 import { useStoreStatus } from './StoreStatusContext';
+import { useCustomer } from './CustomerContext';
 
 const OrderFlowContext = createContext(null);
 
@@ -71,6 +72,7 @@ const PAYMENT_POLL_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function OrderFlowProvider({ children }) {
   const { markClosed } = useStoreStatus();
+  const { updateProfile } = useCustomer();
   const [order, setOrder] = useState(null);
   const [pricing, setPricing] = useState(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -194,6 +196,18 @@ export function OrderFlowProvider({ children }) {
     }
 
     setJawwalPayOtpSession(null);
+    /* The checkout succeeded, so the details the customer typed are the
+       freshest profile we have. The NAME travels with the phone and the
+       address — it is the delivery name the next order pre-fills from,
+       and without it the customer record only ever holds the Telegram
+       handle, which is not a name. Fire-and-forget: the order is already
+       placed and a failed sync must never surface as a checkout error. */
+    updateProfile({
+      name: details?.name,
+      phone: details?.phone,
+      address: details?.address,
+    });
+
     const placed = normalizeOrder(result.data);
     setOrder(placed);
     /*
@@ -206,7 +220,7 @@ export function OrderFlowProvider({ children }) {
      */
     setPayment(placed?.payment ?? null);
     return { ok: true, order: placed, message: result.message };
-  }, [markClosed, stopPolling]);
+  }, [markClosed, stopPolling, updateProfile]);
 
   const clearJawwalPayOtpSession = useCallback(() => {
     setJawwalPayOtpSession(null);
@@ -252,6 +266,15 @@ export function OrderFlowProvider({ children }) {
     }
 
     setJawwalPayOtpSession(null);
+    /* Same profile sync as the non-OTP path — this is where a Jawwal Pay
+       checkout actually completes, so the name/phone/address it carried
+       are only now worth keeping. */
+    updateProfile({
+      name: jawwalPayOtpSession.checkoutPayload?.name,
+      phone: jawwalPayOtpSession.checkoutPayload?.phone,
+      address: jawwalPayOtpSession.checkoutPayload?.address,
+    });
+
     const confirmed = normalizeOrder(outcome.order ?? result.data?.order ?? result.data);
     setPayment(
       normalizePayment(outcome.payment ?? result.data?.payment) ?? confirmed?.payment ?? null,
@@ -268,7 +291,7 @@ export function OrderFlowProvider({ children }) {
       message: result.message,
       outcome,
     };
-  }, [jawwalPayOtpSession]);
+  }, [jawwalPayOtpSession, updateProfile]);
 
   const resendJawwalPayOtp = useCallback(async () => {
     if (!jawwalPayOtpSession?.checkoutPayload) {

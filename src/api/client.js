@@ -421,21 +421,23 @@ export const fetchPaymentMethods = () =>
 /**
  * Sync the current Telegram user as a Customer.
  *
- * @param {{botId?: string|null, phone?: string, address?: string}} [options]
+ * @param {{botId?: string|null, name?: string, phone?: string,
+ *   address?: string}} [options]
  * `name` is the delivery name the customer typed at checkout — the field
- * the form pre-fills from. `username` is the Telegram handle, carried for
- * the store's own records; it is never shown, and never used as the
- * customer's name.
+ * the form pre-fills from, so it is sent back exactly like the phone and
+ * the address. `username` is the Telegram handle, carried for the store's
+ * own records; it is never shown, and never used as the customer's name.
  *
  * @returns {Promise<{id: number, branch_id: number, telegram_user_id: string,
  *           username: string|null, name: string|null, phone: string|null,
  *           address: string|null, total_orders: number} | null>}
  *           The customer, or null on failure
  */
-export async function syncCustomer({ botId = null, phone, address } = {}) {
+export async function syncCustomer({ botId = null, name, phone, address } = {}) {
   try {
     const body = {};
     if (botId) body.bot_id = String(botId);
+    if (name) body.name = name;
     if (phone) body.phone = phone;
     if (address) body.address = address;
 
