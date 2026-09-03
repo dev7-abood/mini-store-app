@@ -453,9 +453,32 @@ export async function syncCustomer({ botId = null, name, phone, address } = {}) 
       timeoutMs: 8000,
     });
 
-    return data?.success ? data.data : null;
+    const record = data?.success ? data.data : null;
+
+    /*
+     | The one thing this request exists to do, checked out loud.
+     |
+     | A sync that stores something OTHER than the name we sent looks
+     | exactly like a sync that worked: 200, a customer back, no error.
+     | That silence is how a `name` overwritten server-side stayed
+     | invisible for eleven orders. So when we sent a name and the record
+     | comes back with a different one, say so and name both sides — the
+     | typed value is the only correct answer here, and anything else is
+     | the API's doing, not the app's.
+     */
+    if (name && record && record.name !== name) {
+      console.warn(
+        `[customer-sync] sent name "${name}" but the API stored "${record.name}"`
+        + `${record.name === record.username ? ' — same as `username`, so it is being derived from the Telegram identity server-side' : ''}`,
+        { sent: body, stored: record },
+      );
+    }
+
+    return record;
   } catch (error) {
-    console.warn('Customer sync failed:', error);
+    /* Status + body, not just "failed": a 422 on the name and a dropped
+       connection are different bugs and must not read the same. */
+    console.warn('Customer sync failed:', error.status ?? '(no status)', error.payload ?? error);
     return null;
   }
 }
