@@ -27,6 +27,14 @@
     "notePlaceholder": "No onions, extra sauce...",
     "continue": "Continue",
     "missingFields": "Please enter your name and address",
+    "amountLimit": {
+      "title": "Order total is outside the allowed range",
+      "below": "The minimum order total is {{min}}. Add more items to your cart to continue.",
+      "above": "The maximum order total is {{max}}. Remove some items to continue, or place more than one order.",
+      "current": "Your total: {{total}}",
+      "range": "Allowed: {{min}} - {{max}}",
+      "short": "The order total must be between {{min}} and {{max}}."
+    },
     "manualSender": {
       "title": "Payment Sender Information",
       "fromBadge": "Payment From",

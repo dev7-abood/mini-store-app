@@ -29,6 +29,7 @@ import { useOrderFlow } from '../context/OrderFlowContext';
 import { usePaymentMethods } from '../context/PaymentMethodsContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useTelegram } from '../hooks/useTelegram';
+import { useCheckoutAmountLimit, useCheckoutAmountMessage } from '../hooks/useCheckoutAmountLimit';
 import { formatLocalPhone, LOCAL_DIGITS } from '../lib/phone';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
 import { paymentMethodLabel, paymentMethodSettlementLabel } from '../lib/paymentMethods';
@@ -39,6 +40,7 @@ import Field from '../components/ui/Field';
 import FlagPS from '../components/ui/FlagPS';
 import PaymentMethodHeader from '../components/payment/PaymentMethodHeader';
 import { StoreStatusNotice } from '../components/StoreStatus';
+import CheckoutAmountNotice from '../components/CheckoutAmountNotice';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './PaymentDetailsScreen.module.css';
@@ -110,6 +112,10 @@ export default function PaymentDetailsScreen() {
   const { canCheckout, refresh: refreshStoreStatus } = useStoreStatus();
   const [isCheckingStore, setIsCheckingStore] = useState(false);
   const [touched, setTouched] = useState({ fullName: false, phone: false, address: false });
+  /* The last screen before a smart payment is submitted, and the last
+     one before a manual customer is sent off to transfer real money. */
+  const amountLimit = useCheckoutAmountLimit();
+  const amountLimitMessage = useCheckoutAmountMessage();
 
   const method = findPaymentMethod(paymentMethod);
   const methodLabel = paymentMethodLabel(method, t);
@@ -129,6 +135,13 @@ export default function PaymentDetailsScreen() {
   const continueToPayment = async () => {
     if (!canCheckout) {
       notify(t('storeStatus.closedFallback'), 'warning');
+      return;
+    }
+
+    /* Ahead of the field errors: an out-of-range total is not something
+       the customer can fix by correcting their address. */
+    if (amountLimit.isBlocked) {
+      notify(amountLimitMessage(amountLimit), 'warning');
       return;
     }
 
@@ -266,6 +279,7 @@ export default function PaymentDetailsScreen() {
             />
           </div>
         </section>
+        <CheckoutAmountNotice limit={amountLimit} />
       </div>
       <StoreStatusNotice />
       <FixedCta>
@@ -273,7 +287,7 @@ export default function PaymentDetailsScreen() {
           variant="green"
           full
           onClick={continueToPayment}
-          disabled={isBusy || isCheckingStore || !canCheckout || !method}
+          disabled={isBusy || isCheckingStore || !canCheckout || !method || amountLimit.isBlocked}
         >
           {isBusy || isCheckingStore
             ? t('paymentDetails.sending')

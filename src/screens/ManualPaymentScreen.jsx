@@ -36,6 +36,7 @@ import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useTelegram } from '../hooks/useTelegram';
 import { useFixedCtaSpace } from '../hooks/useFixedCtaSpace';
+import { useCheckoutAmountLimit, useCheckoutAmountMessage } from '../hooks/useCheckoutAmountLimit';
 import { buildJawwalPayCheckoutPayload } from '../lib/jawwalPayCheckout';
 import { paymentMethodLabel, paymentMethodSettlementLabel } from '../lib/paymentMethods';
 import { createPaymentCheck, isPaymentCheckAnswered } from '../lib/paymentVerification';
@@ -46,6 +47,7 @@ import PaymentMethodHeader from '../components/payment/PaymentMethodHeader';
 import PaymentInstructions from '../components/payment/PaymentInstructions';
 import PaymentCheck from '../components/payment/PaymentCheck';
 import { StoreStatusNotice } from '../components/StoreStatus';
+import CheckoutAmountNotice from '../components/CheckoutAmountNotice';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './ManualPaymentScreen.module.css';
@@ -77,6 +79,14 @@ export default function ManualPaymentScreen() {
   const [ctaRef, ctaHeight] = useFixedCtaSpace();
 
   const method = findPaymentMethod(paymentMethod);
+  /* Judged against the preview's OWN total and currency — the figure on
+     this screen, frozen server-side, is the one the customer is about to
+     transfer by hand. It falls back to the cart's while that loads. */
+  const amountLimit = useCheckoutAmountLimit({
+    total: state.details?.totals?.total,
+    currency: state.details?.totals?.currency,
+  });
+  const amountLimitMessage = useCheckoutAmountMessage();
 
   const load = useCallback(async () => {
     if (!paymentMethod) return;
@@ -106,6 +116,14 @@ export default function ManualPaymentScreen() {
   const claimPaid = async () => {
     if (isClaiming || !canCheckout) {
       if (!canCheckout) notify(t('storeStatus.closedFallback'), 'warning');
+      return;
+    }
+
+    /* Before the sum below, and before any order exists: a total the
+       backend will refuse must not become an order a cashier then has to
+       chase money for. The amount is on the screen above the button. */
+    if (amountLimit.isBlocked) {
+      notify(amountLimitMessage(amountLimit), 'warning');
       return;
     }
 
@@ -208,6 +226,8 @@ export default function ManualPaymentScreen() {
               <p>{t('manualPayment.confirmBody')}</p>
             </section>
 
+            <CheckoutAmountNotice limit={amountLimit} />
+
             <PaymentCheck
               check={check}
               value={checkAnswer}
@@ -238,7 +258,7 @@ export default function ManualPaymentScreen() {
             variant="green"
             full
             onClick={claimPaid}
-            disabled={!instructions || isClaiming || isBusy || !canCheckout}
+            disabled={!instructions || isClaiming || isBusy || !canCheckout || amountLimit.isBlocked}
           >
             {isClaiming
               ? t('manualPayment.claiming')

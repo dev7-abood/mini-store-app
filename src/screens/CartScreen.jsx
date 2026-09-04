@@ -4,12 +4,14 @@ import { useStoreStatus } from '../context/StoreStatusContext';
 import { useNavigation, SCREENS } from '../context/NavigationContext';
 import { useMoney } from '../hooks/useMoney';
 import { useBusinessTypeConfig } from '../hooks/useBusinessTypeConfig';
+import { useCheckoutAmountLimit } from '../hooks/useCheckoutAmountLimit';
 import Screen from '../components/ui/Screen';
 import SubHeader from '../components/ui/SubHeader';
 import CenterIllustration from '../components/ui/CenterIllustration';
 import CartItem from '../components/CartItem';
 import CartProductGroup from '../components/CartProductGroup';
 import { StoreStatusNotice } from '../components/StoreStatus';
+import CheckoutAmountNotice from '../components/CheckoutAmountNotice';
 import FixedCta from '../components/ui/FixedCta';
 import Button from '../components/ui/Button';
 import styles from './CartScreen.module.css';
@@ -24,6 +26,9 @@ export default function CartScreen() {
   const { canCheckout } = useStoreStatus();
   const { navigate } = useNavigation();
   const { icons } = useBusinessTypeConfig();
+  /* The earliest screen that can say it: a total outside the accepted
+     range is caught here, before a method is even chosen. */
+  const amountLimit = useCheckoutAmountLimit();
 
   const isEmpty = count === 0;
 
@@ -75,6 +80,7 @@ export default function CartScreen() {
                 </div>
               )}
             </div>
+            <CheckoutAmountNotice limit={amountLimit} />
           </>
         )}
       </div>
@@ -84,7 +90,7 @@ export default function CartScreen() {
           <Button
             variant="green"
             full
-            disabled={!canCheckout}
+            disabled={!canCheckout || amountLimit.isBlocked}
             onClick={() => navigate(SCREENS.CHECKOUT)}
           >
             {canCheckout ? t('cart.checkout') : t('storeStatus.closedCheckout')}
